@@ -99,7 +99,8 @@ async function isEmailAvailable(email) {
 async function approveRequest(requestData) {
  app.post("/createUser", (req, res) => {
   const { email, nId } = req.body;
-  execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
+  // changed to a test file that just prints if file executes
+    execFile("./create_user_test.sh", (err, stdout, stderr) => { // execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
     if (err) {
       return res.status(500).send(stderr);
     }

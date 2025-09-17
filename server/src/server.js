@@ -10,7 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
-const student2Routes = require("./routes/requestAccountRoutes");
+//const student2Routes = require("./routes/requestAccountRoutes");
 
 const app = express();
 
@@ -26,7 +26,7 @@ app.use("/auth", authRoutes);
 app.use("/tech-blog", techBlogRoutes);
 app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
-app.use("/student", student2Routes);
+//app.use("/student", student2Routes);
 
 /*
 app.use("/api/faq", faqRoutes);

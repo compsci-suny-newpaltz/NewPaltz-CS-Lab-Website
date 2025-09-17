@@ -100,10 +100,18 @@ async function approveRequest(requestData) {
  app.post("/createUser", (req, res) => {
   const { email, nId } = req.body;
   // changed to a test file that just prints if file executes
-    execFile("./create_user_test.sh", (err, stdout, stderr) => { // execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
+    execFile("./create_user_test.sh", [email, nId], (err, stdout, stderr) => { // execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
     if (err) {
       return res.status(500).send(stderr);
     }
+    // creates Database as well if student is approved for Hydra
+    execFile("./create_DBuser.sh", [email, nId], (err, stderr) => {
+        if (err) {
+      return res.status(500).send(stderr);
+    }
+
+    });
+
     res.send(stdout || "User created successfully");
   });
 });

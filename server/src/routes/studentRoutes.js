@@ -1,6 +1,9 @@
+
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/studentModel');
+// needed for execFile to work for creation of accounts
+const { execFile } = require("child_process");
 
 
 router.get('/', async (req, res) => {
@@ -75,11 +78,11 @@ router.get('/check-email/:email', async (req, res) => {
 
 });
 
-arouter.post("/createUser", (req, res) => {
+router.post("/createUser", (req, res) => {
   const { email, nId } = req.body;
-  execFile("./create_user_test.sh", (err, stdout, stderr) => {   // execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
+  execFile("C:\Program Files\Git\bin\bash.exe", ["./create_user_test.sh"], (err, stdout, stderr) => {   // execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
     if (err) {
-      return res.status(500).send(stderr);
+      return res.status(401).send(stderr);
     }
     res.send(stdout || "User created successfully");
   });

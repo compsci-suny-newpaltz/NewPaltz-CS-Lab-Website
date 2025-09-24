@@ -1,6 +1,15 @@
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
 
+
+// new addition to execute file
+
+const express = require("express");
+const { execFile } = require("child_process");
+
+const app = express();
+app.use(express.json()); // Ensure JSON body parsing
+
 // Get all admins (for debugging, no password included)
 async function getAllStudents() {
     const conn = await pool.getConnection();
@@ -100,7 +109,7 @@ async function approveRequest(requestData) {
  app.post("/createUser", (req, res) => {
   const { email, nId } = req.body;
   // changed to a test file that just prints if file executes
-    execFile("./create_user_test.sh", [email, nId], (err, stdout, stderr) => { // execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
+    execFile("/opt/hydra-scripts/test_hello_world.sh", [email, nId], (err, stdout, stderr) => { // execFile("./create_user.sh", [email, nId], (err, stdout, stderr) => {
     if (err) {
       return res.status(500).send(stderr);
     }

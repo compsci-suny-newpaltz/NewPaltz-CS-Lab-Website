@@ -15,9 +15,8 @@ router.get('/', async (req, res) => {
 // Route to add a new student
 router.post('/', async (req, res) => {
     const { user, email, password } = req.body;
-
     try {
-        const id = await Student.addStudent(user, email, password);
+        const id = await Student.addStudent({user, email, password});
         res.json({ message: "Student added successfully", id: Number(id) });
 
     } catch (err) {

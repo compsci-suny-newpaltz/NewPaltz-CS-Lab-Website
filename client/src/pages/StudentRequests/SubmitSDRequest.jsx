@@ -59,6 +59,7 @@ export default function SubmitSDRequest() {
             );
         } catch (err) {
             alert("There was an error submitting your request. Please try again.");
+            console.log("formData:", JSON.stringify(formData));
         }
     };
 

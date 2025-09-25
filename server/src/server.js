@@ -10,6 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
+const nodemailer = require("nodemailer");
 const student2Routes = require("./routes/studentRoutes");
 
 const app = express();
@@ -28,7 +29,10 @@ app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
 
-/*
+
+// Uncomment the following lines to enable these routes when needed
+
+
 app.use("/api/faq", faqRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/student-resources", studentRoutes);
@@ -37,7 +41,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tech-blog", techBlogRoutes);
 app.use("/api/student-highlights", studentHighlightRoutes);
 app.use("/api/sd-forms", sdFormRoutes);
-*/
+
 
 app.get("/", (req, res) => {
     res.send("CS Department Website API is running...");
@@ -45,3 +49,33 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.GOOGLE_USER,
+    pass: process.env.GOOGLE_PASS,
+  },
+});
+
+app.post("/send-alert", async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+
+    await transporter.sendMail({
+      from: '"Queue Alert" your_email@gmail.com',
+      to: "recipient@example.com",
+      subject,
+      text: message,
+    });
+
+    res.json({ success: true, msg: "Email sent!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, msg: "Email failed." });
+  }
+});
+
+

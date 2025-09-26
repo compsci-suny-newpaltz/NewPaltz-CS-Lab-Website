@@ -1,6 +1,9 @@
 import { useState } from "react";
 import sdFormService from "../../services/sdFormService";
 import Dummypanel from "../../components/StudentRequests/dummypanel";
+import axios from "axios";
+
+
 
 export default function SubmitSDRequest() {
     const [formData, setFormData] = useState({
@@ -13,6 +16,19 @@ export default function SubmitSDRequest() {
         email: "",
         student_id: "",
     });
+    const sendAlert = async () => {
+        try {
+            const res = await axios.post("http://localhost:5001/send-alert", {
+                subject: "Student Account Request",
+                message: "A student has requested an account on the hydra server. Please login and review the submition :) ",
+            });
+            alert(res.data.msg);
+        } catch (err) {
+            alert("Error sending email");
+            console.error(err);
+        }
+    };
+
 
     const validateField = (name, value) => {
         switch (name) {
@@ -54,6 +70,7 @@ export default function SubmitSDRequest() {
 
         try {
             await sdFormService.addForm(formData);
+            await sendAlert();
             alert(
                 "Thank you! Your request has been submitted and is awaiting admin review. You will be sent an email soon if you have been accepted or denied access!"
             );

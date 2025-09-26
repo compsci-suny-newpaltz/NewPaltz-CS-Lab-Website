@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import sdFormService from "../../services/sdFormService";
 
-export default function AdminPanel() {
+export default function Dummypanel() {
     const [forms, setForms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");

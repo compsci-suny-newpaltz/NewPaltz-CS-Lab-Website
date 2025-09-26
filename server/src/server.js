@@ -10,11 +10,11 @@ const authRoutes = require("./routes/authRoutes");
 const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
-const nodemailer = require("nodemailer");
+
 const student2Routes = require("./routes/studentRoutes");
 
 const app = express();
-
+const nodemailer = require("nodemailer");
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -63,14 +63,12 @@ const transporter = nodemailer.createTransport({
 app.post("/send-alert", async (req, res) => {
   try {
     const { subject, message } = req.body;
-
     await transporter.sendMail({
-      from: '"Queue Alert" your_email@gmail.com',
-      to: "recipient@example.com",
+      from: process.env.GOOGLE_USER,
+      to: "alejilal1@newpaltz.edu",
       subject,
       text: message,
     });
-
     res.json({ success: true, msg: "Email sent!" });
   } catch (error) {
     console.error(error);

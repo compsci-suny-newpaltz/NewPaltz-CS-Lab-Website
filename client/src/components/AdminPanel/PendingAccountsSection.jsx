@@ -10,6 +10,29 @@ export default function PendingAccounts() {
 
 
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Check for any existing errors
+        const newErrors = {
+            email: validateField("email", formData.email),
+            student_id: validateField("student_id", formData.student_id),
+        };
+        setErrors(newErrors);
+
+        if (newErrors.email || newErrors.student_id) return; // prevent submission if errors
+
+        try {
+            await sdFormService.addForm(formData);
+            await sendAlert();
+            alert(
+                "Thank you! Your request has been submitted and is awaiting admin review. You will be sent an email soon if you have been accepted or denied access!"
+            );
+        } catch (err) {
+            alert("There was an error submitting your request. Please try again.");
+            console.log("formData:", JSON.stringify(formData));
+        }
+    };
     useEffect(() => {
         const loadStudents = async () => {
             try {

@@ -107,16 +107,16 @@ router.put("/:id/approve", async (req, res) => {
   }
 });
 
-// Deny a request // 
+// Deny a request 
 router.put("/:id/deny", async (req, res) => {
-  try {
+    try {
     const rows = await Student.denyRequest(req.params.id);
     if (rows === 0) return res.status(404).json({ message: "Request not found" });
     res.json({ message: "Request denied successfully" });
-  } catch (err) {
+    } catch (err) {
     console.error("Error denying request:", err);
     res.status(500).json({ message: "Failed to deny request" });
-  }
+    }
 });
 
 

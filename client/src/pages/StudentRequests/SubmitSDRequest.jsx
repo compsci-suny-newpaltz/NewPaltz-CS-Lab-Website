@@ -1,6 +1,5 @@
 import { useState } from "react";
 import sdFormService from "../../services/sdFormService";
-import Dummypanel from "../../components/StudentRequests/dummypanel";
 import axios from "axios";
 
 
@@ -154,9 +153,6 @@ export default function SubmitSDRequest() {
                     Submit Request
                 </button>
             </form>
-            <div className="text-stone-500 text-sm mt-4">
-                <Dummypanel />
-            </div>
         </div>
     );
 }

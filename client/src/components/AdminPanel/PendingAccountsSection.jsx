@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { studentService } from "../../services/studentAccountService";
 import sdFormService from "../../services/sdFormService";
 
@@ -57,8 +57,18 @@ export default function PendingAccounts() {
                                         className="bg-green-300 rounded px-3 py-1 hover:bg-green-400 mr-2 transition-all ease-in duration-300">Approve
                                     </button>
                                     <button
-                                        onClick={() => studentService.denyRequest(students.id)}
-                                        className="bg-rose-300 rounded px-3 py-1 hover:bg-rose-400 transition-all ease-in duration-300">Deny
+                                        onClick={async () => {
+                                            try {
+                                                await sdFormService.deleteForm(students.id);
+                                                setStudents((prev) => prev.filter((s) => s.id !== students.id));
+                                            } catch (err) {
+                                                console.error("Error denying request:", err);
+                                                setError(err.message);
+                                            }
+                                        }}
+                                        className="bg-rose-300 rounded px-3 py-1 hover:bg-rose-400 transition-all ease-in duration-300"
+                                    >
+                                        Deny
                                     </button>
                                 </td>
                             </tr>

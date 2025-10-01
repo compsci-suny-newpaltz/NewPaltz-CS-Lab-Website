@@ -15,9 +15,8 @@ router.get('/', async (req, res) => {
 // Route to add a new student
 router.post('/', async (req, res) => {
     const { user, email, password } = req.body;
-
     try {
-        const id = await Student.addStudent(user, email, password);
+        const id = await Student.addStudent({user, email, password});
         res.json({ message: "Student added successfully", id: Number(id) });
 
     } catch (err) {
@@ -108,16 +107,16 @@ router.put("/:id/approve", async (req, res) => {
   }
 });
 
-// Deny a request // 
+// Deny a request 
 router.put("/:id/deny", async (req, res) => {
-  try {
+    try {
     const rows = await Student.denyRequest(req.params.id);
     if (rows === 0) return res.status(404).json({ message: "Request not found" });
     res.json({ message: "Request denied successfully" });
-  } catch (err) {
+    } catch (err) {
     console.error("Error denying request:", err);
     res.status(500).json({ message: "Failed to deny request" });
-  }
+    }
 });
 
 

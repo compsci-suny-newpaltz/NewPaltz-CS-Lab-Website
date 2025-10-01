@@ -10,6 +10,29 @@ export default function PendingAccounts() {
 
 
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Check for any existing errors
+        const newErrors = {
+            email: validateField("email", formData.email),
+            student_id: validateField("student_id", formData.student_id),
+        };
+        setErrors(newErrors);
+
+        if (newErrors.email || newErrors.student_id) return; // prevent submission if errors
+
+        try {
+            await sdFormService.addForm(formData);
+            await sendAlert();
+            alert(
+                "Thank you! Your request has been submitted and is awaiting admin review. You will be sent an email soon if you have been accepted or denied access!"
+            );
+        } catch (err) {
+            alert("There was an error submitting your request. Please try again.");
+            console.log("formData:", JSON.stringify(formData));
+        }
+    };
     useEffect(() => {
         const loadStudents = async () => {
             try {
@@ -57,8 +80,19 @@ export default function PendingAccounts() {
                                         className="bg-green-300 rounded px-3 py-1 hover:bg-green-400 mr-2 transition-all ease-in duration-300">Approve
                                     </button>
                                     <button
-                                        onClick={() => studentService.denyRequest(students.id)}
-                                        className="bg-rose-300 rounded px-3 py-1 hover:bg-rose-400 transition-all ease-in duration-300">Deny
+                                        onClick={async () => {
+                                            if (window.confirm("Are you sure you want to deny and delete this student?")) {
+                                                try {
+                                                    alert("Student denied and notified.");
+                                                } catch (err) {
+                                                    alert("Failed to deny student.");
+                                                    console.log(err)
+                                                }
+                                            }
+                                        }}
+                                        className="bg-rose-300 rounded px-3 py-1 hover:bg-rose-400 transition-all ease-in duration-300"
+                                    >
+                                        Deny
                                     </button>
                                 </td>
                             </tr>

@@ -56,7 +56,7 @@ export const studentService = {
 
   async denyRequest(requestId) {
     try {
-      const response = await axios.delete(`${baseURL}/deny/${requestId}`);
+      const response = await axios.delete(`${baseURL}/${requestId}`);
       return response.data.affectedRows; // Return number of affected rows
     } catch (error) {
       throw new Error(

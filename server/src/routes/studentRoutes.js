@@ -96,7 +96,7 @@ router.get("/pending", async (req, res) => {
 });
 
 // Approve a request
-router.put("/:id/approve", async (req, res) => {
+router.put("/approve/:id", async (req, res) => {
   try {
     const rows = await Student.approveRequest(req.params.id);
     if (rows === 0) return res.status(404).json({ message: "Request not found" });

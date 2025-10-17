@@ -248,13 +248,16 @@ export default function AdminPanel() {
                     </table>
                     
                      <div>
-      <h1>Script Test</h1>
-      <p>Click the button below to test the backend script:</p>
+              
+              // test script               
+                       <h1>Script Test</h1>
+                       <p>Click the button below to test the backend script:</p>
 
-      <TestScriptSection />
+                       <TestScriptSection />
+  
+                       <p>Check the console or below for output.</p>
+                     </div>
 
-      <p>Check the console or below for output.</p>
-    </div>
                     <div className="mt-4">
                         <Link to="/admin-panel/users/create-user"
                             className="bg-blue-300 text-white px-4 py-2 rounded hover:bg-4lue-600">

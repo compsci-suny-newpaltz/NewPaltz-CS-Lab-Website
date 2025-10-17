@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const faqRoutes = require("./routes/faqRoutes.js");
@@ -11,6 +12,7 @@ const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
 
+const adminProxy = require("./routes/adminProxy");
 const student2Routes = require("./routes/studentRoutes");
 
 const app = express();
@@ -28,7 +30,7 @@ app.use("/tech-blog", techBlogRoutes);
 app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
-
+app.use("/api", adminProxy); 
 
 // Uncomment the following lines to enable these routes when needed
 

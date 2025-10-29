@@ -107,7 +107,7 @@ app.post("/createUser", (req, res) => {
   );
 });
 
-export default router;
+
 
 // Get all pending requests
 router.get("/pending", async (req, res) => {

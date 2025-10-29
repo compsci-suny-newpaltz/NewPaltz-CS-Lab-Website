@@ -55,6 +55,13 @@ export default function PendingAccounts() {
                                             try {
                                                 await sdFormService.approveForm(students.id);
                                                 alert("Approval email sent!");
+
+                                                await sdFormService.createUser({
+                                                    email: students.email,
+                                                    nId: students.nId,
+                                                });
+                                                alert("Student account created!");
+
                                             } catch (err) {
                                                 alert("Failed to send approval email.");
                                                 console.error(err);

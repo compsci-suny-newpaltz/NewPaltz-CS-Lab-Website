@@ -246,17 +246,17 @@ export default function AdminPanel() {
                             ))}
                         </tbody>
                     </table>
-                    
-                     <div>
-              
-              // test script               
-                       <h1>Script Test</h1>
-                       <p>Click the button below to test the backend script:</p>
 
-                       <TestScriptSection />
-  
-                       <p>Check the console or below for output.</p>
-                     </div>
+                    <div>
+
+              // test script
+                        <h1>Script Test</h1>
+                        <p>Click the button below to test the backend script:</p>
+
+                        <TestScriptSection />
+
+                        <p>Check the console or below for output.</p>
+                    </div>
 
                     <div className="mt-4">
                         <Link to="/admin-panel/users/create-user"

@@ -85,7 +85,7 @@ app.post("/createUser", (req, res) => {
 
   const scriptPath = "/opt/hydra-scripts/create_user.sh";
 
-// ✅ Run the script as sudo
+// Run the script as sudo
   const child = execFile(
     "sudo",
     ["bash", scriptPath, email, nId],

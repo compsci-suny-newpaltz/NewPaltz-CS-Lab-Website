@@ -40,6 +40,16 @@ async function getStudentById(id) {
     }
 }
 
+async function getStudentEmailById(id) {
+    const conn = await pool.getConnection();
+    try {
+        const rows = await conn.query("SELECT email FROM Student WHERE id = ?", [id]);
+        return rows[0]?.email;
+    } finally {
+        conn.release();
+    }
+}
+
 
 // Add a new student and hash the password before saving
 async function addStudent(user, email, password) {
@@ -96,6 +106,7 @@ async function isEmailAvailable(email) {
  * @param {number} id - Request ID
  * @returns {Promise<number>} Number of affected rows
  */
+// conect to script to create user
 async function approveRequest(requestData) {
  app.post("/createUser", (req, res) => {
   const { email, nId } = req.body;
@@ -114,12 +125,15 @@ async function approveRequest(requestData) {
  * @param {number} id - Request ID
  * @returns {Promise<number>} Number of affected rows
  */
+// connect to script to send email to student
+
 async function denyRequest(requestData) {
 const conn = await pool.getConnection();
   try {
     const result = await conn.query(
       "UPDATE AccountRequests SET status = 'denied' WHERE id = ?",
       [id]
+      //instead delete student 
     );
     return result.affectedRows;
   } finally {

@@ -7,6 +7,8 @@ import StudentResourceSection from "../../components/AdminPanel/StudentResourceS
 import HighlightsSection from "../../components/AdminPanel/HighlightsSection";
 import TechBlogSection from "../../components/AdminPanel/TechBlogSection";
 import PendingSDAccounts from "../../components/AdminPanel/PendingSDAccounts";
+import PendingAccountsSection from "../../components/AdminPanel/PendingAccountsSection";
+import TestScriptSection from "../../components/AdminPanel/TestScript";
 import { adminService } from "../../services/adminService";
 
 import { Link } from "react-router-dom";
@@ -23,6 +25,7 @@ export default function AdminPanel() {
         const selectedId = e.currentTarget.id;
         setActiveCategory(selectedId); // Update the active category
     };
+
 
     useEffect(() => {
         const loadAdmins = async () => {
@@ -142,7 +145,7 @@ export default function AdminPanel() {
             )}
             {/* Pending Accounts Section */}
             {activeCategory === "pending-accounts" && (
-                <PendingSDAccounts />)}
+                <PendingAccountsSection />)}
 
 
             {/* Admin Options Tab - Resources */}
@@ -243,6 +246,18 @@ export default function AdminPanel() {
                             ))}
                         </tbody>
                     </table>
+                    
+                     <div>
+              
+              // test script               
+                       <h1>Script Test</h1>
+                       <p>Click the button below to test the backend script:</p>
+
+                       <TestScriptSection />
+  
+                       <p>Check the console or below for output.</p>
+                     </div>
+
                     <div className="mt-4">
                         <Link to="/admin-panel/users/create-user"
                             className="bg-blue-300 text-white px-4 py-2 rounded hover:bg-4lue-600">
@@ -252,6 +267,7 @@ export default function AdminPanel() {
                 </div>
             </div>
         </div>
+
 
     );
 }

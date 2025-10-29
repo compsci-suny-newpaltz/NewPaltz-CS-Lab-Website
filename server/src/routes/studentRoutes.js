@@ -15,9 +15,8 @@ router.get('/', async (req, res) => {
 // Route to add a new student
 router.post('/', async (req, res) => {
     const { user, email, password } = req.body;
-
     try {
-        const id = await Student.addStudent(user, email, password);
+        const id = await Student.addStudent({user, email, password});
         res.json({ message: "Student added successfully", id: Number(id) });
 
     } catch (err) {
@@ -113,7 +112,7 @@ export default router;
 // Get all pending requests
 router.get("/pending", async (req, res) => {
   try {
-    const requests = await accountRequests.getPendingRequests();
+    const requests = await Student.getPendingRequests();
     res.json(requests);
   } catch (err) {
     console.error("Error fetching pending requests:", err);
@@ -122,9 +121,9 @@ router.get("/pending", async (req, res) => {
 });
 
 // Approve a request
-router.put("/:id/approve", async (req, res) => {
+router.put("/approve/:id", async (req, res) => {
   try {
-    const rows = await accountRequests.approveRequest(req.params.id);
+    const rows = await Student.approveRequest(req.params.id);
     if (rows === 0) return res.status(404).json({ message: "Request not found" });
     res.json({ message: "Request approved successfully" });
   } catch (err) {
@@ -133,16 +132,16 @@ router.put("/:id/approve", async (req, res) => {
   }
 });
 
-// Deny a request
+// Deny a request 
 router.put("/:id/deny", async (req, res) => {
-  try {
-    const rows = await accountRequests.denyRequest(req.params.id);
+    try {
+    const rows = await Student.denyRequest(req.params.id);
     if (rows === 0) return res.status(404).json({ message: "Request not found" });
     res.json({ message: "Request denied successfully" });
-  } catch (err) {
+    } catch (err) {
     console.error("Error denying request:", err);
     res.status(500).json({ message: "Failed to deny request" });
-  }
+    }
 });
 
 

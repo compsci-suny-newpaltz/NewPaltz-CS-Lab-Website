@@ -46,15 +46,13 @@ export default function Calendar() {
         f.office_hours.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Check if any faculty has office hours on this specific date
+    // --- Updated hasOfficeHours function ---
     const hasOfficeHours = (date) => {
         const dayStr = date.toLocaleDateString("en-US", { weekday: "long" });
-        return filteredFaculty.some(f =>
-            f.office_hours
-                .split(",")
-                .map(s => s.trim())
-                .some(slot => slot.toLowerCase().startsWith(dayStr.toLowerCase()))
-        );
+        return filteredFaculty.some(f => {
+            const officeHoursStr = f.office_hours || ""; // string-based office hours
+            return officeHoursStr.toLowerCase().includes(dayStr.toLowerCase());
+        });
     };
 
     // Click handler
@@ -268,11 +266,11 @@ export default function Calendar() {
             {showPopup && selectedDate && (
                 <PopupWindow
                     date={selectedDate}
-                    faculty={filteredFaculty.filter(f =>
-                        f.office_hours.toLowerCase().includes(
-                            selectedDate.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase()
-                        )
-                    )}
+                    faculty={filteredFaculty.filter(f => {
+                        const dayStr = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
+                        const officeHoursStr = f.office_hours || "";
+                        return officeHoursStr.toLowerCase().includes(dayStr.toLowerCase());
+                    })}
                     events={events[formatDateKey(selectedDate)] || []}
                     onClose={() => setShowPopup(false)}
                 />

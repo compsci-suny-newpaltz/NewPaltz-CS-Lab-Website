@@ -75,7 +75,7 @@ router.get('/check-email/:email', async (req, res) => {
 });
 
 // creating a new user using the script
-app.post("/createUser", (req, res) => {
+router.post("/createUser", (req, res) => {
   const { email, nId } = req.body;
 
   if (!email || !nId) {

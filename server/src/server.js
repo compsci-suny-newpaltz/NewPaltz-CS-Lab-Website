@@ -12,7 +12,8 @@ const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
 
-const adminProxy = require("./routes/adminProxy");
+// const adminProxy = require("./routes/adminProxy");
+const adminProxy = require("./routes/adminRoutes.js");
 const student2Routes = require("./routes/studentRoutes");
 
 const app = express();

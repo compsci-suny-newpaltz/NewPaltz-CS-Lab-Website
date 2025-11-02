@@ -8,7 +8,7 @@ import HighlightsSection from "../../components/AdminPanel/HighlightsSection";
 import TechBlogSection from "../../components/AdminPanel/TechBlogSection";
 import PendingSDAccounts from "../../components/AdminPanel/PendingSDAccounts";
 import PendingAccountsSection from "../../components/AdminPanel/PendingAccountsSection";
-import TestScriptSection from "../../components/AdminPanel/TestScript";
+// import TestScriptSection from "../../components/AdminPanel/TestScript";
 import { adminService } from "../../services/adminService";
 
 import { Link } from "react-router-dom";

@@ -50,6 +50,15 @@ const sdFormService = {
       throw new Error('Failed to approve form');
     }
   },
+
+  async createUser(email, nId) {
+    try {
+      const response = await axios.post('/api/students/createUser', { email, nId });
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to create user');
+    }
+  },
 };
 
 export default sdFormService;

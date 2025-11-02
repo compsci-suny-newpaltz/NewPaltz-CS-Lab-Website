@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/studentModel');
+const { execFile } = require('child_process');
 
 
 router.get('/', async (req, res) => {
@@ -29,9 +30,9 @@ router.post('/login', async (req, res) => {
         const student = await Student.login(req.body);
 
         // Remove password_hash before sending the response
-        const { password_hash, ...adminWithoutPassword } = admin;
+        const { password_hash, ...adminWithoutPassword } = student;
 
-        res.send(adminWithoutPassword);
+        res.send(studentWithoutPassword);
     } catch (err) {
         res.status(401).json({ message: err.message });
     }
@@ -84,7 +85,7 @@ router.post("/createUser", (req, res) => {
 
   const scriptPath = "/opt/hydra-scripts/create_user.sh";
 
-// ✅ Run the script as sudo
+// Run the script as sudo
   const child = execFile(
     "sudo",
     ["bash", scriptPath, email, nId],
@@ -107,7 +108,7 @@ router.post("/createUser", (req, res) => {
   );
 });
 
-
+module.exports = router;
 
 // Get all pending requests
 router.get("/pending", async (req, res) => {

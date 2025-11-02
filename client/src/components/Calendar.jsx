@@ -41,10 +41,12 @@ export default function Calendar() {
     }, []);
 
     // Filter faculty based on search query
-    const filteredFaculty = facultyList.filter(f =>
-        f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        f.office_hours.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredFaculty = facultyList.filter(f => {
+        const name = f?.name?.toLowerCase() ?? "";
+        const officeHours = f?.office_hours?.toLowerCase() ?? "";
+        const query = searchQuery?.toLowerCase() ?? "";
+        return name.includes(query) || officeHours.includes(query);
+    });
 
     // --- Updated hasOfficeHours function ---
     const hasOfficeHours = (date) => {

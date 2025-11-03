@@ -108,7 +108,6 @@ router.post("/createUser", (req, res) => {
   );
 });
 
-module.exports = router;
 
 // Get all pending requests
 router.get("/pending", async (req, res) => {

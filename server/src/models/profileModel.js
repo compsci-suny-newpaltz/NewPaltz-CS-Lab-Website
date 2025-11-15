@@ -1,4 +1,4 @@
-import db from "../config/db.js";
+const db = require("../config/db");
 
 const getProfileById = async (userId) => {
     const [rows] = await db.query(

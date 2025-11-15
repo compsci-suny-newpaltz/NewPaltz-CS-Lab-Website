@@ -1,23 +1,37 @@
 const db = require("../config/db");
 
-const getProfileById = async (userId) => {
-    const [rows] = await db.query(
-        "SELECT * FROM profiles WHERE user_id = ?",
-        [userId]
-    );
-    return rows[0];
-};
+async function getProfileById(id) {
+    let conn;
+    try {
+        conn = await db.getConnection();
+        const rows = await conn.query("SELECT * FROM profiles WHERE id = ?", [id]);
+        return rows[0]; // Return first row
+    } catch (err) {
+        console.error("Error fetching profile:", err);
+        throw err;
+    } finally {
 
-const updateProfile = async (userId, data) => {
-    const { firstName, lastName, bio } = data;
-    await db.query(
-        "UPDATE profiles SET first_name=?, last_name=?, bio=? WHERE user_id=?",
-        [firstName, lastName, bio, userId]
-    );
-    return true;
-};
+if (conn) conn.release();
+    }
+}
 
-module.exports = {
-    getProfileById,
-    updateProfile,
-};
+async function updateProfile(id, data) {
+    let conn;
+    try {
+        conn = await db.getConnection();
+        const { name, email, role, bio } = data;
+        await conn.query(
+            "UPDATE profiles SET name = ?, email = ?, role = ?, bio = ? WHERE id = ?",
+
+[name, email, role, bio, id]
+        );
+    } catch (err) {
+        console.error("Error updating profile:", err);
+        throw err;
+    } finally {
+        if (conn) conn.release();
+    }
+}
+
+module.exports = { getProfileById, updateProfile };
+

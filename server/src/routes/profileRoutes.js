@@ -5,9 +5,8 @@ const {
 } = require("../models/profileModel");
 
 const router = express.Router();
-
+/*
 // Hardcoded for testing 
-
 router.get("/:id", async (req, res) => {
     try {
         // Mock profile for testing
@@ -26,8 +25,8 @@ router.get("/:id", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch profile" });
     }
 });
+*/
 
-/*
 // Get a profile
 router.get("/:id", async (req, res) => {
     try {
@@ -39,7 +38,6 @@ router.get("/:id", async (req, res) => {
     }
         
 });
-*/
 
 // Update a profile
 router.put("/:id", async (req, res) => {

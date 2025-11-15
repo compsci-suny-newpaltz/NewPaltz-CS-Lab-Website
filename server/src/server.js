@@ -45,6 +45,8 @@ app.use("/api/tech-blog", techBlogRoutes);
 app.use("/api/student-highlights", studentHighlightRoutes);
 app.use("/api/sd-forms", sdFormRoutes);
 */
+// waiting to implement
+// app.use("/api/profile", require("./src/routes/profileRoutes"));
 
 app.get("/", (req, res) => {
     res.send("CS Department Website API is running...");

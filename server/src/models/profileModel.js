@@ -8,7 +8,7 @@ const getProfileById = async (userId) => {
     return rows[0];
 };
 
-export const updateProfile = async (userId, data) => {
+const updateProfile = async (userId, data) => {
     const { firstName, lastName, bio } = data;
     await db.query(
         "UPDATE profiles SET first_name=?, last_name=?, bio=? WHERE user_id=?",

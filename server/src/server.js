@@ -32,7 +32,7 @@ app.use("/tech-blog", techBlogRoutes);
 app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
-app.use("profile", profileRoutes);
+app.use("/profile", profileRoutes);
 //app.use("/scripts", adminProxy); 
 
 // Uncomment the following lines to enable these routes when needed

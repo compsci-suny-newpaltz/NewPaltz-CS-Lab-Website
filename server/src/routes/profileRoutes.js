@@ -6,6 +6,28 @@ const {
 
 const router = express.Router();
 
+// Hardcoded for testing 
+
+router.get("/:id", async (req, res) => {
+    try {
+        // Mock profile for testing
+        const mockProfile = {
+            id: req.params.id,
+            name: "John Doe",
+            email: "john.doe@example.com",
+
+            role: "Student",
+            bio: "This is a mock profile for testing."
+        };
+
+        res.json(mockProfile);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch profile" });
+    }
+});
+
+/*
 // Get a profile
 router.get("/:id", async (req, res) => {
     try {
@@ -15,7 +37,9 @@ router.get("/:id", async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch profile" });
     }
+        
 });
+*/
 
 // Update a profile
 router.put("/:id", async (req, res) => {

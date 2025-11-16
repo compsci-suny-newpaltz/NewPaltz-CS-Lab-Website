@@ -35,67 +35,61 @@ const router = express.Router();
  */
 // Login route handler
 router.post("/login", async (req, res) => {
-    let conn;  // Database connection variable
+    let conn;
     try {
-        // Extract username and password from request body
         const { username, password } = req.body;
 
-        // Validate that both fields are provided
         if (!username || !password) {
             return res.status(400).json({ message: "Username and password are required" });
         }
 
-        // Get database connection
         conn = await pool.getConnection();
 
-        // Query database for user
+        // Query by username
         const results = await conn.query(
-            "SELECT * FROM Admins WHERE user = ?", 
+            "SELECT * FROM Admins WHERE user = ?",
             [username]
         );
 
-        // Check if user exists
         if (results.length === 0) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        const userFound = results[0];  // Get first (and should be only) result
+        const userFound = results[0];
 
-        // Verify password hash exists in database
+        // Ensure password hash exists
         if (!userFound.password_hash) {
-            return res.status(500).json({ message: "Password hash not found" });
+            return res.status(500).json({ message: "Password hash missing for user" });
         }
 
-        
-        // Compare provided password with stored hash
         const passwordMatch = await bcrypt.compare(password, userFound.password_hash);
 
-        // // If password doesn't match
         if (!passwordMatch) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
-        
-        // Create JWT token
+
+        // Include role in the JWT
         const token = jwt.sign(
-            { 
-                id: userFound.id, 
-                username: userFound.username 
+            {
+                id: userFound.id,
+                username: userFound.user,
+                role: userFound.role  // <-- IMPORTANT
             },
-           process.env.JWT_SECRET,
-//           "3a29fa08430f496877c49d95769dbe973a96816e211f462029867e442b9b16ef" 
-           { expiresIn: "1h" }
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
         );
 
-        // Send successful response with token
-        res.json({ token, message: "Login successful" });
-        
+        // Return token + role back to frontend
+        res.json({
+            token,
+            role: userFound.role,
+            message: "Login successful"
+        });
 
     } catch (err) {
-        // Handle any errors
         console.error("Login error:", err);
         res.status(500).json({ message: "Internal server error" });
     } finally {
-        // Always release the database connection
         if (conn) conn.release();
     }
 });

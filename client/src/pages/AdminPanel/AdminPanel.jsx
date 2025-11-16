@@ -1,59 +1,43 @@
-import React, { useState, useEffect } from "react";
-import PendingHighlights from "../../components/AdminPanel/PendingHighlights";
-import PendingArticles from "../../components/AdminPanel/PendingArticles";
-import FAQSection from "../../components/AdminPanel/FAQSection"
-import FacultySection from "../../components/AdminPanel/FacultySection"
-import StudentResourceSection from "../../components/AdminPanel/StudentResourceSection";
-import HighlightsSection from "../../components/AdminPanel/HighlightsSection";
-import TechBlogSection from "../../components/AdminPanel/TechBlogSection";
-import PendingSDAccounts from "../../components/AdminPanel/PendingSDAccounts";
-import PendingAccountsSection from "../../components/AdminPanel/PendingAccountsSection";
-import UserControlsSection from "../../components/AdminPanel/UserControlsSection"
-import { adminService } from "../../services/adminService";
+import React, { useState, useEffect } from 'react';
+import PendingHighlights from '../../components/AdminPanel/PendingHighlights';
+import PendingArticles from '../../components/AdminPanel/PendingArticles';
+import FAQSection from '../../components/AdminPanel/FAQSection';
+import FacultySection from '../../components/AdminPanel/FacultySection';
+import StudentResourceSection from '../../components/AdminPanel/StudentResourceSection';
+import HighlightsSection from '../../components/AdminPanel/HighlightsSection';
+import TechBlogSection from '../../components/AdminPanel/TechBlogSection';
+import PendingSDAccounts from '../../components/AdminPanel/PendingSDAccounts';
+import PendingAccountsSection from '../../components/AdminPanel/PendingAccountsSection';
+import UserControlsSection from '../../components/AdminPanel/UserControlsSection';
+//import TestScriptSection from "../../components/AdminPanel/TestScript";
+import { adminService } from '../../services/adminService';
 
-import { Link } from "react-router-dom";
-
+import { Link } from 'react-router-dom';
 
 export default function AdminPanel() {
-    const [activeCategory, setActiveCategory] = useState("student-highlights");
-    const [admins, setAdmins] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [openDropdown, setOpenDropdown] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('student-highlights');
+  const [admins, setAdmins] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
-    // Handle category selection
-    const handleSelect = (category) => {
-        setActiveCategory(category);
-    };
+  // Handle category selection
+  const handleSelect = (category) => {
+    setActiveCategory(category);
+  };
 
-
-    useEffect(() => {
-        const loadAdmins = async () => {
-            try {
-                setIsLoading(true);
-                const admins = await adminService.getAllAdmins();
-                setAdmins(admins);
-            } catch (err) {
-                console.error("Error loading admins:", err);
-                setError(err.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadAdmins();
-    }, []);
-
-    const handleDelete = async (adminId) => {
-        if (window.confirm("Are you sure you want to delete this Admin?")) {
-            try {
-                await adminService.deleteAdmin(adminId);
-                setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== adminId));
-            } catch (err) {
-                console.error("Error deleting admin:", err);
-                alert("Failed to delete admin. Please try again.");
-            }
-        }
+  useEffect(() => {
+    const loadAdmins = async () => {
+      try {
+        setIsLoading(true);
+        const admins = await adminService.getAllAdmins();
+        setAdmins(admins);
+      } catch (err) {
+        console.error('Error loading admins:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     return (

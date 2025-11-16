@@ -33,6 +33,9 @@ const pool = mariadb.createPool({
 console.log('Connecting with user:', process.env.DB_USER);
 console.log('Password:', process.env.DB_PASSWORD ? '✓' : '❌ (missing)');
 
+// test connection
+console.log("Connecting to DB:", process.env.DB_NAME);
+
 async function testConnection() {
     let conn;
     try {
@@ -50,10 +53,6 @@ async function testConnection() {
 if (process.env.NODE_ENV !== 'test') {
     testConnection();
 }
-
-// Additions for profile pages IN PROGRESS
-
-const pool = require("../config/db");
 
 // Export the connection pool for use in other modules
 module.exports = pool;

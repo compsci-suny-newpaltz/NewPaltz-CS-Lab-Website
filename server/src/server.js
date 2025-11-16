@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const faqRoutes = require("./routes/faqRoutes.js");
@@ -12,6 +13,8 @@ const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
 
 const eventRoutes = require("./routes/eventRoutes");
+// const adminProxy = require("./routes/adminProxy");
+const adminProxy = require("./routes/adminRoutes.js");
 const student2Routes = require("./routes/studentRoutes");
 
 const app = express();
@@ -31,6 +34,7 @@ app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
 app.use("/events", eventRoutes);
 
+//app.use("/scripts", adminProxy); 
 
 // Uncomment the following lines to enable these routes when needed
 
@@ -51,6 +55,8 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',

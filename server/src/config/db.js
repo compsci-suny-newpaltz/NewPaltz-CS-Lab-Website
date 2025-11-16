@@ -33,6 +33,10 @@ const pool = mariadb.createPool({
 console.log('Connecting with user:', process.env.DB_USER);
 console.log('Password:', process.env.DB_PASSWORD ? '✓' : '❌ (missing)');
 
+// test connection
+console.log("Connecting to DB:", process.env.DB_NAME);
+
+
 async function testConnection() {
     let conn;
     try {

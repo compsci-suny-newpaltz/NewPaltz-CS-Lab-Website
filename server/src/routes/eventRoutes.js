@@ -109,4 +109,33 @@ router.get('/admin/:adminId', async (req, res) => {
     }
 });
 
+
+// Edit an event by ID with optional flyer update
+router.put('/:id', upload.single('flyer'), async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        const { title, description, start_time, end_time, location } = req.body;
+        const flyer_url = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const eventData = {
+            title,
+            description,
+            start_time,
+            end_time,
+            location,
+        };
+        if (flyer_url) {
+            eventData.flyer_url = flyer_url;
+        }
+
+        const affectedRows = await eventsModel.editEvent(id, eventData);
+        if (affectedRows === 0) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+        res.json({ message: 'Event updated successfully', affectedRows });
+    } catch (err) {
+        console.error('Error updating event:', err);
+        res.status(500).json({ message: 'Failed to update event' });
+    }
+});
+
 module.exports = router;

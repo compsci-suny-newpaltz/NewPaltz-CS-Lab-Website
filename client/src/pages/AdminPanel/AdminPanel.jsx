@@ -12,6 +12,9 @@ import StudentResourceSection from '../../components/AdminPanel/StudentResourceS
 import PendingAccountsSection from '../../components/AdminPanel/PendingAccountsSection';
 import UserControlsSection from '../../components/AdminPanel/UserControlsSection';
 
+import PendingEvents from '../../components/AdminPanel/PendingEvents';
+import EventsSection from '../../components/AdminPanel/EventsSection';
+
 import { adminService } from '../../services/adminService';
 
 export default function AdminPanel() {
@@ -59,9 +62,11 @@ export default function AdminPanel() {
         },
         { key: 'faq', component: <FAQSection />, roles: ['admin'], label: 'FAQs' },
         { key: 'faculty-directory', component: <FacultySection />, roles: ['admin'], label: 'Faculty Directory' },
-        { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin'], label: 'Student Resources' },
-        { key: 'pending-accounts', component: <PendingAccountsSection />, roles: ['admin'], label: 'Pending Accounts' },
+        { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin', 'editor'], label: 'Student Resources' },
+        { key: 'pending-accounts', component: <PendingAccountsSection />, roles: ['admin', 'editor'], label: 'Pending Accounts' },
         { key: 'user-controls', component: <UserControlsSection admins={admins} handleDelete={handleDelete} />, roles: ['admin'], label: 'User Controls' },
+        { key: 'events', component: <PendingEvents />, roles: ['admin', 'editor', 'club'], label: 'Pending Events' },
+        { key: 'cur-events', component: <EventsSection />, roles: ['admin', 'editor', 'club'], label: 'Current Events' },
     ];
 
     if (loading) return <p>Loading user...</p>;
@@ -80,8 +85,8 @@ export default function AdminPanel() {
                     {panels
                         .filter(panel => canAccess(panel.roles))
                         .map(panel => {
-                            const hasChildren = Array.isArray(panel.children) && panel.children.length > 0;
-
+                            // Determine if dropdown needed
+                            const isDropdown = ['student-highlights', 'tech-blog', 'events'].includes(panel.key);
                             return (
                                 <div key={panel.key}>
                                     {hasChildren ? (

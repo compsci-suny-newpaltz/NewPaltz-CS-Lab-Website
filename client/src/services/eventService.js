@@ -2,51 +2,48 @@ import axios from 'axios';
 
 const baseURL = '/api/events';
 
+function authHeader() {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 const eventService = {
-  // Fetch all Events
   async getAllEvents() {
-    try {
-      const response = await axios.get(baseURL);
-      return response.data;
-    } catch (error) {
-      console.error('Error loading events:', error);
-      throw new Error('Failed to load events data');
-    }
+    const res = await axios.get(baseURL);
+    return res.data;
   },
 
-  // Add a new Event
-  async addEvent(eventData) {
-    console.log('eventData:', eventData);
-    try {
-      const response = await axios.post(baseURL, eventData);
-      return response.data;
-    } catch (error) {
-      console.error('Error adding event:', error);
-      throw new Error('Failed to add event');
-    }
+  async getEventById(id) {
+    const res = await axios.get(`${baseURL}/${id}`);
+    return res.data;
   },
 
-  // Delete an Event by ID
-  async deleteEvent(eventId) {
-    try {
-      const response = await axios.delete(`${baseURL}/${eventId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error deleting event:', error);
-      throw new Error('Failed to delete event');
-    }
+  async createEvent(formData) {
+    const res = await axios.post(baseURL, formData, {
+      headers: {
+        ...authHeader(),
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
   },
-};
 
-// Grabbing events by admin ID
-eventService.getEventsByAdminId = async function (adminId) {
-  try {
-    const response = await axios.get(`${baseURL}/admin/${adminId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error getting events by admin ID:', error);
-    throw new Error('Failed to get events by admin ID');
-  }
+  async editEvent(id, formData) {
+    const res = await axios.put(`${baseURL}/${id}`, formData, {
+      headers: {
+        ...authHeader(),
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
+
+  async deleteEvent(id) {
+    const res = await axios.delete(`${baseURL}/${id}`, {
+      headers: authHeader(),
+    });
+    return res.data;
+  },
 };
 
 export default eventService;

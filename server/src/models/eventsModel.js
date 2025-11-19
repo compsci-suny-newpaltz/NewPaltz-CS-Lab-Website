@@ -83,9 +83,24 @@ async function getEventsByAdminId(adminId) {
     }
 }
 
+async function editEvent(id, eventData) {
+    const { title, description, start_time, end_time, location, flyer_url } = eventData;
+    const conn = await pool.getConnection();
+    try {
+        const [result] = await conn.query(
+            "UPDATE Events SET title = ?, description = ?, start_time = ?, end_time = ?, location = ?, flyer_url = ? WHERE id = ?",
+            [title, description, start_time, end_time, location, flyer_url, id]
+        );
+        return result.affectedRows;
+    } finally {
+        conn.release();
+    }
+}
+
 module.exports = {
     getAllEvents,
     addEvent,
     deleteEvent,
+    editEvent,
     getEventsByAdminId
 };

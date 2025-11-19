@@ -12,8 +12,8 @@ import StudentResourceSection from '../../components/AdminPanel/StudentResourceS
 import PendingAccountsSection from '../../components/AdminPanel/PendingAccountsSection';
 import UserControlsSection from '../../components/AdminPanel/UserControlsSection';
 
-//import PendingEvents from '../../components/AdminPanel/PendingEvents';
-//import EventsSection from '../../components/AdminPanel/EventsSection';
+import PendingEvents from '../../components/AdminPanel/PendingEvents';
+import EventsSection from '../../components/AdminPanel/EventsSection';
 
 import { adminService } from '../../services/adminService';
 

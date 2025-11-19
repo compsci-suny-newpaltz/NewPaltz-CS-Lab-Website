@@ -108,5 +108,22 @@ router.get('/check-email/:email', async (req, res) => {
 
 });
 
+
+//routes for checking roles
+// Admin-only route
+router.get("/admin-data", requireRole("admin"), (req, res) => {
+  res.json({ secret: "Only admins can see this!" });
+});
+
+// Club-only route
+router.get("/club-data", requireRole("club"), (req, res) => {
+  res.json({ secret: "Only clubs can see this!" });
+});
+
+//Editor-only route
+router.get("/editor-data", requireRole("editor"), (req, res) => {
+  res.json({ secret: "Only editors can see this!" });
+});
+
 module.exports = router;
 

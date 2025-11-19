@@ -89,7 +89,7 @@ export default function AdminPanel() {
                             const isDropdown = ['student-highlights', 'tech-blog', 'events'].includes(panel.key);
                             return (
                                 <div key={panel.key}>
-                                    {hasChildren ? (
+                                    {panel.children ? (
                                         <>
                                             {/* Parent button */}
                                             <button
@@ -98,7 +98,7 @@ export default function AdminPanel() {
                                                 }
                                                 className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md w-full text-left transition-all text-gray-700 hover:bg-gray-100"
                                             >
-                                                <i className="fas fa-folder"></i> {panel.label}
+                                                {panel.label}
                                                 <span className="ml-auto">
                                                     <svg
                                                         className={`w-4 h-4 transition-transform ${openDropdown === panel.key ? 'rotate-180' : ''
@@ -124,7 +124,7 @@ export default function AdminPanel() {
                                                         <button
                                                             key={sub.key}
                                                             onClick={() => handleSelect(sub.key)}
-                                                            className={`block w-full text-left pl-10 pr-3 py-2 text-sm rounded-md transition-all ${activeCategory === sub.key
+                                                            className={`block w-full text-left pl-10 pr-3 py-2 text-sm font-medium rounded-md transition-all ${activeCategory === sub.key
                                                                 ? 'bg-gray-200 text-gray-900'
                                                                 : 'text-gray-700 hover:bg-gray-100'
                                                                 }`}

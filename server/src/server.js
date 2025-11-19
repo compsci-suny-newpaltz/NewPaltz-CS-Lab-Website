@@ -20,6 +20,10 @@ const student2Routes = require("./routes/studentRoutes");
 
 const app = express();
 const nodemailer = require("nodemailer");
+
+const path = require("path");
+
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,6 +40,8 @@ app.use("/student", student2Routes);
 app.use("/profile", profileRoutes);
 app.use("/events", eventRoutes);
 
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //app.use("/scripts", adminProxy); 
 
 // Uncomment the following lines to enable these routes when needed

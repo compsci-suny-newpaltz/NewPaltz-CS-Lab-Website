@@ -44,6 +44,7 @@ import Login from './pages/Login';
 
 import Footer from './components/Footer';
 
+import Event from './pages/Events/EventPage';
 
 const App = () => {
   return (
@@ -95,6 +96,8 @@ const App = () => {
             <Route path="/editor-panel" element={<EditorPanel />} />
 
             <Route path="/contributions" element={<Contributions />} />
+
+            <Route path="/events" element={<Event />} />
 
 
           </Routes>

@@ -1,13 +1,13 @@
 const pool = require('../config/db');
 
 /*
-CREATE TABLE IF NOT EXISTS Events (
+CREATE TABLE Events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     admin_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    start_time DATETIME NOT NULL,
-    end_time DATETIME NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
     location VARCHAR(255),
     flyer_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -22,8 +22,10 @@ CREATE TABLE IF NOT EXISTS Events (
 async function getAllEvents() {
     const conn = await pool.getConnection();
     try {
-        const rows = await conn.query("SELECT * FROM Events ORDER BY start_time ASC");
-        return rows;
+        // MySQL2 returns [rows, fields] for queries
+        const rows = await conn.query("SELECT * FROM Events");
+        
+        return rows; // this is an array of event objects
     } finally {
         conn.release();
     }
@@ -36,17 +38,13 @@ async function getAllEvents() {
  */
 async function addEvent(eventData) {
     const { admin_id, title, description, start_time, end_time, location, flyer_url } = eventData;
-
     const conn = await pool.getConnection();
     try {
-        const result = await conn.query(
+        const [result] = await conn.query(
             "INSERT INTO Events (admin_id, title, description, start_time, end_time, location, flyer_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [admin_id, title, description, start_time, end_time, location, flyer_url]
         );
         return result.insertId;
-    } catch (error) {
-        console.error("Database Error:", error);
-        throw new Error('Failed to add event');
     } finally {
         conn.release();
     }

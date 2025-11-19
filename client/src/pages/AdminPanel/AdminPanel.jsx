@@ -12,8 +12,8 @@ import StudentResourceSection from '../../components/AdminPanel/StudentResourceS
 import PendingAccountsSection from '../../components/AdminPanel/PendingAccountsSection';
 import UserControlsSection from '../../components/AdminPanel/UserControlsSection';
 
-import PendingEvents from '../../components/AdminPanel/PendingEvents';
-import EventsSection from '../../components/AdminPanel/EventsSection';
+//import PendingEvents from '../../components/AdminPanel/PendingEvents';
+//import EventsSection from '../../components/AdminPanel/EventsSection';
 
 import { adminService } from '../../services/adminService';
 
@@ -60,13 +60,18 @@ export default function AdminPanel() {
                 { key: 'cur-tech-blog', component: <TechBlogSection />, label: 'Current Tech Blog' },
             ]
         },
+        {
+            key: 'events', label: 'Events', roles: ['admin', 'editor', 'club'], children: [
+                { key: 'pending-events', label: 'Pending Events', component: <ComingSoon label="Pending Events" /> },
+                { key: 'current-events', label: 'Current Events', component: <ComingSoon label="Current Events" /> },
+            ]
+        },
         { key: 'faq', component: <FAQSection />, roles: ['admin'], label: 'FAQs' },
         { key: 'faculty-directory', component: <FacultySection />, roles: ['admin'], label: 'Faculty Directory' },
         { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin', 'editor'], label: 'Student Resources' },
         { key: 'pending-accounts', component: <PendingAccountsSection />, roles: ['admin', 'editor'], label: 'Pending Accounts' },
         { key: 'user-controls', component: <UserControlsSection admins={admins} handleDelete={handleDelete} />, roles: ['admin'], label: 'User Controls' },
-        { key: 'events', component: <PendingEvents />, roles: ['admin', 'editor', 'club'], label: 'Pending Events' },
-        { key: 'cur-events', component: <EventsSection />, roles: ['admin', 'editor', 'club'], label: 'Current Events' },
+
     ];
 
     if (loading) return <p>Loading user...</p>;
@@ -74,6 +79,13 @@ export default function AdminPanel() {
     if (isLoading) return <p>Loading admins...</p>;
     if (error) return <p>Error:{error}</p>;
 
+    function ComingSoon() {
+        return (
+            <div className="p-4 text-gray-700 bg-gray-50 rounded-md border border-gray-200">
+                Events is coming soon!
+            </div>
+        );
+    }
     return (
         <div className="flex min-h-screen mx-auto">
             {/* Sidebar */}
@@ -176,4 +188,5 @@ export default function AdminPanel() {
 
         </div>
     );
+
 }

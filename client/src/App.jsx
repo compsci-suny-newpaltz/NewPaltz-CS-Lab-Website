@@ -35,9 +35,6 @@ import UsersEditPage from './pages/AdminPanel/Users/UsersEditPage';
 
 import ProfilePage from './pages/ProfilePage';
 
-import ClubPanel from './pages/AdminPanel/ClubPanel'
-import EditorPanel from './pages/AdminPanel/EditorPanel'
-
 import Contributions from './pages/Contributions';
 
 import Login from './pages/Login';
@@ -92,10 +89,6 @@ const App = () => {
             <Route path="/admin-panel/users/edit-admin/:id" element={<UsersEditPage />} />
 
             <Route path="/profile/:id" element={<ProfilePage />} />
-
-            <Route path="/club-panel" element={<ClubPanel />} />
-
-            <Route path="/editor-panel" element={<EditorPanel />} />
 
             <Route path="/contributions" element={<Contributions />} />
 

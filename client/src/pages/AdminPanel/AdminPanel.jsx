@@ -12,6 +12,9 @@ import StudentResourceSection from '../../components/AdminPanel/StudentResourceS
 import PendingAccountsSection from '../../components/AdminPanel/PendingAccountsSection';
 import UserControlsSection from '../../components/AdminPanel/UserControlsSection';
 
+import PendingEvents from '../../components/AdminPanel/PendingEvents';
+import EventsSection from '../../components/AdminPanel/EventsSection';
+
 import { adminService } from '../../services/adminService';
 
 export default function AdminPanel() {
@@ -45,22 +48,44 @@ export default function AdminPanel() {
 
     // Panel configuration
     const panels = [
-        { key: 'student-highlights', component: <PendingHighlights />, roles: ['admin', 'editor'], label: 'Student Highlights' },
-        { key: 'cur-student-highlights', component: <HighlightsSection />, roles: ['admin', 'editor'], label: 'Current Student Highlights' },
-        { key: 'tech-blog', component: <PendingArticles />, roles: ['admin', 'club'], label: 'Technology Blog' },
-        { key: 'cur-tech-blog', component: <TechBlogSection />, roles: ['admin', 'club'], label: 'Current Tech Blog' },
+        {
+            key: 'student-highlights', label: 'Student Highlights', roles: ['admin', 'editor'], children: [
+                { key: 'pending', label: 'Pending Student Highlights', component: <PendingHighlights /> },
+                { key: 'current', label: 'Current Student Highlights', component: <HighlightsSection /> },
+            ]
+        },
+        {
+            key: 'tech-blog', label: 'Technology Blog', roles: ['admin', 'editor'], children: [
+                { key: 'tech-blog', component: <PendingArticles />, label: 'Pending Technology Blog' },
+                { key: 'cur-tech-blog', component: <TechBlogSection />, label: 'Current Tech Blog' },
+            ]
+        },
+        {
+            key: 'events', label: 'Events', roles: ['admin', 'editor', 'club'], children: [
+                { key: 'pending-events', label: 'Pending Events', component: <ComingSoon label="Pending Events" /> },
+                { key: 'current-events', label: 'Current Events', component: <ComingSoon label="Current Events" /> },
+            ]
+        },
         { key: 'faq', component: <FAQSection />, roles: ['admin'], label: 'FAQs' },
         { key: 'faculty-directory', component: <FacultySection />, roles: ['admin'], label: 'Faculty Directory' },
-        { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin'], label: 'Student Resources' },
-        { key: 'pending-accounts', component: <PendingAccountsSection />, roles: ['admin'], label: 'Pending Accounts' },
+        { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin', 'editor'], label: 'Student Resources' },
+        { key: 'pending-accounts', component: <PendingAccountsSection />, roles: ['admin', 'editor'], label: 'Pending Accounts' },
         { key: 'user-controls', component: <UserControlsSection admins={admins} handleDelete={handleDelete} />, roles: ['admin'], label: 'User Controls' },
+
     ];
 
     if (loading) return <p>Loading user...</p>;
     if (!user) return <p>You are not authorized to view this page.</p>;
     if (isLoading) return <p>Loading admins...</p>;
-    if (error) return <p>Error: {error}</p>;
+    if (error) return <p>Error:{error}</p>;
 
+    function ComingSoon() {
+        return (
+            <div className="p-4 text-gray-700 bg-gray-50 rounded-md border border-gray-200">
+                Events is coming soon!
+            </div>
+        );
+    }
     return (
         <div className="flex min-h-screen mx-auto">
             {/* Sidebar */}
@@ -73,49 +98,62 @@ export default function AdminPanel() {
                         .filter(panel => canAccess(panel.roles))
                         .map(panel => {
                             // Determine if dropdown needed
-                            const isDropdown = ['student-highlights', 'tech-blog'].includes(panel.key);
+                            const isDropdown = ['student-highlights', 'tech-blog', 'events'].includes(panel.key);
                             return (
                                 <div key={panel.key}>
-                                    {isDropdown ? (
+                                    {panel.children ? (
                                         <>
+                                            {/* Parent button */}
                                             <button
                                                 onClick={() =>
                                                     setOpenDropdown(openDropdown === panel.key ? null : panel.key)
                                                 }
                                                 className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md w-full text-left transition-all text-gray-700 hover:bg-gray-100"
                                             >
-                                                <i className="fas fa-folder"></i> {panel.label}
+                                                {panel.label}
                                                 <span className="ml-auto">
                                                     <svg
-                                                        className={`w-4 h-4 transition-transform ${openDropdown === panel.key ? 'rotate-180' : ''}`}
+                                                        className={`w-4 h-4 transition-transform ${openDropdown === panel.key ? 'rotate-180' : ''
+                                                            }`}
                                                         fill="none"
                                                         viewBox="0 0 24 24"
                                                         stroke="currentColor"
                                                     >
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M19 9l-7 7-7-7"
+                                                        />
                                                     </svg>
                                                 </span>
                                             </button>
+
+                                            {/* Child dropdown items */}
                                             {openDropdown === panel.key && (
-                                                <div className="ml-6 mt-1 space-y-1">
-                                                    {panels
-                                                        .filter(p => p.key.startsWith(panel.key) && canAccess(p.roles))
-                                                        .map(sub => (
-                                                            <button
-                                                                key={sub.key}
-                                                                onClick={() => handleSelect(sub.key)}
-                                                                className={`block w-full text-left px-3 py-2 text-sm rounded-md transition-all ${activeCategory === sub.key ? 'bg-gray-200 text-gray-900' : 'text-gray-700 hover:bg-gray-100'}`}
-                                                            >
-                                                                {sub.label}
-                                                            </button>
-                                                        ))}
+                                                <div className="mt-1 space-y-1 ">
+                                                    {panel.children.map(sub => (
+                                                        <button
+                                                            key={sub.key}
+                                                            onClick={() => handleSelect(sub.key)}
+                                                            className={`block w-full text-left pl-10 pr-3 py-2 text-sm font-medium rounded-md transition-all ${activeCategory === sub.key
+                                                                ? 'bg-gray-200 text-gray-900'
+                                                                : 'text-gray-700 hover:bg-gray-100'
+                                                                }`}
+                                                        >
+                                                            {sub.label}
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             )}
                                         </>
                                     ) : (
                                         <button
                                             onClick={() => handleSelect(panel.key)}
-                                            className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md w-full text-left transition-all ${activeCategory === panel.key ? 'bg-gray-200 text-gray-900' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md w-full text-left transition-all ${activeCategory === panel.key
+                                                ? 'bg-gray-200 text-gray-900'
+                                                : 'text-gray-700 hover:bg-gray-100'
+                                                }`}
                                         >
                                             {panel.label}
                                         </button>
@@ -124,16 +162,31 @@ export default function AdminPanel() {
                             );
                         })}
                 </nav>
+
             </aside>
 
             {/* Main Content */}
             <main className="flex-1 p-6 overflow-x-auto">
-                {panels
-                    .filter(panel => canAccess(panel.roles) && activeCategory === panel.key)
-                    .map(panel => (
-                        <div key={panel.key}>{panel.component}</div>
-                    ))}
+                {/* Check top-level panels */}
+                {panels.map(panel => {
+                    // child?
+                    if (panel.children) {
+                        const child = panel.children.find(c => c.key === activeCategory);
+                        if (child) {
+                            return <div key={child.key}>{child.component}</div>;
+                        }
+                    }
+
+                    // regular (non-child) panel
+                    if (panel.key === activeCategory) {
+                        return <div key={panel.key}>{panel.component}</div>;
+                    }
+
+                    return null;
+                })}
             </main>
+
         </div>
     );
+
 }

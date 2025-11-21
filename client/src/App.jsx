@@ -35,9 +35,6 @@ import UsersEditPage from './pages/AdminPanel/Users/UsersEditPage';
 
 import ProfilePage from './pages/ProfilePage';
 
-import ClubPanel from './pages/AdminPanel/ClubPanel'
-import EditorPanel from './pages/AdminPanel/EditorPanel'
-
 import Contributions from './pages/Contributions';
 
 import Login from './pages/Login';
@@ -45,6 +42,8 @@ import Login from './pages/Login';
 import Footer from './components/Footer';
 
 import Event from './pages/Events/EventPage';
+import EventAddPage from './pages/Events/EventAddPage';
+import EventEditPage from './pages/Events/EventEditPage';
 
 const App = () => {
   return (
@@ -91,13 +90,11 @@ const App = () => {
 
             <Route path="/profile/:id" element={<ProfilePage />} />
 
-            <Route path="/club-panel" element={<ClubPanel />} />
-
-            <Route path="/editor-panel" element={<EditorPanel />} />
-
             <Route path="/contributions" element={<Contributions />} />
 
             <Route path="/events" element={<Event />} />
+            <Route path="/admin-panel/events/create-event" element={<EventAddPage />} />
+            <Route path="/admin-panel/events/edit/:id" element={<EventEditPage />} />
 
 
           </Routes>

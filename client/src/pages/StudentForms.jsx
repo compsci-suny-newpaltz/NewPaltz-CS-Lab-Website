@@ -1,6 +1,8 @@
 
 import SDFormCard from '../components/StudentRequests/SDFormCard';
 
+console.log("Rendering StudentForms component");
+
 const StudentForms = () => {
     return (
         <div className="text-center">

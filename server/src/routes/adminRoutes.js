@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/adminModel');
+const requireRole = require("../middleware/requireRole");
 
 
 router.get('/', async (req, res) => {
@@ -105,6 +106,23 @@ router.get('/check-email/:email', async (req, res) => {
     const isAvailable = await Admin.isEmailAvailable(email);
     res.json({ available: isAvailable });
 
+});
+
+
+//routes for checking roles
+// Admin-only route
+router.get("/admin-data", requireRole("admin"), (req, res) => {
+  res.json({ secret: "Only admins can see this!" });
+});
+
+// Club-only route
+router.get("/club-data", requireRole("club"), (req, res) => {
+  res.json({ secret: "Only clubs can see this!" });
+});
+
+//Editor-only route
+router.get("/editor-data", requireRole("editor"), (req, res) => {
+  res.json({ secret: "Only editors can see this!" });
 });
 
 module.exports = router;

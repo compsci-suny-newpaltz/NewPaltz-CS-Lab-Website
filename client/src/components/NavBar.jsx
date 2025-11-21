@@ -80,6 +80,14 @@ const NavBar = () => {
           </li>
         </Link>
 
+        <Link to="/events">
+          <li className="transition-color rounded-xl px-1 py-1 duration-300 hover:bg-rose-300  hover:shadow">
+            <p className="flex items-center gap-1">
+              <IoCalendarClearOutline /> Events
+            </p>
+          </li>
+        </Link>
+
         {/* Blogs Dropdown
          * - Uses group hover for interaction
          * - Animated entry/exit

@@ -11,7 +11,9 @@ const authRoutes = require("./routes/authRoutes");
 const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
+const profileRoutes = require("./routes/profileRoutes.js");
 
+const eventRoutes = require("./routes/eventRoutes");
 // const adminProxy = require("./routes/adminProxy");
 const adminProxy = require("./routes/adminRoutes.js");
 const student2Routes = require("./routes/studentRoutes");
@@ -19,6 +21,10 @@ const profileRoutes = require("./routes/profileRoutes.js")
 
 const app = express();
 const nodemailer = require("nodemailer");
+
+const path = require("path");
+
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,7 +38,6 @@ app.use("/tech-blog", techBlogRoutes);
 app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
-app.use("/profile", profileRoutes)
 //app.use("/scripts", adminProxy); 
 
 // Uncomment the following lines to enable these routes when needed
@@ -47,6 +52,8 @@ app.use("/api/tech-blog", techBlogRoutes);
 app.use("/api/student-highlights", studentHighlightRoutes);
 app.use("/api/sd-forms", sdFormRoutes);
 */
+// waiting to implement
+// app.use("/api/profile", require("./src/routes/profileRoutes"));
 
 app.get("/", (req, res) => {
     res.send("CS Department Website API is running...");

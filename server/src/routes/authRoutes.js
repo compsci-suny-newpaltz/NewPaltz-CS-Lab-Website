@@ -85,7 +85,6 @@ router.post("/login", async (req, res) => {
             role: userFound.role,
             message: "Login successful"
         });
-        console.log("USER ROLE:", userFound.role);
 
 
     } catch (err) {

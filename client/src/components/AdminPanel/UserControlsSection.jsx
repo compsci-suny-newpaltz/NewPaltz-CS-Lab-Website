@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { adminService } from '../../services/adminService';
 
 export default function UserControlsSection({ admins, handleDelete }) {
+
+
+    // Load admins
+    useEffect(() => {
+        const loadAdmins = async () => {
+            try {
+                setIsLoading(true);
+                const data = await adminService.getAllAdmins();
+                setAdmins(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadAdmins();
+    }, []);
 
 
     return (

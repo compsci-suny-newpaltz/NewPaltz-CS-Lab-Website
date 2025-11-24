@@ -1,37 +1,62 @@
-const db = require("../config/db");
+// PROBELM IN PROGRESS
+
+const db = require("../config/db"); 
 
 async function getProfileById(id) {
-    let conn;
-    try {
-        conn = await db.getConnection();
-        const rows = await conn.query("SELECT * FROM profiles WHERE id = ?", [id]);
-        return rows[0]; // Return first row
-    } catch (err) {
-        console.error("Error fetching profile:", err);
-        throw err;
-    } finally {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT id, name, email, role, bio, user_id
+            FROM profiles
+            WHERE id = ?
+        `;
 
-if (conn) conn.release();
-    }
+        db.query(query, [id], (err, results) => {
+            if (err) return reject(err);
+
+            if (results.length === 0) {
+                return reject(new Error("Profile not found"));
+            }
+
+            resolve(results[0]);
+        });
+    });
 }
 
-async function updateProfile(id, data) {
-    let conn;
-    try {
-        conn = await db.getConnection();
-        const { name, email, role, bio } = data;
-        await conn.query(
-            "UPDATE profiles SET name = ?, email = ?, role = ?, bio = ? WHERE id = ?",
+async function updateProfile(id, profileData) {
+    return new Promise((resolve, reject) => {
+        // Filter fields that are allowed to be updated
+        const allowedFields = ["name", "email", "role", "bio"];
+        const updates = [];
+        const values = [];
 
-[name, email, role, bio, id]
-        );
-    } catch (err) {
-        console.error("Error updating profile:", err);
-        throw err;
-    } finally {
-        if (conn) conn.release();
-    }
+        for (const field of allowedFields) {
+            if (profileData[field] !== undefined) {
+                updates.push(`${field} = ?`);
+                values.push(profileData[field]);
+            }
+        }
+
+        // No update fields provided
+        if (updates.length === 0) {
+            return reject(new Error("No valid fields provided to update"));
+        }
+
+        const query = `
+            UPDATE profiles
+            SET ${updates.join(", ")}
+            WHERE id = ?
+        `;
+
+        values.push(id);
+
+        db.query(query, values, (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        });
+    });
 }
 
-module.exports = { getProfileById, updateProfile };
-
+module.exports = {
+    getProfileById,
+    updateProfile,
+};

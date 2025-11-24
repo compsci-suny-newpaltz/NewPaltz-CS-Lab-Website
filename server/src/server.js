@@ -11,7 +11,6 @@ const authRoutes = require("./routes/authRoutes");
 const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
-const profileRoutes = require("./routes/profileRoutes.js");
 
 const eventRoutes = require("./routes/eventRoutes");
 // const adminProxy = require("./routes/adminProxy");

@@ -1,4 +1,3 @@
-// middleware/requireRole.js
 const jwt = require("jsonwebtoken");
 
 function requireRole(...allowedRoles) {

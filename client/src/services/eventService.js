@@ -25,6 +25,8 @@ const eventService = {
         'Content-Type': 'multipart/form-data',
       },
     });
+
+    console.log('Create Event Response:', res.data);
     return res.data;
   },
 

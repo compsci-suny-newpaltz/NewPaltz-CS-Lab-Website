@@ -31,6 +31,7 @@ router.get("/:id", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     console.log("DB USER:", process.env.DB_USER);
+    console.log("HIT PROFILE ROUTE with ID:", req.params.id);
     try {
         const profile = await getProfileById(req.params.id);
         res.json(profile);

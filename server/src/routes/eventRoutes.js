@@ -57,15 +57,25 @@ router.get('/', async (req, res) => {
 });
 
 // Add a new event with optional flyer
-router.post('/', validateEvent, upload.single('flyer'), async (req, res) => {
+// Add a new event with optional flyer
+router.post('/', upload.single('flyer'), validateEvent, async (req, res) => {
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
     try {
         const { admin_id, title, description, start_time, end_time, location } = req.body;
+
+        // Validate admin_id as number
+        const adminIdNum = Number(admin_id);
+        if (isNaN(adminIdNum)) {
+            return res.status(400).json({ message: 'admin_id must be a number' });
+        }
 
         // Use uploaded flyer if present, otherwise use default noFlyer
         const flyer_url = req.file ? `/uploads/${req.file.filename}` : `/uploads/noFlyer.jpg`;
 
         const insertId = await eventsModel.addEvent({
-            admin_id: Number(admin_id),
+            admin_id: adminIdNum,
             title,
             description,
             start_time,
@@ -74,9 +84,17 @@ router.post('/', validateEvent, upload.single('flyer'), async (req, res) => {
             flyer_url,
         });
 
-        res.status(201).json({ message: 'Event added successfully', id: insertId });
+        // Convert insertId to Number for JSON response
+        res.status(201).json({ message: 'Event added successfully', id: Number(insertId) });
+
     } catch (err) {
         console.error('Error adding event:', err);
+
+        // Foreign key error handling
+        if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+            return res.status(400).json({ message: 'Invalid admin_id: no matching admin found' });
+        }
+
         res.status(500).json({ message: 'Failed to add event' });
     }
 });
@@ -106,6 +124,35 @@ router.get('/admin/:adminId', async (req, res) => {
     } catch (err) {
         console.error('Error getting events by admin ID:', err);
         res.status(500).json({ message: 'Failed to fetch events for this admin' });
+    }
+});
+
+
+// Edit an event by ID with optional flyer update
+router.put('/:id', upload.single('flyer'), async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        const { title, description, start_time, end_time, location } = req.body;
+        const flyer_url = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const eventData = {
+            title,
+            description,
+            start_time,
+            end_time,
+            location,
+        };
+        if (flyer_url) {
+            eventData.flyer_url = flyer_url;
+        }
+
+        const affectedRows = await eventsModel.editEvent(id, eventData);
+        if (affectedRows === 0) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+        res.json({ message: 'Event updated successfully', affectedRows });
+    } catch (err) {
+        console.error('Error updating event:', err);
+        res.status(500).json({ message: 'Failed to update event' });
     }
 });
 

@@ -1,7 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { adminService } from '../../services/adminService';
 
 export default function UserControlsSection({ admins, handleDelete }) {
+    const { user, loading } = useContext(AuthContext);
+    const [activeCategory, setActiveCategory] = useState('student-highlights');
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Load admins
+    useEffect(() => {
+        const loadAdmins = async () => {
+            try {
+                setIsLoading(true);
+                const data = await adminService.getAllAdmins();
+                setAdmins(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadAdmins();
+    }, []);
 
 
     return (

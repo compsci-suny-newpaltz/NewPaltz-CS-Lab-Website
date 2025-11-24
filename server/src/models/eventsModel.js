@@ -40,15 +40,19 @@ async function addEvent(eventData) {
     const { admin_id, title, description, start_time, end_time, location, flyer_url } = eventData;
     const conn = await pool.getConnection();
     try {
-        const [result] = await conn.query(
+        const result = await conn.query(
             "INSERT INTO Events (admin_id, title, description, start_time, end_time, location, flyer_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [admin_id, title, description, start_time, end_time, location, flyer_url]
         );
         return result.insertId;
+    }catch (err) {
+        console.error("Error in addEvent:", err);
+        throw err;
     } finally {
         conn.release();
     }
 }
+
 
 /**
  * Deletes an event from the database by ID
@@ -83,9 +87,24 @@ async function getEventsByAdminId(adminId) {
     }
 }
 
+async function editEvent(id, eventData) {
+    const { title, description, start_time, end_time, location, flyer_url } = eventData;
+    const conn = await pool.getConnection();
+    try {
+        const [result] = await conn.query(
+            "UPDATE Events SET title = ?, description = ?, start_time = ?, end_time = ?, location = ?, flyer_url = ? WHERE id = ?",
+            [title, description, start_time, end_time, location, flyer_url, id]
+        );
+        return result.affectedRows;
+    } finally {
+        conn.release();
+    }
+}
+
 module.exports = {
     getAllEvents,
     addEvent,
     deleteEvent,
+    editEvent,
     getEventsByAdminId
 };

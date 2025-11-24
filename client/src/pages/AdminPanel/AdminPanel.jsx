@@ -12,8 +12,8 @@ import StudentResourceSection from '../../components/AdminPanel/StudentResourceS
 import PendingAccountsSection from '../../components/AdminPanel/PendingAccountsSection';
 import UserControlsSection from '../../components/AdminPanel/UserControlsSection';
 
-//import PendingEvents from '../../components/AdminPanel/PendingEvents';
-//import EventsSection from '../../components/AdminPanel/EventsSection';
+import PendingEvents from '../../components/AdminPanel/PendingEvents';
+import EventsSection from '../../components/AdminPanel/EventsSection';
 
 import { adminService } from '../../services/adminService';
 
@@ -62,8 +62,8 @@ export default function AdminPanel() {
         },
         {
             key: 'events', label: 'Events', roles: ['admin', 'editor', 'club'], children: [
-                { key: 'pending-events', label: 'Pending Events', component: <ComingSoon label="Pending Events" /> },
-                { key: 'current-events', label: 'Current Events', component: <ComingSoon label="Current Events" /> },
+                { key: 'pending-events', label: 'Pending Events', component: <PendingEvents /> },
+                { key: 'current-events', label: 'Current Events', component: <EventsSection /> },
             ]
         },
         { key: 'faq', component: <FAQSection />, roles: ['admin'], label: 'FAQs' },

@@ -108,10 +108,11 @@ export default function UsersEditPage() {
                         className="px-4 py-2 border border-stone-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-300"
                     >
                         <option value="admin">Admin</option>
-                        <option value="admin">Club</option>
-                        <option value="admin">Editor</option>
+                        <option value="club">Club</option>
+                        <option value="editor">Editor</option>
                     </select>
                 </div>
+
 
                 {/* TODO: Reset Password */}
 

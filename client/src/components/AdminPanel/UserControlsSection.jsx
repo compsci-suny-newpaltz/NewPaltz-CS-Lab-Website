@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import { adminService } from '../../services/adminService';
 
 export default function UserControlsSection({ admins, handleDelete }) {
-    const { user, loading } = useContext(AuthContext);
-    const [activeCategory, setActiveCategory] = useState('student-highlights');
-    const [isLoading, setIsLoading] = useState(true);
+
 
     // Load admins
     useEffect(() => {

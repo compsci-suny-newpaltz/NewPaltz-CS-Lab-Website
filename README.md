@@ -13,8 +13,9 @@ This project aims to develop a **fully functional and intuitive website** for th
 ### General Tips
 
 ### Frontend
-
+-[ProfilePages](handbook/frontend/ProfilePages.md)
 ### Serverside
+-[profileRoute](handbook/serverside/profileRoute.md)
 -[profileModel](handbook/serverside/profileModel.md)
 
 ### Database

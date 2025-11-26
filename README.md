@@ -1,3 +1,20 @@
+Teaching Assistant Handbook – SUNY New Paltz Computer Science Department
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 📌 Computer Science Department Website
 
 🚀 **Capstone Project | Full-Stack Web Development**  

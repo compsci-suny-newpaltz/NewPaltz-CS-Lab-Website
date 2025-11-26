@@ -15,6 +15,7 @@ This project aims to develop a **fully functional and intuitive website** for th
 ### Frontend
 
 ### Serverside
+-[profileModel](handbook/serverside.profileModel.md)
 
 ### Database
 ---

@@ -1,26 +1,22 @@
-Teaching Assistant Handbook – SUNY New Paltz Computer Science Department
+# Tech Handbook: Hydra Server/Lab Website
 
+This project aims to develop a **fully functional and intuitive website** for the Computer Science Department, serving as a **central hub** for department activities, resources, and student engagement. Designed with **scalability and ease of maintenance** in mind, the platform will be used by faculty, students, lab assistants, and clubs
 
+---
+## Table of Context
 
+### Welcome
+-[Welcome](handbook/welcome/welcome.md)
 
+### Tools and Access
 
+### General Tips
 
+### Frontend
 
+### Serverside
 
-
-
-
-
-
-
-
-
-# 📌 Computer Science Department Website
-
-🚀 **Capstone Project | Full-Stack Web Development**  
-
-This project aims to develop a **fully functional and intuitive website** for the Computer Science Department, serving as a **central hub** for department activities, resources, and student engagement. Designed with **scalability and ease of maintenance** in mind, the platform will be used by faculty, students, and lab assistants.
-
+### Database
 ---
 
 ## 🔧 Tech Stack  

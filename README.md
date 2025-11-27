@@ -6,18 +6,18 @@ This project aims to develop a **fully functional and intuitive website** for th
 ## Table of Context
 
 ### Welcome
--[Welcome](handbook/welcome/welcome.md)
+- [Welcome](handbook/welcome/welcome.md)
 
 ### Tools and Access
 
 ### General Tips
 
 ### Frontend
--[ProfilePages](handbook/frontend/ProfilePages.md)
+- [ProfilePages](handbook/frontend/ProfilePages.md)
 ### Serverside
--[profileRoute](handbook/serverside/profileRoute.md)
+- [profileRoute](handbook/serverside/profileRoute.md)
 
--[profileModel](handbook/serverside/profileModel.md)
+- [profileModel](handbook/serverside/profileModel.md)
 
 ### Database
 ---

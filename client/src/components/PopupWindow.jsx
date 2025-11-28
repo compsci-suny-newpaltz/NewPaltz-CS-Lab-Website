@@ -68,20 +68,32 @@ export default function PopupWindow({ date, events, faculty, onClose }) {
                 </h3>
 
                 {events.length > 0 ? (
-                    <ul style={{ paddingLeft: 20, lineHeight: 1.6 }}>
+                    <ul style={{ paddingLeft: 0, lineHeight: 1.6, listStyle: "none" }}>
                         {events.map((ev, i) => (
                             <li
                                 key={i}
                                 style={{
-                                    marginBottom: 6,
-                                    padding: "4px 0",
-                                    borderRadius: 4,
+                                    marginBottom: 16,
+                                    padding: "8px 12px",
+                                    borderRadius: 6,
+                                    border: "1px solid #ddd",
                                     transition: "background 0.2s",
                                 }}
                                 onMouseEnter={(e) => (e.currentTarget.style.background = "#f9f9f9")}
                                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                             >
-                                {ev}
+                                <strong>{ev.title}</strong>
+                                <p style={{ margin: "4px 0" }}>
+                                    📅 {new Date(ev.start_time).toLocaleString()} - {new Date(ev.end_time).toLocaleString()}
+                                </p>
+                                {ev.location && <p>📍 {ev.location}</p>}
+                                {ev.flyer_url && (
+                                    <img
+                                        src={ev.flyer_url}
+                                        alt={ev.title}
+                                        style={{ maxWidth: "100%", borderRadius: 8, marginTop: 6 }}
+                                    />
+                                )}
                             </li>
                         ))}
                     </ul>

@@ -93,7 +93,7 @@ const App = () => {
             <Route path="/contributions" element={<Contributions />} />
 
             <Route path="/events" element={<Event />} />
-            <Route path="/admin-panel/events/create-event" element={<EventAddPage />} />
+            <Route path="/create-event" element={<EventAddPage />} />
             <Route path="/admin-panel/events/edit/:id" element={<EventEditPage />} />
 
 

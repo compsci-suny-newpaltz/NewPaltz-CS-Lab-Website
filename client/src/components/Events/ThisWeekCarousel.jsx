@@ -1,8 +1,15 @@
 import React, { useRef } from 'react';
 import EventCard from './EventCard';
+import EventPopup from './EventPopup';
 
-export default function ThisWeekCarousel({ events, onEventClick }) {
+export default function ThisWeekCarousel({ events }) {
     const carouselRef = useRef(null);
+
+    const [selectedEvent, setSelectedEvent] = React.useState(null);
+
+    const handleEventClick = (event) => {
+        setSelectedEvent(event);
+    };
 
     const scroll = (direction) => {
         if (!carouselRef.current) return;
@@ -34,7 +41,7 @@ export default function ThisWeekCarousel({ events, onEventClick }) {
                     {events.length > 0 ? (
                         events.map((event) => (
                             <div key={event.id} className="flex-shrink-0 w-64">
-                                <EventCard event={event} onClick={onEventClick} />
+                                <EventCard event={event} onClick={handleEventClick} />
                             </div>
                         ))
                     ) : (
@@ -50,6 +57,10 @@ export default function ThisWeekCarousel({ events, onEventClick }) {
                     &#8594;
                 </button>
             </div>
+            {selectedEvent && (
+                <EventPopup event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+            )}
+
         </div>
     );
 }

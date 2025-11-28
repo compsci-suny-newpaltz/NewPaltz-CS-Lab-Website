@@ -11,13 +11,11 @@ const authRoutes = require("./routes/authRoutes");
 const techBlogRoutes = require("./routes/techBlogPostsRoutes");
 const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
-const profileRoutes = require("./routes/profileRoutes.js");
 
 const eventRoutes = require("./routes/eventRoutes");
 // const adminProxy = require("./routes/adminProxy");
 const adminProxy = require("./routes/adminRoutes.js");
 const student2Routes = require("./routes/studentRoutes");
-
 
 const app = express();
 const nodemailer = require("nodemailer");
@@ -38,6 +36,10 @@ app.use("/tech-blog", techBlogRoutes);
 app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
+app.use("/events", eventRoutes);
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //app.use("/scripts", adminProxy); 
 
 // Uncomment the following lines to enable these routes when needed

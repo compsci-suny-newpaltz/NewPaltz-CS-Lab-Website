@@ -132,16 +132,16 @@ export default function EventEditPage() {
                 </div>
 
                 <div className="flex flex-col">
-                    <label htmlFor="flyer_url" className="text-sm font-medium text-stone-700 mb-1">Event Flyer</label>
+                    <label htmlFor="flyer" className="text-sm font-medium text-stone-700 mb-1">Event Flyer</label>
                     <input
                         type="file"
-                        name="flyer_url"
-                        id="flyer_url"
+                        name="flyer"
+                        id="flyer"
                         accept="image/*"
                         onChange={handleChange}
                         className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
                     />
-                    {formData.flyer_url && <p className="text-xs text-stone-600 mt-1">Selected: {formData.flyer_url.name}</p>}
+                    {formData.flyer && <p className="text-xs text-stone-600 mt-1">Selected: {formData.flyer.name}</p>}
                 </div>
 
                 <button

@@ -65,7 +65,7 @@ export default function EventsSection() {
         <div className="p-6 max-w-5xl mx-auto">
             <div className="flex justify-between mb-6">
                 <Link
-                    to="/admin-panel/events/create-event"
+                    to="/create-event"
                     className="px-4 py-2 bg-yellow-300 rounded-md hover:bg-yellow-400 transition"
                 >
                     Add Event

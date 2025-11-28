@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import PopupWindow from "./PopupWindow";
 import facultyService from "../services/facultyService";
+import eventService from "../services/eventService";
 
 export default function Calendar() {
     const [viewDate, setViewDate] = useState(new Date());
@@ -12,20 +13,9 @@ export default function Calendar() {
     const [showPopup, setShowPopup] = useState(false);
     // Search bar state
     const [searchQuery, setSearchQuery] = useState("");
+    // Events state
+    const [events, setEvents] = useState({});
 
-    // FAKE EVENTS DATABASE
-    const events = {
-        "2025-10-03": ["Project kickoff meeting", "Lunch with team"],
-        "2025-10-05": ["Webdev workshop", "Code review session"],
-        "2025-10-10": ["Team coding session", "Client demo at 4 PM"],
-        "2025-10-14": ["Maria’s Birthday", "Send reminders"],
-        "2025-10-18": ["Weekend planning"],
-        "2025-09-20": ["Hydra website update", "Server backup check"],
-        "2024-11-22": ["Presentation draft due"],
-        "2025-10-25": ["Hackathon event - all day"],
-        "2025-10-28": ["Team meeting - 11 AM"],
-        "2025-10-31": [" Halloween Party - 7 PM"],
-    };
 
     // Fetch faculty data for popup
     useEffect(() => {
@@ -40,6 +30,26 @@ export default function Calendar() {
         fetchFaculty();
     }, []);
 
+    // Fetch events from backend
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const data = await eventService.getAllEvents();
+                // Convert array of events to an object keyed by date
+                const eventsByDate = data.reduce((acc, ev) => {
+                    const dateKey = new Date(ev.start_time).toISOString().split("T")[0];
+                    if (!acc[dateKey]) acc[dateKey] = [];
+                    acc[dateKey].push(ev);
+                    return acc;
+                }, {});
+                setEvents(eventsByDate);
+            } catch (err) {
+                console.error("Failed to load events", err);
+            }
+        };
+        fetchEvents();
+    }, []);
+
     // Filter faculty based on search query
     const filteredFaculty = facultyList.filter(f => {
         const name = f?.name?.toLowerCase() ?? "";
@@ -48,7 +58,7 @@ export default function Calendar() {
         return name.includes(query) || officeHours.includes(query);
     });
 
-    // --- Updated hasOfficeHours function ---
+    // Updated hasOfficeHours function
     const hasOfficeHours = (date) => {
         const dayStr = date.toLocaleDateString("en-US", { weekday: "long" });
         return filteredFaculty.some(f => {
@@ -56,6 +66,7 @@ export default function Calendar() {
             return officeHoursStr.toLowerCase().includes(dayStr.toLowerCase());
         });
     };
+
 
     // Click handler
     const onDateSelect = (date) => {
@@ -66,11 +77,14 @@ export default function Calendar() {
     // Filter events based on search query
     const filteredEvents = Object.keys(events).reduce((acc, dateKey) => {
         const matched = events[dateKey].filter((ev) =>
-            ev.toLowerCase().includes(searchQuery.toLowerCase())
+            ev.title.toLowerCase().includes(searchQuery.toLowerCase())
         );
         if (matched.length) acc[dateKey] = matched;
         return acc;
     }, {});
+
+
+
 
     // Compute month info
     const { year, month, daysInMonth, startWeekday } = useMemo(() => {
@@ -91,7 +105,7 @@ export default function Calendar() {
     const gotoNext = () =>
         setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
 
-    const formatDateKey = (date) => date.toISOString().split("T")[0];
+    const formatDateKey = (date) => date.toLocaleDateString("en-CA");
 
     return (
         <div
@@ -273,7 +287,7 @@ export default function Calendar() {
                         const officeHoursStr = f.office_hours || "";
                         return officeHoursStr.toLowerCase().includes(dayStr.toLowerCase());
                     })}
-                    events={events[formatDateKey(selectedDate)] || []}
+                    events={filteredEvents[formatDateKey(selectedDate)] || []}
                     onClose={() => setShowPopup(false)}
                 />
             )}

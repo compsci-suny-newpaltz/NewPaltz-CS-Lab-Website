@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ResourceCard from "../components/StudentResources/ResourceCard";
 import SearchBar from "../components/StudentResources/SearchBar";
+// imports service for resources
 import resourceService from "../services/resourceService";
 
 /**

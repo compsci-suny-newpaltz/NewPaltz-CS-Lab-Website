@@ -8,9 +8,9 @@ This project aims to develop a **fully functional and intuitive website** for th
 ### Welcome
 - [Welcome](handbook/welcome/welcome.md)
 
-### Tools and Access
-
-### General Tips
+### Setup and Onboarding
+- [Setup](handbook/setup%20and%20onboarding/setup.md)
+- [Onboarding](handbook/setup%20and%20onboarding/onbaording.md)
 
 ### Frontend
 - [ProfilePages](handbook/frontend/ProfilePages.md)

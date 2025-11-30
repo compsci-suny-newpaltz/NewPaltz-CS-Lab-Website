@@ -14,7 +14,6 @@ const sdFormRoutes = require("./routes/sdFormRoutes");
 
 const eventRoutes = require("./routes/eventRoutes");
 const adminProxy = require("./routes/adminProxy");
-const adminProxy = require("./routes/adminRoutes.js");
 const student2Routes = require("./routes/studentRoutes");
 
 const app = express();

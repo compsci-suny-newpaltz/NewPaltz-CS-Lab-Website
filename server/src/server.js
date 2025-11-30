@@ -13,7 +13,7 @@ const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
 
 const eventRoutes = require("./routes/eventRoutes");
-// const adminProxy = require("./routes/adminProxy");
+const adminProxy = require("./routes/adminProxy");
 const adminProxy = require("./routes/adminRoutes.js");
 const student2Routes = require("./routes/studentRoutes");
 
@@ -40,7 +40,7 @@ app.use("/events", eventRoutes);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-//app.use("/scripts", adminProxy); 
+app.use("/scripts", adminProxy); 
 
 // Uncomment the following lines to enable these routes when needed
 

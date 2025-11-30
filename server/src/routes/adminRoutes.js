@@ -3,7 +3,7 @@ const router = express.Router();
 const Admin = require('../models/adminModel');
 const requireRole = require("../middleware/requireRole");
 
-
+//get all admins
 router.get('/', async (req, res) => {
     try {
         const admins = await Admin.getAllAdmins();
@@ -58,6 +58,7 @@ router.put('/admin-panel/:id', async (req, res) => {
     }
 });
 
+//Login
 router.post('/login', async (req, res) => {
     try {
         const admin = await Admin.login(req.body);

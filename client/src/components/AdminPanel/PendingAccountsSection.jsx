@@ -68,6 +68,10 @@ export default function PendingAccounts() {
 
                                                 // 3. Remove the student from table UI
                                                 //setStudents(prev => prev.filter(s => s.id !== students.id));
+                                                const data = await resp.json();
+                                                console.log("Hydra stdout:", data.stdout);   // <---- SHOW IT
+
+                                                alert("Hydra output:\n\n" + data.stdout);    // <---- OPTIONAL POPUP
 
                                                 alert("Student approved and Hydra account created!");
                                             } catch (err) {

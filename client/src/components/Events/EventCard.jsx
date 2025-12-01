@@ -7,12 +7,12 @@ export default function EventCard({ event, onClick }) {
 
     // Use flyer if available, fallback to default
     const flyerSrc = event.flyer_url
-        ? `http://localhost:5001${event.flyer_url}`
-        : 'http://localhost:5001/uploads/noFlyer.jpg';
+        ? `/api${event.flyer_url}`
+        : '/api/uploads/noFlyer.jpg';
 
     const handleImageError = (e) => {
-        if (e.target.src !== 'http://localhost:5001/uploads/noFlyer.jpg') {
-            e.target.src = 'http://localhost:5001/uploads/noFlyer.jpg';
+        if (e.target.src !== '/api/uploads/noFlyer.jpg') {
+            e.target.src = '/api/uploads/noFlyer.jpg';
         }
     };
 

@@ -64,6 +64,7 @@ export default function PendingAccounts() {
                                                         id: students.id,
                                                     })
                                                 });
+                                                console.log("SENDING ID:", students.id);
 
                                                 // 3. Remove the student from table UI
                                                 //setStudents(prev => prev.filter(s => s.id !== students.id));

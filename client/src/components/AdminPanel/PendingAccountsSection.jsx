@@ -56,7 +56,7 @@ export default function PendingAccounts() {
                                                 await sdFormService.approveForm(students.id);
 
                                                 // 2. Call Hydra through your backend proxy
-                                                await fetch("/scripts/admin/createUser", {
+                                                const response = await fetch("http://localhost:5001/scripts/admin/createUser", {
                                                     method: "POST",
                                                     headers: { "Content-Type": "application/json" },
                                                     body: JSON.stringify({
@@ -65,7 +65,8 @@ export default function PendingAccounts() {
                                                     })
                                                 });
                                                 console.log("SENDING ID:", students.id);
-
+                                                console.log("FETCH STATUS:", response.status);
+                                                console.log("FETCH TEXT:", await response.text());
                                                 // 3. Remove the student from table UI
                                                 //setStudents(prev => prev.filter(s => s.id !== students.id));
 

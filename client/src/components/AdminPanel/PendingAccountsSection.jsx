@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { studentService } from "../../services/studentAccountService";
 import sdFormService from "../../services/sdFormService";
 
 
@@ -53,22 +52,34 @@ export default function PendingAccounts() {
                                     <button
                                         onClick={async () => {
                                             try {
+                                                // 1. Mark form as approved in your database
                                                 await sdFormService.approveForm(students.id);
-                                                alert("Approval email sent! Account created [test]");
 
-                                                await sdFormService.createUser({
-                                                    email: students.email,
-                                                    nId: students.nId,
+                                                // 2. Call Hydra through your backend proxy
+                                                await fetch("/scripts/admin/createUser", {
+                                                    method: "POST",
+                                                    headers: { "Content-Type": "application/json" },
+                                                    body: JSON.stringify({
+                                                        action: "createUser",
+                                                        email: students.email,
+                                                        nId: students.student_id
+                                                    })
                                                 });
 
+                                                // 3. Remove the student from table UI
+                                                //setStudents(prev => prev.filter(s => s.id !== students.id));
+
+                                                alert("Student approved and Hydra account created!");
                                             } catch (err) {
-                                                alert("Failed to send approval email.");
                                                 console.error(err);
+                                                alert("Failed to approve student.");
                                             }
                                         }}
-                                        className="bg-green-300 rounded px-3 py-1 hover:bg-green-400 mr-2 transition-all ease-in duration-300">
+                                        className="bg-green-300 rounded px-3 py-1 hover:bg-green-400 mr-2 transition-all ease-in duration-300"
+                                    >
                                         Approve
                                     </button>
+
                                     <button
                                         onClick={async () => {
                                             if (window.confirm("Are you sure you want to deny and notify this student?")) {

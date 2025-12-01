@@ -56,7 +56,7 @@ export default function PendingAccounts() {
                                                 await sdFormService.approveForm(students.id);
 
                                                 // 2. Call Hydra through your backend proxy
-                                                await fetch("/scripts/admin/createUser", {
+                                                const resp = await fetch("/scripts/admin/createUser", {
                                                     method: "POST",
                                                     headers: { "Content-Type": "application/json" },
                                                     body: JSON.stringify({

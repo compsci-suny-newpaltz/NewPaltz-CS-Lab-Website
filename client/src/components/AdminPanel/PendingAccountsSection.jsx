@@ -61,17 +61,18 @@ export default function PendingAccounts() {
                                                     headers: { "Content-Type": "application/json" },
                                                     body: JSON.stringify({
                                                         action: "createUser",
-                                                        email: students.email,
-                                                        nId: students.student_id
+                                                        id: students.id   // ✔ THIS IS REQUIRED since Hydra pulls email+NID from DB
+                                                        //email: students.email,
+                                                        //nId: students.student_id
                                                     })
                                                 });
 
                                                 // 3. Remove the student from table UI
                                                 //setStudents(prev => prev.filter(s => s.id !== students.id));
-                                                const data = await resp.json();
-                                                console.log("Hydra stdout:", data.stdout);   // <---- SHOW IT
+                                                //const data = await response.json()
+                                                //console.log("Hydra stdout:", data.stdout);   // <---- SHOW IT
 
-                                                alert("Hydra output:\n\n" + data.stdout);    // <---- OPTIONAL POPUP
+                                                //alert("Hydra output:\n\n" + data.stdout);    // <---- OPTIONAL POPUP
 
                                                 alert("Student approved and Hydra account created!");
                                             } catch (err) {

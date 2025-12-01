@@ -4,12 +4,12 @@ export default function EventPopup({ event, onClose }) {
     if (!event) return null;
 
     const flyerSrc = event.flyer
-        ? `http://localhost:5001${event.flyer}`
-        : 'http://localhost:5001/uploads/noFlyer.jpg';
+        ? `/api${event.flyer}`
+        : '/api/uploads/noFlyer.jpg';
 
     const handleImageError = (e) => {
-        if (e.target.src !== 'http://localhost:5001/uploads/noFlyer.jpg') {
-            e.target.src = 'http://localhost:5001/uploads/noFlyer.jpg';
+        if (e.target.src !== '/api/uploads/noFlyer.jpg') {
+            e.target.src = '/api/uploads/noFlyer.jpg';
         }
     };
 

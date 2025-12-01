@@ -56,30 +56,17 @@ export default function PendingAccounts() {
                                                 await sdFormService.approveForm(students.id);
 
                                                 // 2. Call Hydra through your backend proxy
-                                                const resp = await fetch("http://127.0.0.1:5001/scripts/admin/createUser", {
+                                                await fetch("/scripts/admin/createUser", {
                                                     method: "POST",
                                                     headers: { "Content-Type": "application/json" },
                                                     body: JSON.stringify({
                                                         action: "createUser",
-                                                        id: students.id   // ✔ THIS IS REQUIRED since Hydra pulls email+NID from DB
-                                                        //email: students.email,
-                                                        //nId: students.student_id
+                                                        id: students.id,
                                                     })
                                                 });
 
-                                                const data = await resp.json();
-                                                console.log("Hydra response:", data);
-
-                                                // Optional: show script output
-                                                if (data.stdout) {
-                                                    alert("Hydra Script Output:\n\n" + data.stdout);
-                                                }
                                                 // 3. Remove the student from table UI
                                                 //setStudents(prev => prev.filter(s => s.id !== students.id));
-                                                //const data = await response.json()
-                                                //console.log("Hydra stdout:", data.stdout);   // <---- SHOW IT
-
-                                                //alert("Hydra output:\n\n" + data.stdout);    // <---- OPTIONAL POPUP
 
                                                 alert("Student approved and Hydra account created!");
                                             } catch (err) {

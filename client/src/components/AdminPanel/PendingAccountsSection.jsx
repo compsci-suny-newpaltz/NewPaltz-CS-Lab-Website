@@ -67,19 +67,26 @@ export default function PendingAccounts() {
                                                     })
                                                 });
 
-                                                // 3. Remove the student from table UI
-                                                //setStudents(prev => prev.filter(s => s.id !== students.id));
-                                                //const data = await response.json()
-                                                //console.log("Hydra stdout:", data.stdout);   // <---- SHOW IT
+                                                const data = await resp.json();
+                                                console.log("Hydra response:", data);
 
-                                                //alert("Hydra output:\n\n" + data.stdout);    // <---- OPTIONAL POPUP
+                                                // Optional: show script output
+                                                if (data.stdout) {
+                                                    alert("Hydra Script Output:\n\n" + data.stdout);
 
-                                                alert("Student approved and Hydra account created!");
-                                            } catch (err) {
-                                                console.error(err);
-                                                alert("Failed to approve student.");
-                                            }
-                                        }}
+                                                    // 3. Remove the student from table UI
+                                                    //setStudents(prev => prev.filter(s => s.id !== students.id));
+                                                    //const data = await response.json()
+                                                    //console.log("Hydra stdout:", data.stdout);   // <---- SHOW IT
+
+                                                    //alert("Hydra output:\n\n" + data.stdout);    // <---- OPTIONAL POPUP
+
+                                                    alert("Student approved and Hydra account created!");
+                                                } catch (err) {
+                                                    console.error(err);
+                                                    alert("Failed to approve student.");
+                                                }
+                                            }}
                                         className="bg-green-300 rounded px-3 py-1 hover:bg-green-400 mr-2 transition-all ease-in duration-300"
                                     >
                                         Approve

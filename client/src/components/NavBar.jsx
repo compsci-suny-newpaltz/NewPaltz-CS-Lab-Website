@@ -138,6 +138,16 @@ const NavBar = () => {
           {/*Drop Down*/}
           <ul className="invisible absolute left-0 mt-2 w-48 scale-95 transform rounded-xl bg-white/90 py-2 opacity-0 shadow-xl backdrop-blur-sm transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
             <li>
+              <a
+                href="https://hydra.newpaltz.edu/dashboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+              >
+                Hydra Dashboard
+              </a>
+            </li>
+            <li>
               <Link
                 to="/student-resources"
                 className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
@@ -195,22 +205,12 @@ const NavBar = () => {
             </li>
             <li>
               <a
-                href="https://hydra.newpaltz.edu/dashboard"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
-              >
-                Hydra Dashboard
-              </a>
-            </li>
-            <li>
-              <a
                 href="https://compsci-suny-newpaltz.github.io/TR-TA-CompSci-Handbook/#/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
               >
-                TA Guidelines
+                TA Handbook
               </a>
             </li>
           </ul>

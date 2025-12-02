@@ -2,10 +2,11 @@ import { RiGalleryView2 } from 'react-icons/ri';
 import { LuCalendarDays } from 'react-icons/lu';
 import { IoIosBook } from 'react-icons/io';
 import { LuNotepadText } from 'react-icons/lu';
-import { FaQuestion, FaGraduationCap } from 'react-icons/fa6';
+import { FaQuestion, FaGraduationCap, FaWpforms } from 'react-icons/fa6';
 import { GiPartyPopper } from 'react-icons/gi';
 import { FaComputer } from 'react-icons/fa6';
 import { HiAcademicCap } from 'react-icons/hi';
+import { TbListTree } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
 
 /**
@@ -41,7 +42,7 @@ const BentoBox = () => {
        */}
             <div
                 id="bento-box-section"
-                className="grid h-full w-2/3 grid-cols-4 grid-rows-7 gap-4"
+                className="grid h-full w-2/3 grid-cols-4 grid-rows-8 gap-4"
             >
                 {/* Student Highlights - Tall Format */}
                 <Link to="/student-highlights" className="group relative col-span-1 row-span-3 flex cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl bg-gradient-to-br from-rose-300 to-rose-400 p-6 transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
@@ -137,6 +138,26 @@ const BentoBox = () => {
                         className="text-white transition-transform group-hover:scale-110"
                     />
                     <span className="text-sm font-medium text-white">Comp Exam</span>
+                </Link>
+
+                {/* Student Forms */}
+                <Link to="/student-forms" className="group relative col-span-1 row-span-1 flex cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl bg-gradient-to-br from-pink-300 to-pink-400 p-6 transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
+                    <div className="absolute inset-0 translate-x-[-200%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-1000 group-hover:translate-x-[200%]" />
+                    <FaWpforms
+                        size={50}
+                        className="text-white transition-transform group-hover:scale-110"
+                    />
+                    <span className="text-sm font-medium text-white">Student Forms</span>
+                </Link>
+
+                {/* Course Progression */}
+                <Link to="/course-progression" className="group relative col-span-1 row-span-1 flex cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl bg-gradient-to-br from-lime-300 to-lime-400 p-6 transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
+                    <div className="absolute inset-0 translate-x-[-200%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-1000 group-hover:translate-x-[200%]" />
+                    <TbListTree
+                        size={50}
+                        className="text-white transition-transform group-hover:scale-110"
+                    />
+                    <span className="text-sm font-medium text-white">Course Progression</span>
                 </Link>
             </div>
         </div>

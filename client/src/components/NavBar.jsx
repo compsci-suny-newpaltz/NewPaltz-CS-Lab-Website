@@ -193,6 +193,16 @@ const NavBar = () => {
                 Comp Exam
               </Link>
             </li>
+            <li>
+              <a
+                href="https://hydra.newpaltz.edu/dashboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+              >
+                Hydra Dashboard
+              </a>
+            </li>
           </ul>
 
         </li>

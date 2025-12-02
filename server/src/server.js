@@ -13,6 +13,7 @@ const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
 
 const eventRoutes = require("./routes/eventRoutes");
+const coursesRoutes = require("./routes/coursesRoutes");
 
 let adminProxy;
 
@@ -48,6 +49,8 @@ app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
 app.use("/events", eventRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/courses", coursesRoutes);
+app.use("/api/courses", coursesRoutes);
 
 
 // Serve static files from the uploads directory

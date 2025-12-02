@@ -169,6 +169,30 @@ const NavBar = () => {
                 Student Forms
               </Link>
             </li>
+            <li>
+              <Link
+                to="/courses"
+                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+              >
+                Courses
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/course-progression"
+                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+              >
+                Course Progression
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/comp-exam"
+                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+              >
+                Comp Exam
+              </Link>
+            </li>
           </ul>
 
         </li>

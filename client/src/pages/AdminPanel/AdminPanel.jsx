@@ -15,6 +15,8 @@ import UserControlsSection from '../../components/AdminPanel/UserControlsSection
 import PendingEvents from '../../components/AdminPanel/PendingEvents';
 import EventsSection from '../../components/AdminPanel/EventsSection';
 
+import MonitoringPanelPage from './MonitoringPanelPage';
+
 import { adminService } from '../../services/adminService';
 
 export default function AdminPanel() {
@@ -71,6 +73,8 @@ export default function AdminPanel() {
         { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin', 'editor'], label: 'Student Resources' },
         { key: 'pending-accounts', component: <PendingAccountsSection />, roles: ['admin'], label: 'Pending Accounts' },
         { key: 'user-controls', component: <UserControlsSection admins={admins} handleDelete={handleDelete} />, roles: ['admin'], label: 'User Controls' },
+
+        { key: 'monitoring-panel', component: <MonitoringPanelPage />, roles: ['admin'], label: 'Monitoring Panel' },
 
     ];
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const Admin = require('../models/adminModel');
 const requireRole = require("../middleware/requireRole");
 
-
+//get all admins
 router.get('/', async (req, res) => {
     try {
         const admins = await Admin.getAllAdmins();
@@ -15,10 +15,10 @@ router.get('/', async (req, res) => {
 
 // Route to add a new admin
 router.post('/', async (req, res) => {
-    const { user, email, password } = req.body;
+    const { user, email, password, role } = req.body;
 
     try {
-        const id = await Admin.addAdmin(user, email, password);
+        const id = await Admin.addAdmin(user, email, password,role);
         res.json({ message: "Admin added successfully", id: Number(id) });
 
     } catch (err) {
@@ -58,6 +58,7 @@ router.put('/admin-panel/:id', async (req, res) => {
     }
 });
 
+//Login
 router.post('/login', async (req, res) => {
     try {
         const admin = await Admin.login(req.body);

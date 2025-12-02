@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const faqs = require('../models/faqModel');
 
+// Get all FAQs
 router.get("/", async (req, res) => {
     try {
         const rows = await faqs.getAllFAQs();
@@ -11,6 +12,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+// Get FAQ by ID
 router.get("/:id", async (req, res) => {
     try {
         const faq = await faqs.getFaqByID(req.params.id);
@@ -32,6 +34,7 @@ router.post("/", async (req, res) => {
     }
 });
 
+//delete faq by id
 router.delete("/:id", async (req, res) => {
     try {
         const result = await faqs.deleteFAQ(req.params.id);
@@ -41,6 +44,7 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+//edit question 
 router.put("/:id/question", async (req, res) => {
     try {
         const result = await faqs.updateQuestion(req.params.id, req.body.question);
@@ -50,6 +54,7 @@ router.put("/:id/question", async (req, res) => {
     }
 });
 
+//`
 router.put("/:id/answer", async (req, res) => {
     try {
         const result = await faqs.updateAnswer(req.params.id, req.body.answer);
@@ -59,7 +64,7 @@ router.put("/:id/answer", async (req, res) => {
     }
 });
 
-//edit all columns
+//edit entire faq
 router.put("/:id", async (req, res) => {
     try {
         const result = await faqs.updateFAQ(req.params.id, req.body);

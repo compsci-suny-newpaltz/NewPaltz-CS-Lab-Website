@@ -1,7 +1,7 @@
 // src/pages/Admin/AdminPanel.jsx
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
-
+import { useLocation } from "react-router-dom";
 import PendingHighlights from '../../components/AdminPanel/PendingHighlights';
 import HighlightsSection from '../../components/AdminPanel/HighlightsSection';
 import PendingArticles from '../../components/AdminPanel/PendingArticles';
@@ -24,7 +24,9 @@ import { adminService } from '../../services/adminService';
 
 export default function AdminPanel() {
     const { user, loading } = useContext(AuthContext);
-    const [activeCategory, setActiveCategory] = useState('student-highlights');
+    const location = useLocation();
+    const initialCategory = location.state?.activeCategory || 'student-highlights';
+    const [activeCategory, setActiveCategory] = useState(initialCategory);
     const [admins, setAdmins] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,6 +52,12 @@ export default function AdminPanel() {
         };
         loadAdmins();
     }, []);
+
+    useEffect(() => {
+        if (location.state?.activeCategory) {
+            setActiveCategory(location.state.activeCategory);
+        }
+    }, [location.state]);
 
     // Panel configuration
     const panels = [
@@ -80,6 +88,8 @@ export default function AdminPanel() {
         { key: 'user-controls', component: <UserControlsSection admins={admins} handleDelete={handleDelete} />, roles: ['admin'], label: 'User Controls' },
 
         { key: 'monitoring-panel', component: <MonitoringPanelPage />, roles: ['admin'], label: 'Monitoring Panel' },
+
+
 
     ];
 

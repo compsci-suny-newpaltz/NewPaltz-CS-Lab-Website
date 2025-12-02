@@ -153,7 +153,7 @@ router.put("/:id/headshot", async (req, res) => {
     }
 });
 
-// UPDATE headshot URL
+// UPDATE approval status
 router.put("/approve/:id", async (req, res) => {
     try {
         const result = await highlightPosts.approve(req.params.id);

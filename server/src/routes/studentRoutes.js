@@ -3,7 +3,7 @@ const router = express.Router();
 const Student = require('../models/studentModel');
 const { execFile } = require('child_process');
 
-
+// Route to get all students
 router.get('/', async (req, res) => {
     try {
         const students = await Student.getAllStudents();
@@ -25,6 +25,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+//Login 
 router.post('/login', async (req, res) => {
     try {
         const student = await Student.login(req.body);

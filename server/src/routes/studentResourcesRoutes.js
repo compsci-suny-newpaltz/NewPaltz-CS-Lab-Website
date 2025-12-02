@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const studentResources = require('../models/studentResourcesModel');
 
+// Get all student resources
 router.get("/", async (req, res) => {
     try {
         const rows = await studentResources.getAllStudentResources();
@@ -11,6 +12,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+// Add a new student resource
 router.post("/", async (req, res) => {
     try {
         const result = await studentResources.addStudentResource(req.body);
@@ -20,6 +22,7 @@ router.post("/", async (req, res) => {
     }
 });
 
+// Delete a student resource
 router.delete("/:id", async (req, res) => {
     try {
         const result = await studentResources.removeStudentResource(req.params.id);
@@ -29,6 +32,7 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+// Edit a student resource
 router.put("/:id", async (req, res) => {
     try {
         const result = await studentResources.editStudentResource(req.params.id, req.body);
@@ -38,6 +42,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 
+// Get student resource by ID
 router.get("/:id", async (req, res) => {
     try {
         const resource = await studentResources.getResourceByID(req.params.id);

@@ -6,7 +6,7 @@ import compExamService from '../../services/compExamService';
 
 const CompExam = () => {
   const [examSettings, setExamSettings] = useState({
-    exam_date: 'May 8th, 2025',
+    exam_date: 'December 11, 2025',
     exam_time: '9 AM - 12 PM',
     location: 'Science Hall 259'
   });
@@ -16,7 +16,7 @@ const CompExam = () => {
       try {
         const data = await compExamService.getSettings();
         setExamSettings({
-          exam_date: data.exam_date || 'May 8th, 2025',
+          exam_date: data.exam_date || 'December 11, 2025',
           exam_time: data.exam_time || '9 AM - 12 PM',
           location: data.location || 'Science Hall 259'
         });

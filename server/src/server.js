@@ -13,7 +13,18 @@ const studentHighlightRoutes = require("./routes/StudentHighlightRoutes");
 const sdFormRoutes = require("./routes/sdFormRoutes");
 
 const eventRoutes = require("./routes/eventRoutes");
-const adminProxy = require("./routes/adminProxy");
+
+let adminProxy;
+
+try {
+  // Try real proxy (only exists on production server)
+  adminProxy = require("./routes/adminProxy");
+  console.log("Loaded REAL adminProxy.js");
+} catch (err) {
+  console.warn("adminProxy.js not found — using MOCK adminProxy instead.");
+  adminProxy = require("./routes/adminProxy.local.js");
+}
+
 const student2Routes = require("./routes/studentRoutes");
 
 const app = express();
@@ -36,6 +47,8 @@ app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
 app.use("/events", eventRoutes);
+app.use("/api/events", eventRoutes);
+
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

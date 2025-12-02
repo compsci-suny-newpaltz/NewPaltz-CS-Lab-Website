@@ -285,21 +285,22 @@ const CourseCarousel = ({ courses, title, icon, gradient }) => {
 };
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Start with static data immediately for fast load
+  const [courses, setCourses] = useState(staticCoursesData);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    // Try to fetch from API in background, but don't block on it
     const fetchCourses = async () => {
       try {
-        setLoading(true);
         const data = await courseService.getAllCourses();
-        setCourses(data);
+        if (data && data.length > 0) {
+          setCourses(data);
+        }
       } catch (err) {
-        console.error('Error fetching courses from API, using static data:', err);
-        setCourses(staticCoursesData);
-      } finally {
-        setLoading(false);
+        // Silently use static data - already loaded
+        console.log('Using static course data');
       }
     };
     fetchCourses();

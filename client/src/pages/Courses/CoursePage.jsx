@@ -52,29 +52,30 @@ const CoursePage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
+    // Load static data immediately for fast render
+    const groupedCourse = findCoursesByCode(staticCoursesData, slug);
+    if (groupedCourse) {
+      setCourseData(groupedCourse);
+      setLoading(false);
+    }
+
+    // Try API in background
     const fetchCourse = async () => {
       try {
-        setLoading(true);
-        // Try API first
         const data = await courseService.getCourseBySlug(slug);
         if (data) {
-          // If API returns single course, wrap it
           setCourseData({
             ...data,
             sections: [data]
           });
         }
       } catch (err) {
-        console.error('Error fetching course from API, using static data:', err);
-        // Fallback to static data - find all sections matching this course code
-        const groupedCourse = findCoursesByCode(staticCoursesData, slug);
-        if (groupedCourse) {
-          setCourseData(groupedCourse);
-        } else {
+        // Silently use static data - already loaded
+        console.log('Using static course data for', slug);
+        if (!groupedCourse) {
           setError('Course not found. Please check the URL and try again.');
+          setLoading(false);
         }
-      } finally {
-        setLoading(false);
       }
     };
     fetchCourse();

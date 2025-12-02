@@ -21,8 +21,8 @@ const CompExam = () => {
           location: data.location || 'Science Hall 259'
         });
       } catch (err) {
-        console.error('Error fetching comp exam settings:', err);
-        // Keep defaults on error
+        // Silently use defaults - already loaded
+        console.log('Using default comp exam settings');
       }
     };
     fetchSettings();

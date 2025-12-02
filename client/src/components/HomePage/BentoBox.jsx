@@ -7,7 +7,7 @@ import { GiPartyPopper } from 'react-icons/gi';
 import { FaComputer } from 'react-icons/fa6';
 import { HiAcademicCap } from 'react-icons/hi';
 import { TbListTree } from 'react-icons/tb';
-import { SiHydra } from 'react-icons/si';
+import { MdDashboard } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
 /**
@@ -124,7 +124,7 @@ const BentoBox = () => {
                 {/* Hydra Dashboard - External Link */}
                 <a href="https://hydra.newpaltz.edu/dashboard" target="_blank" rel="noopener noreferrer" className="group relative col-span-1 row-span-2 flex cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-400 to-blue-500 p-6 transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                     <div className="absolute inset-0 translate-x-[-200%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-1000 group-hover:translate-x-[200%]" />
-                    <SiHydra
+                    <MdDashboard
                         size={50}
                         className="text-white transition-transform group-hover:scale-110"
                     />

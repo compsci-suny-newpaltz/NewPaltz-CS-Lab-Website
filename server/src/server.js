@@ -47,6 +47,8 @@ app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
 app.use("/events", eventRoutes);
+app.use("/api/events", eventRoutes);
+
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

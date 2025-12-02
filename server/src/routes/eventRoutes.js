@@ -128,28 +128,73 @@ router.get('/admin/:adminId', async (req, res) => {
 });
 
 
-// Edit an event by ID with optional flyer update
-router.put('/:id', upload.single('flyer'), async (req, res) => {
+// Get event by ID
+router.get('/:id', async (req, res) => {
     try {
         const id = Number(req.params.id);
+        const rows = await eventsModel.getEventById(id);
+        const event = rows[0];
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        res.json(event);
+    } catch (err) {
+        console.error('Error getting event by ID:', err);
+        res.status(500).json({ message: 'Failed to fetch event' });
+    }
+});
+
+
+// Edit an existing event by ID with optional flyer replacement
+router.put('/:id', upload.single('flyer'), async (req, res) => {
+    console.log("REQ BODY:", req.body);
+console.log("REQ FILE:", req.file);
+    try {
+        const id = Number(req.params.id);
+        const existingRows = await eventsModel.getEventById(id);
+        const existingEvent = existingRows[0];
+
+        if (!existingEvent) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
         const { title, description, start_time, end_time, location } = req.body;
-        const flyer_url = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+        let flyer_url = existingEvent.flyer_url;
+
+        // Replace flyer if uploaded
+        if (req.file) {
+            flyer_url = `/uploads/${req.file.filename}`;
+
+            if (existingEvent.flyer_url && !existingEvent.flyer_url.includes('noFlyer.jpg')) {
+                const oldPath = path.join(__dirname, '..', existingEvent.flyer_url);
+
+                fs.unlink(oldPath, (err) =>
+                    err ? console.error("Failed to delete old flyer:", err)
+                        : console.log("Old flyer deleted:", oldPath)
+                );
+            }
+        }
+
         const eventData = {
             title,
             description,
             start_time,
             end_time,
             location,
+            flyer_url,
         };
-        if (flyer_url) {
-            eventData.flyer_url = flyer_url;
-        }
 
         const affectedRows = await eventsModel.editEvent(id, eventData);
+
         if (affectedRows === 0) {
             return res.status(404).json({ message: 'Event not found' });
         }
+
         res.json({ message: 'Event updated successfully', affectedRows });
+
     } catch (err) {
         console.error('Error updating event:', err);
         res.status(500).json({ message: 'Failed to update event' });

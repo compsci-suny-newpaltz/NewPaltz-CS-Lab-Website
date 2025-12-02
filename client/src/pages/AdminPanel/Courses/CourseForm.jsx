@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaSave, FaArrowLeft, FaPlus, FaTrash, FaUpload } from 'react-icons/fa';
+import { FaSave, FaArrowLeft, FaPlus, FaTrash, FaUpload, FaUser, FaHistory, FaFileAlt, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import courseService from '../../../services/courseService';
 
 const categories = [
@@ -36,6 +36,11 @@ const colors = [
   { id: 'bg-pink-200', name: 'Pink' }
 ];
 
+const semesters = [
+  'Spring 2024', 'Fall 2024', 'Spring 2025', 'Fall 2025',
+  'Spring 2026', 'Fall 2026', 'Spring 2027', 'Fall 2027'
+];
+
 const CourseForm = ({ isEdit = false }) => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -43,15 +48,22 @@ const CourseForm = ({ isEdit = false }) => {
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [syllabusFile, setSyllabusFile] = useState(null);
+  const [expandedSections, setExpandedSections] = useState({
+    professors: true,
+    syllabi: true,
+    resources: true
+  });
 
   const [formData, setFormData] = useState({
     code: '',
     name: '',
     section: '01',
     professor: '',
+    professors: [], // Array of professors teaching this course
     semester: 'Fall 2025',
     description: '',
     syllabusFile: '',
+    syllabi: [], // Array of syllabi over the years
     category: 'core',
     color: 'bg-blue-200',
     crn: '',
@@ -59,6 +71,7 @@ const CourseForm = ({ isEdit = false }) => {
     days: '',
     time: '',
     location: '',
+    prerequisites: '',
     resources: []
   });
 
@@ -71,8 +84,24 @@ const CourseForm = ({ isEdit = false }) => {
   const fetchCourse = async () => {
     try {
       const data = await courseService.getCourseByID(id);
+      // Convert legacy professor field to professors array if needed
+      let professors = data.professors || [];
+      if (!professors.length && data.professor) {
+        professors = [{ name: data.professor, isPrimary: true }];
+      }
+      // Convert legacy syllabusFile to syllabi array if needed
+      let syllabi = data.syllabi || [];
+      if (!syllabi.length && data.syllabusFile) {
+        syllabi = [{
+          semester: data.semester || 'Fall 2025',
+          file: data.syllabusFile,
+          professor: data.professor || ''
+        }];
+      }
       setFormData({
         ...data,
+        professors,
+        syllabi,
         resources: data.resources || []
       });
     } catch (err) {
@@ -95,6 +124,61 @@ const CourseForm = ({ isEdit = false }) => {
     }
   };
 
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // Professor management
+  const addProfessor = () => {
+    setFormData(prev => ({
+      ...prev,
+      professors: [...prev.professors, { name: '', isPrimary: prev.professors.length === 0, section: '', email: '' }]
+    }));
+  };
+
+  const updateProfessor = (index, field, value) => {
+    const newProfessors = [...formData.professors];
+    newProfessors[index] = { ...newProfessors[index], [field]: value };
+    // If setting as primary, unset others
+    if (field === 'isPrimary' && value) {
+      newProfessors.forEach((p, i) => {
+        if (i !== index) p.isPrimary = false;
+      });
+    }
+    setFormData(prev => ({ ...prev, professors: newProfessors }));
+  };
+
+  const removeProfessor = (index) => {
+    const newProfessors = formData.professors.filter((_, i) => i !== index);
+    // Ensure at least one is primary if any exist
+    if (newProfessors.length > 0 && !newProfessors.some(p => p.isPrimary)) {
+      newProfessors[0].isPrimary = true;
+    }
+    setFormData(prev => ({ ...prev, professors: newProfessors }));
+  };
+
+  // Syllabus history management
+  const addSyllabus = () => {
+    setFormData(prev => ({
+      ...prev,
+      syllabi: [...prev.syllabi, { semester: 'Fall 2025', file: '', professor: '', notes: '' }]
+    }));
+  };
+
+  const updateSyllabus = (index, field, value) => {
+    const newSyllabi = [...formData.syllabi];
+    newSyllabi[index] = { ...newSyllabi[index], [field]: value };
+    setFormData(prev => ({ ...prev, syllabi: newSyllabi }));
+  };
+
+  const removeSyllabus = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      syllabi: prev.syllabi.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Resource management
   const handleResourceChange = (index, field, value) => {
     const newResources = [...formData.resources];
     newResources[index] = { ...newResources[index], [field]: value };
@@ -122,10 +206,17 @@ const CourseForm = ({ isEdit = false }) => {
     try {
       const submitData = new FormData();
 
+      // Build professor string from array (for backwards compatibility)
+      const primaryProfessor = formData.professors.find(p => p.isPrimary)?.name ||
+                               formData.professors[0]?.name ||
+                               formData.professor;
+
       // Add all form fields
       Object.keys(formData).forEach(key => {
-        if (key === 'resources') {
+        if (key === 'resources' || key === 'professors' || key === 'syllabi') {
           submitData.append(key, JSON.stringify(formData[key]));
+        } else if (key === 'professor') {
+          submitData.append(key, primaryProfessor);
         } else if (formData[key] !== null && formData[key] !== undefined) {
           submitData.append(key, formData[key]);
         }
@@ -160,7 +251,7 @@ const CourseForm = ({ isEdit = false }) => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <button
@@ -169,9 +260,12 @@ const CourseForm = ({ isEdit = false }) => {
         >
           <FaArrowLeft className="text-gray-600" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-800">
-          {isEdit ? 'Edit Course' : 'Add New Course'}
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            {isEdit ? 'Edit Course' : 'Add New Course'}
+          </h1>
+          <p className="text-sm text-gray-500">Manage course details, professors, and syllabi</p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -179,7 +273,7 @@ const CourseForm = ({ isEdit = false }) => {
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Basic Information</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Course Code *
@@ -209,7 +303,22 @@ const CourseForm = ({ isEdit = false }) => {
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Credits
+              </label>
+              <input
+                type="number"
+                name="credits"
+                value={formData.credits}
+                onChange={handleChange}
+                min="1"
+                max="6"
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none"
+              />
+            </div>
+
+            <div className="md:col-span-2 lg:col-span-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Course Name *
               </label>
@@ -224,37 +333,7 @@ const CourseForm = ({ isEdit = false }) => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Professor *
-              </label>
-              <input
-                type="text"
-                name="professor"
-                value={formData.professor}
-                onChange={handleChange}
-                placeholder="e.g., Katherine Brainard"
-                required
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Semester *
-              </label>
-              <input
-                type="text"
-                name="semester"
-                value={formData.semester}
-                onChange={handleChange}
-                placeholder="e.g., Fall 2025"
-                required
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none"
-              />
-            </div>
-
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 lg:col-span-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Description
               </label>
@@ -267,7 +346,130 @@ const CourseForm = ({ isEdit = false }) => {
                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none resize-none"
               />
             </div>
+
+            <div className="md:col-span-2 lg:col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Prerequisites
+              </label>
+              <input
+                type="text"
+                name="prerequisites"
+                value={formData.prerequisites}
+                onChange={handleChange}
+                placeholder="e.g., CPS 210 or instructor permission"
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none"
+              />
+            </div>
           </div>
+        </div>
+
+        {/* Professors Section */}
+        <div className="bg-white rounded-xl shadow overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleSection('professors')}
+            className="w-full p-4 flex items-center justify-between bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-violet-500 rounded-lg">
+                <FaUser className="text-white" />
+              </div>
+              <div className="text-left">
+                <h2 className="text-lg font-semibold text-gray-800">Professors</h2>
+                <p className="text-sm text-gray-500">{formData.professors.length} professor(s) assigned</p>
+              </div>
+            </div>
+            {expandedSections.professors ? <FaChevronUp className="text-gray-500" /> : <FaChevronDown className="text-gray-500" />}
+          </button>
+
+          {expandedSections.professors && (
+            <div className="p-6 border-t border-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-sm text-gray-600">Add multiple professors who teach different sections of this course.</p>
+                <button
+                  type="button"
+                  onClick={addProfessor}
+                  className="flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-600 rounded-lg hover:bg-violet-200 transition-colors text-sm font-medium"
+                >
+                  <FaPlus />
+                  Add Professor
+                </button>
+              </div>
+
+              {formData.professors.length === 0 ? (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <FaUser className="mx-auto text-3xl text-gray-300 mb-2" />
+                  <p className="text-gray-500">No professors added yet.</p>
+                  <button
+                    type="button"
+                    onClick={addProfessor}
+                    className="mt-3 text-violet-600 hover:text-violet-700 font-medium text-sm"
+                  >
+                    + Add your first professor
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {formData.professors.map((prof, index) => (
+                    <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                          <div className="md:col-span-2">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Name *</label>
+                            <input
+                              type="text"
+                              value={prof.name}
+                              onChange={(e) => updateProfessor(index, 'name', e.target.value)}
+                              placeholder="Dr. John Smith"
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-violet-300 focus:outline-none text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Section(s)</label>
+                            <input
+                              type="text"
+                              value={prof.section || ''}
+                              onChange={(e) => updateProfessor(index, 'section', e.target.value)}
+                              placeholder="01, 02"
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-violet-300 focus:outline-none text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+                            <input
+                              type="email"
+                              value={prof.email || ''}
+                              onChange={(e) => updateProfessor(index, 'email', e.target.value)}
+                              placeholder="smith@newpaltz.edu"
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-violet-300 focus:outline-none text-sm"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border cursor-pointer hover:bg-violet-50 transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={prof.isPrimary}
+                              onChange={(e) => updateProfessor(index, 'isPrimary', e.target.checked)}
+                              className="accent-violet-500"
+                            />
+                            <span className="text-xs text-gray-600">Primary</span>
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => removeProfessor(index)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Schedule Section */}
@@ -291,17 +493,18 @@ const CourseForm = ({ isEdit = false }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Credits
+                Semester
               </label>
-              <input
-                type="number"
-                name="credits"
-                value={formData.credits}
+              <select
+                name="semester"
+                value={formData.semester}
                 onChange={handleChange}
-                min="1"
-                max="6"
                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none"
-              />
+              >
+                {semesters.map(sem => (
+                  <option key={sem} value={sem}>{sem}</option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -332,7 +535,7 @@ const CourseForm = ({ isEdit = false }) => {
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 lg:col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Location
               </label>
@@ -397,124 +600,252 @@ const CourseForm = ({ isEdit = false }) => {
           </div>
         </div>
 
-        {/* Syllabus Section */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Syllabus</h2>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Upload Syllabus (PDF or Word)
-            </label>
-
-            {formData.syllabusFile && !syllabusFile && (
-              <div className="mb-3 p-3 bg-green-50 rounded-lg text-green-700 text-sm">
-                Current file: {formData.syllabusFile.split('/').pop()}
+        {/* Syllabi History Section */}
+        <div className="bg-white rounded-xl shadow overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleSection('syllabi')}
+            className="w-full p-4 flex items-center justify-between bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-500 rounded-lg">
+                <FaHistory className="text-white" />
               </div>
-            )}
+              <div className="text-left">
+                <h2 className="text-lg font-semibold text-gray-800">Syllabi History</h2>
+                <p className="text-sm text-gray-500">{formData.syllabi.length} syllabus/syllabi across semesters</p>
+              </div>
+            </div>
+            {expandedSections.syllabi ? <FaChevronUp className="text-gray-500" /> : <FaChevronDown className="text-gray-500" />}
+          </button>
 
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors">
-                <FaUpload />
-                {syllabusFile ? 'Change File' : 'Choose File'}
+          {expandedSections.syllabi && (
+            <div className="p-6 border-t border-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-sm text-gray-600">Track syllabi across different semesters and professors.</p>
+                <button
+                  type="button"
+                  onClick={addSyllabus}
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-600 rounded-lg hover:bg-emerald-200 transition-colors text-sm font-medium"
+                >
+                  <FaPlus />
+                  Add Syllabus
+                </button>
+              </div>
+
+              {/* Current Syllabus Upload */}
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <FaFileAlt className="text-blue-500" />
+                  <span className="font-medium text-blue-800">Current Semester Syllabus</span>
+                </div>
+
+                {formData.syllabusFile && !syllabusFile && (
+                  <div className="mb-3 p-3 bg-green-100 rounded-lg text-green-700 text-sm">
+                    Current file: {formData.syllabusFile.split('/').pop()}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 px-4 py-2 bg-white border border-blue-200 hover:bg-blue-100 rounded-lg cursor-pointer transition-colors">
+                    <FaUpload className="text-blue-500" />
+                    <span className="text-sm">{syllabusFile ? 'Change File' : 'Upload Syllabus'}</span>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                  {syllabusFile && (
+                    <span className="text-sm text-gray-600">{syllabusFile.name}</span>
+                  )}
+                </div>
+
+                <p className="mt-3 text-xs text-gray-500">
+                  Or enter a path to an existing file:
+                </p>
                 <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                  className="hidden"
+                  type="text"
+                  name="syllabusFile"
+                  value={formData.syllabusFile}
+                  onChange={handleChange}
+                  placeholder="/syllabi/filename.pdf"
+                  className="w-full mt-2 px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-300 focus:outline-none text-sm"
                 />
-              </label>
-              {syllabusFile && (
-                <span className="text-sm text-gray-600">{syllabusFile.name}</span>
+              </div>
+
+              {/* Historical Syllabi */}
+              {formData.syllabi.length === 0 ? (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <FaHistory className="mx-auto text-3xl text-gray-300 mb-2" />
+                  <p className="text-gray-500">No historical syllabi recorded.</p>
+                  <button
+                    type="button"
+                    onClick={addSyllabus}
+                    className="mt-3 text-emerald-600 hover:text-emerald-700 font-medium text-sm"
+                  >
+                    + Add a past syllabus
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-gray-700">Historical Syllabi</h3>
+                  {formData.syllabi.map((syl, index) => (
+                    <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Semester</label>
+                            <select
+                              value={syl.semester}
+                              onChange={(e) => updateSyllabus(index, 'semester', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-emerald-300 focus:outline-none text-sm"
+                            >
+                              {semesters.map(sem => (
+                                <option key={sem} value={sem}>{sem}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Professor</label>
+                            <input
+                              type="text"
+                              value={syl.professor || ''}
+                              onChange={(e) => updateSyllabus(index, 'professor', e.target.value)}
+                              placeholder="Professor name"
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-emerald-300 focus:outline-none text-sm"
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">File Path / URL</label>
+                            <input
+                              type="text"
+                              value={syl.file || ''}
+                              onChange={(e) => updateSyllabus(index, 'file', e.target.value)}
+                              placeholder="/syllabi/CPS210_Fall2024.pdf"
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-emerald-300 focus:outline-none text-sm"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeSyllabus(index)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-
-            <p className="mt-2 text-xs text-gray-500">
-              Or enter a path to an existing file in the public folder:
-            </p>
-            <input
-              type="text"
-              name="syllabusFile"
-              value={formData.syllabusFile}
-              onChange={handleChange}
-              placeholder="/syllabi/filename.pdf"
-              className="w-full mt-2 px-4 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none text-sm"
-            />
-          </div>
+          )}
         </div>
 
         {/* Resources Section */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Helpful Resources</h2>
-            <button
-              type="button"
-              onClick={addResource}
-              className="flex items-center gap-2 px-3 py-1 bg-rose-100 text-rose-600 rounded-lg hover:bg-rose-200 transition-colors text-sm"
-            >
-              <FaPlus />
-              Add Resource
-            </button>
-          </div>
+        <div className="bg-white rounded-xl shadow overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleSection('resources')}
+            className="w-full p-4 flex items-center justify-between bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500 rounded-lg">
+                <FaFileAlt className="text-white" />
+              </div>
+              <div className="text-left">
+                <h2 className="text-lg font-semibold text-gray-800">Helpful Resources</h2>
+                <p className="text-sm text-gray-500">{formData.resources.length} resource(s) linked</p>
+              </div>
+            </div>
+            {expandedSections.resources ? <FaChevronUp className="text-gray-500" /> : <FaChevronDown className="text-gray-500" />}
+          </button>
 
-          {formData.resources.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center py-4">
-              No resources added yet. Click "Add Resource" to add helpful links.
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {formData.resources.map((resource, index) => (
-                <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <input
-                        type="text"
-                        value={resource.name}
-                        onChange={(e) => handleResourceChange(index, 'name', e.target.value)}
-                        placeholder="Resource Name"
-                        className="px-3 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none text-sm"
-                      />
-                      <input
-                        type="url"
-                        value={resource.url}
-                        onChange={(e) => handleResourceChange(index, 'url', e.target.value)}
-                        placeholder="https://..."
-                        className="px-3 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none text-sm"
-                      />
-                      <input
-                        type="text"
-                        value={resource.description}
-                        onChange={(e) => handleResourceChange(index, 'description', e.target.value)}
-                        placeholder="Brief description"
-                        className="px-3 py-2 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none text-sm"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeResource(index)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
+          {expandedSections.resources && (
+            <div className="p-6 border-t border-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-sm text-gray-600">Add helpful links for students taking this course.</p>
+                <button
+                  type="button"
+                  onClick={addResource}
+                  className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-200 transition-colors text-sm font-medium"
+                >
+                  <FaPlus />
+                  Add Resource
+                </button>
+              </div>
+
+              {formData.resources.length === 0 ? (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <FaFileAlt className="mx-auto text-3xl text-gray-300 mb-2" />
+                  <p className="text-gray-500">No resources added yet.</p>
+                  <button
+                    type="button"
+                    onClick={addResource}
+                    className="mt-3 text-amber-600 hover:text-amber-700 font-medium text-sm"
+                  >
+                    + Add a helpful resource
+                  </button>
                 </div>
-              ))}
+              ) : (
+                <div className="space-y-3">
+                  {formData.resources.map((resource, index) => (
+                    <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <input
+                            type="text"
+                            value={resource.name}
+                            onChange={(e) => handleResourceChange(index, 'name', e.target.value)}
+                            placeholder="Resource Name"
+                            className="px-3 py-2 border border-gray-200 rounded-lg focus:border-amber-300 focus:outline-none text-sm"
+                          />
+                          <input
+                            type="url"
+                            value={resource.url}
+                            onChange={(e) => handleResourceChange(index, 'url', e.target.value)}
+                            placeholder="https://..."
+                            className="px-3 py-2 border border-gray-200 rounded-lg focus:border-amber-300 focus:outline-none text-sm"
+                          />
+                          <input
+                            type="text"
+                            value={resource.description}
+                            onChange={(e) => handleResourceChange(index, 'description', e.target.value)}
+                            placeholder="Brief description"
+                            className="px-3 py-2 border border-gray-200 rounded-lg focus:border-amber-300 focus:outline-none text-sm"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeResource(index)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 sticky bottom-6">
           <button
             type="button"
             onClick={() => navigate('/admin-panel')}
-            className="px-6 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-6 py-3 bg-white text-gray-600 hover:bg-gray-100 rounded-xl transition-colors shadow-lg border border-gray-200"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg disabled:opacity-50 font-medium"
           >
             {saving ? (
               <>

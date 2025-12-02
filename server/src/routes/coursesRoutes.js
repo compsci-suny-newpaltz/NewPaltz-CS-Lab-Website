@@ -74,6 +74,20 @@ router.get("/slug/:slug", async (req, res) => {
     }
 });
 
+// Get all sections of a course by code (e.g., /courses/code/cps210 returns all CPS 210 sections)
+router.get("/code/:code", async (req, res) => {
+    try {
+        const courseSections = await courses.getCoursesByCode(req.params.code);
+        if (!courseSections || courseSections.length === 0) {
+            return res.status(404).json({ message: "No courses found with that code" });
+        }
+        res.json(courseSections);
+    } catch (err) {
+        console.error("Error getting courses by code:", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Get course by ID
 router.get("/:id", async (req, res) => {
     try {

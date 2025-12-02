@@ -16,13 +16,15 @@ async function getAllCourses() {
             ORDER BY c.code ASC
         `);
 
-        // Parse resources from concatenated string
+        // Parse resources and JSON fields from concatenated string
         return rows.map(row => ({
             ...row,
             resources: row.resources ? row.resources.split(';;').map(r => {
                 const [name, url, description] = r.split('||');
                 return { name, url, description };
-            }) : []
+            }) : [],
+            professors: row.professors ? JSON.parse(row.professors) : [],
+            syllabi: row.syllabi ? JSON.parse(row.syllabi) : []
         }));
     } finally {
         conn.release();
@@ -49,9 +51,12 @@ async function getCourseByID(id) {
             [id]
         );
 
+        const course = courses[0];
         return {
-            ...courses[0],
-            resources: resources || []
+            ...course,
+            resources: resources || [],
+            professors: course.professors ? JSON.parse(course.professors) : [],
+            syllabi: course.syllabi ? JSON.parse(course.syllabi) : []
         };
     } finally {
         conn.release();
@@ -78,9 +83,12 @@ async function getCourseBySlug(slug) {
             [courses[0].id]
         );
 
+        const course = courses[0];
         return {
-            ...courses[0],
-            resources: resources || []
+            ...course,
+            resources: resources || [],
+            professors: course.professors ? JSON.parse(course.professors) : [],
+            syllabi: course.syllabi ? JSON.parse(course.syllabi) : []
         };
     } finally {
         conn.release();
@@ -95,11 +103,16 @@ async function getCourseBySlug(slug) {
 async function addCourse(courseData) {
     const {
         code, name, section, professor, semester, description,
-        syllabusFile, category, color, crn, credits, days, time, location, resources
+        syllabusFile, category, color, crn, credits, days, time, location,
+        prerequisites, professors, syllabi, resources
     } = courseData;
 
     // Generate slug from code and section
     const slug = `${code.toLowerCase().replace(/\s+/g, '')}-${section || '01'}`.replace(/[^a-z0-9-]/g, '');
+
+    // Stringify JSON fields
+    const professorsJson = professors ? (typeof professors === 'string' ? professors : JSON.stringify(professors)) : null;
+    const syllabiJson = syllabi ? (typeof syllabi === 'string' ? syllabi : JSON.stringify(syllabi)) : null;
 
     const conn = await pool.getConnection();
     try {
@@ -107,17 +120,18 @@ async function addCourse(courseData) {
 
         const result = await conn.query(
             `INSERT INTO Courses (code, name, section, professor, semester, description,
-             syllabusFile, category, color, crn, credits, days, time, location, slug)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+             syllabusFile, category, color, crn, credits, days, time, location, slug, prerequisites, professors, syllabi)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [code, name, section, professor, semester, description,
-             syllabusFile, category, color, crn, credits, days, time, location, slug]
+             syllabusFile, category, color, crn, credits, days, time, location, slug, prerequisites, professorsJson, syllabiJson]
         );
 
         const courseId = result.insertId;
 
         // Add resources if provided
         if (resources && resources.length > 0) {
-            for (const resource of resources) {
+            const resourceList = typeof resources === 'string' ? JSON.parse(resources) : resources;
+            for (const resource of resourceList) {
                 await conn.query(
                     "INSERT INTO CourseResources (course_id, name, url, description) VALUES (?, ?, ?, ?)",
                     [courseId, resource.name, resource.url, resource.description]
@@ -145,7 +159,8 @@ async function addCourse(courseData) {
 async function editCourse(id, courseData) {
     const {
         code, name, section, professor, semester, description,
-        syllabusFile, category, color, crn, credits, days, time, location, resources
+        syllabusFile, category, color, crn, credits, days, time, location,
+        prerequisites, professors, syllabi, resources
     } = courseData;
 
     const conn = await pool.getConnection();
@@ -155,21 +170,28 @@ async function editCourse(id, courseData) {
         // Update slug if code or section changed
         const slug = `${code.toLowerCase().replace(/\s+/g, '')}-${section || '01'}`.replace(/[^a-z0-9-]/g, '');
 
+        // Stringify JSON fields
+        const professorsJson = professors ? (typeof professors === 'string' ? professors : JSON.stringify(professors)) : null;
+        const syllabiJson = syllabi ? (typeof syllabi === 'string' ? syllabi : JSON.stringify(syllabi)) : null;
+
         const result = await conn.query(
             `UPDATE Courses SET
              code = ?, name = ?, section = ?, professor = ?, semester = ?,
              description = ?, syllabusFile = ?, category = ?, color = ?,
-             crn = ?, credits = ?, days = ?, time = ?, location = ?, slug = ?
+             crn = ?, credits = ?, days = ?, time = ?, location = ?, slug = ?,
+             prerequisites = ?, professors = ?, syllabi = ?
              WHERE id = ?`,
             [code, name, section, professor, semester, description,
-             syllabusFile, category, color, crn, credits, days, time, location, slug, id]
+             syllabusFile, category, color, crn, credits, days, time, location, slug,
+             prerequisites, professorsJson, syllabiJson, id]
         );
 
         // Update resources - delete old ones and insert new
         await conn.query("DELETE FROM CourseResources WHERE course_id = ?", [id]);
 
         if (resources && resources.length > 0) {
-            for (const resource of resources) {
+            const resourceList = typeof resources === 'string' ? JSON.parse(resources) : resources;
+            for (const resource of resourceList) {
                 await conn.query(
                     "INSERT INTO CourseResources (course_id, name, url, description) VALUES (?, ?, ?, ?)",
                     [id, resource.name, resource.url, resource.description]
@@ -215,6 +237,41 @@ async function removeCourse(id) {
 }
 
 /**
+ * Get all courses with a specific course code (e.g., all CPS 210 sections)
+ * @param {string} code - The course code to search for (e.g., "CPS 210" or "cps210")
+ * @returns {Promise<Array>} Array of course objects with that code
+ */
+async function getCoursesByCode(code) {
+    const conn = await pool.getConnection();
+    try {
+        // Normalize the code - remove spaces and convert to uppercase for comparison
+        const normalizedCode = code.toUpperCase().replace(/\s+/g, '');
+
+        const rows = await conn.query(`
+            SELECT c.*,
+                   GROUP_CONCAT(DISTINCT CONCAT(cr.name, '||', cr.url, '||', cr.description) SEPARATOR ';;') as resources
+            FROM Courses c
+            LEFT JOIN CourseResources cr ON c.id = cr.course_id
+            WHERE UPPER(REPLACE(c.code, ' ', '')) = ?
+            GROUP BY c.id
+            ORDER BY c.section ASC
+        `, [normalizedCode]);
+
+        return rows.map(row => ({
+            ...row,
+            resources: row.resources ? row.resources.split(';;').map(r => {
+                const [name, url, description] = r.split('||');
+                return { name, url, description };
+            }) : [],
+            professors: row.professors ? JSON.parse(row.professors) : [],
+            syllabi: row.syllabi ? JSON.parse(row.syllabi) : []
+        }));
+    } finally {
+        conn.release();
+    }
+}
+
+/**
  * Get courses by category
  * @param {string} category - The category to filter by
  * @returns {Promise<Array>} Array of course objects
@@ -238,7 +295,9 @@ async function getCoursesByCategory(category) {
             resources: row.resources ? row.resources.split(';;').map(r => {
                 const [name, url, description] = r.split('||');
                 return { name, url, description };
-            }) : []
+            }) : [],
+            professors: row.professors ? JSON.parse(row.professors) : [],
+            syllabi: row.syllabi ? JSON.parse(row.syllabi) : []
         }));
     } finally {
         conn.release();
@@ -249,6 +308,7 @@ module.exports = {
     getAllCourses,
     getCourseByID,
     getCourseBySlug,
+    getCoursesByCode,
     addCourse,
     editCourse,
     removeCourse,

@@ -59,7 +59,7 @@ export default function ThisWeekCarousel({ events }) {
                 >
                     {events.length > 0 ? (
                         events.map((event) => (
-                            <div key={event.id} className="flex-shrink-0 w-64">
+                            <div key={event.id} className="flex-shrink-0 w-[19rem]">
                                 <EventCard event={event} onClick={handleEventClick} />
                             </div>
                         ))

@@ -3,6 +3,7 @@ const express = require("express");
 
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const faqRoutes = require("./routes/faqRoutes.js");
 const facultyRoutes = require("./routes/facultyRoutes");
 const studentRoutes = require("./routes/studentResourcesRoutes");
@@ -15,6 +16,7 @@ const sdFormRoutes = require("./routes/sdFormRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const coursesRoutes = require("./routes/coursesRoutes");
 const compExamRoutes = require("./routes/compExamRoutes");
+const samlAuthRoutes = require("./routes/samlAuthRoutes");
 
 let adminProxy;
 
@@ -35,9 +37,13 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use("/faq", faqRoutes);
 app.use("/faculty", facultyRoutes);
@@ -54,6 +60,8 @@ app.use("/courses", coursesRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/comp-exam", compExamRoutes);
 app.use("/api/comp-exam", compExamRoutes);
+app.use("/saml", samlAuthRoutes);
+app.use("/api/saml", samlAuthRoutes);
 
 
 // Serve static files from the uploads directory

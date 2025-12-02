@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const highlightPosts = require('../models/studentHighlightModel');
+const { requireNPAuth, requireStudent, requireAdmin } = require('../middleware/samlAuth');
 
 // GET approved student highlights
 router.get("/", async (req, res) => {
@@ -42,7 +43,7 @@ router.get("/:id", async (req, res) => {
 );
 
 
-// POST new student highlight
+// POST new student highlight (legacy - no auth)
 router.post("/", async (req, res) => {
     try {
         await highlightPosts.addPost(req.body);
@@ -52,7 +53,37 @@ router.post("/", async (req, res) => {
         console.error("Error adding student highlight:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
-    
+
+});
+
+// POST new student highlight with SAML authentication
+router.post("/submit-authenticated", requireNPAuth, requireStudent, async (req, res) => {
+    try {
+        const { project_title, summary, project_description, project_link, github_link, banner_image, headshot_url } = req.body;
+
+        // Auto-populate from SAML user
+        const postData = {
+            project_title,
+            summary,
+            project_description,
+            project_link,
+            github_link,
+            student_name: req.samlUser.display_name || `${req.samlUser.given_name || ''} ${req.samlUser.family_name || ''}`.trim(),
+            student_email: req.samlUser.email,
+            headshot_url: headshot_url || null,
+            banner_image: banner_image || null,
+            submitted_by_saml: true
+        };
+
+        const result = await highlightPosts.addPost(postData);
+        res.status(201).json({
+            message: 'Project submitted successfully',
+            id: result
+        });
+    } catch (error) {
+        console.error('Error submitting project:', error);
+        res.status(500).json({ message: 'Failed to submit project' });
+    }
 });
 
 // DELETE student highlight

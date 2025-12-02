@@ -3,11 +3,14 @@ import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import EventCalendar from './pages/EventCalendar';
 
+import { SAMLAuthProvider } from './context/samlAuthContext';
+
 import StudentHighlights from './pages/StudentHighlights/StudentHighlights';
 import HighlightDetails from './pages/StudentHighlights/StudentHighlightDetails';
 import StudentHighlightsAddPage from './pages/AdminPanel/StudentHighlights/StudentHighlightAddPage';
 import StudentHighlightsEditPage from './pages/AdminPanel/StudentHighlights/StudentHighlightsEditPage';
 import ProjectForm from './pages/StudentHighlights/SubmitProject';
+import SubmitProjectSAML from './pages/StudentHighlights/SubmitProjectSAML';
 
 import TechBlogDisplay from './pages/TechBlog/TechBlogDisplay';
 import TechBlogEditPage from './pages/AdminPanel/TechBlog/TechBlogEditPage';
@@ -56,10 +59,11 @@ import MonitoringPanelPage from './pages/AdminPanel/MonitoringPanelPage';
 const App = () => {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-stone-50">
-        <NavBar />
-        <main className="container mx-auto px-4">
-          <Routes>
+      <SAMLAuthProvider>
+        <div className="min-h-screen bg-stone-50">
+          <NavBar />
+          <main className="container mx-auto px-4">
+            <Routes>
             <Route path="/" element={<Home />} />
 
             <Route path="/calendar" element={<EventCalendar />} />
@@ -68,7 +72,8 @@ const App = () => {
             <Route path="/student-highlights/:id" element={<HighlightDetails />} />
             <Route path="admin-panel/student-highlights/edit/:id" element={<StudentHighlightsEditPage />} />
             <Route path="/create-student-highlight" element={<StudentHighlightsAddPage />} />
-            <Route path="/submit-project" element={<ProjectForm />} />
+            <Route path="/submit-project" element={<SubmitProjectSAML />} />
+            <Route path="/submit-project-legacy" element={<ProjectForm />} />
 
             <Route path="/tech-blog" element={<TechBlogDisplay />} />
             <Route path="/admin-panel/tech-blog/edit/:id" element={<TechBlogEditPage />} />
@@ -114,10 +119,11 @@ const App = () => {
             <Route path="/comp-exam" element={<CompExam />} />
             <Route path="/course-progression" element={<CourseProgression />} />
 
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </SAMLAuthProvider>
     </BrowserRouter>
   );
 };

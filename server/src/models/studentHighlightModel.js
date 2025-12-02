@@ -35,15 +35,20 @@ async function getPendingPosts() {
  */
 
 async function addPost(postData) {
-    const { project_title, summary, project_description, project_link, github_link, student_name, headshot_url } = postData;
-    
+    const {
+        project_title, summary, project_description, project_link, github_link,
+        student_name, headshot_url, student_email, banner_image, submitted_by_saml
+    } = postData;
+
     const conn = await pool.getConnection();
     try {
         const result = await conn.query(
-            "INSERT INTO StudentHighlightBlog (project_title, summary, project_description, project_link, github_link, student_name, headshot_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [project_title, summary, project_description, project_link, github_link, student_name, headshot_url]
+            `INSERT INTO StudentHighlightBlog
+             (project_title, summary, project_description, project_link, github_link, student_name, headshot_url, student_email, banner_image, submitted_by_saml)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [project_title, summary, project_description, project_link, github_link, student_name, headshot_url, student_email || null, banner_image || null, submitted_by_saml ? 1 : 0]
         );
-        return result.insertId; // Return the ID of the newly created post
+        return result.insertId;
     } catch (err) {
         console.error("Database Error:", err);
         throw err;

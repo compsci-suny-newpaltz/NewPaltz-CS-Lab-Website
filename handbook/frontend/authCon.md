@@ -1,22 +1,26 @@
 # AuthContext & AuthProvider
 
-This file manages authentication state for the frontend application. It loads the user from a stored JWT token, decodes it, and provides authentication data and logout functionality to the rest of the app.
+This file manages authentication state for the frontend application. It supports both legacy JWT authentication and SAML/SSO authentication via New Paltz Hydra.
 
-## File: `AuthContext.jsx`
+## File: `client/src/context/authContext.jsx`
 
 ```jsx
 import { createContext, useState, useEffect } from "react";
 import authService from "../services/authService";
 import jwt_decode from "jwt-decode";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [samlUser, setSamlUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchUser = () => {
+        const fetchUser = async () => {
+            // Check JWT token first (legacy admin login)
             const token = authService.getToken();
             if (token) {
                 try {
@@ -28,6 +32,30 @@ export const AuthProvider = ({ children }) => {
                     setUser(null);
                 }
             }
+
+            // Also check SAML auth
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/saml/me`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.authenticated) {
+                    setSamlUser(data.user);
+                    // If SAML user is admin, also set as main user
+                    if (data.user.isAdmin && !token) {
+                        setUser({
+                            id: data.user.email,
+                            username: data.user.name,
+                            email: data.user.email,
+                            role: 'admin',
+                            isSamlUser: true
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("SAML auth check error:", err);
+            }
+
             setLoading(false);
         };
 
@@ -37,10 +65,27 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         authService.logout();
         setUser(null);
+        setSamlUser(null);
+        if (samlUser) {
+            const HYDRA_BASE_URL = import.meta.env.VITE_HYDRA_BASE_URL || 'https://hydra.newpaltz.edu';
+            window.location.href = `${HYDRA_BASE_URL}/logout`;
+        }
     };
 
+    const isAuthenticated = !!user || !!samlUser;
+    const isAdmin = user?.role === 'admin' || samlUser?.isAdmin;
+
     return (
-        <AuthContext.Provider value={{ user, setUser, loading, logout }}>
+        <AuthContext.Provider value={{
+            user,
+            setUser,
+            samlUser,
+            setSamlUser,
+            loading,
+            logout,
+            isAuthenticated,
+            isAdmin
+        }}>
             {children}
         </AuthContext.Provider>
     );
@@ -62,84 +107,162 @@ This allows any component to access authentication data.
 ### **2. Stores authentication-related state**
 ```jsx
 const [user, setUser] = useState(null);
+const [samlUser, setSamlUser] = useState(null);
 const [loading, setLoading] = useState(true);
 ```
-- `user` contains decoded token data  
-- `loading` tracks whether token validation is still running
+- `user` - Contains user data from JWT or SAML (unified)
+- `samlUser` - Contains SAML-specific user data
+- `loading` - Tracks whether auth validation is still running
 
 ---
 
-### **3. Loads and decodes the JWT token on page load**
+### **3. Dual Authentication Check on Page Load**
+
+The `useEffect` hook checks both authentication methods:
+
+#### JWT Token Check (Legacy)
 ```jsx
-useEffect(() => {
-    const token = authService.getToken();
-    ...
-}, []);
+const token = authService.getToken();
+if (token) {
+    const decoded = jwt_decode(token);
+    setUser(decoded);
+}
 ```
-- Retrieves the token from localStorage  
-- Decodes it with `jwt-decode`  
-- Removes the token if invalid  
+- Retrieves token from localStorage
+- Decodes with `jwt-decode`
+- Removes token if invalid
 
-This ensures the user stays logged in between page refreshes.
-
----
-
-### **4. Handles invalid or expired tokens**
-If token decoding fails:
-
+#### SAML Session Check
 ```jsx
-authService.logout();
-setUser(null);
+const response = await fetch(`${API_BASE_URL}/api/saml/me`, {
+    credentials: 'include'
+});
+const data = await response.json();
+if (data.authenticated) {
+    setSamlUser(data.user);
+    // Auto-promote SAML admins
+    if (data.user.isAdmin && !token) {
+        setUser({
+            id: data.user.email,
+            username: data.user.name,
+            email: data.user.email,
+            role: 'admin',
+            isSamlUser: true
+        });
+    }
+}
 ```
+- Calls `/api/saml/me` endpoint with cookies
+- If authenticated via SAML, stores user data
+- If SAML user is admin, creates a unified `user` object
 
 ---
 
-### **5. Provides a global logout function**
+### **4. Unified Logout Function**
 ```jsx
 const logout = () => {
-    authService.logout();
+    authService.logout();       // Clear JWT
     setUser(null);
+    setSamlUser(null);
+    if (samlUser) {
+        window.location.href = `${HYDRA_BASE_URL}/logout`;
+    }
 };
 ```
-
-Any component can log the user out by calling `logout()` from the context.
+- Clears JWT token from localStorage
+- Clears both user states
+- If SAML user, redirects to Hydra logout
 
 ---
 
-### **6. Makes auth data available to the entire app**
+### **5. Computed Auth Properties**
 ```jsx
-<AuthContext.Provider value={{ user, setUser, loading, logout }}>
-    {children}
-</AuthContext.Provider>
+const isAuthenticated = !!user || !!samlUser;
+const isAdmin = user?.role === 'admin' || samlUser?.isAdmin;
 ```
+- `isAuthenticated` - True if user has any valid session
+- `isAdmin` - True if user has admin privileges
 
-Components can access:
+---
 
-- `user` – logged-in user data  
-- `setUser` – manually update user  
-- `loading` – check if auth is still initializing  
-- `logout` – log the user out  
+### **6. Context Provider Values**
+```jsx
+<AuthContext.Provider value={{
+    user,           // Unified user object
+    setUser,        // Update user manually
+    samlUser,       // SAML-specific data
+    setSamlUser,    // Update SAML user
+    loading,        // Auth initialization status
+    logout,         // Logout function
+    isAuthenticated,// Boolean
+    isAdmin         // Boolean
+}}>
+```
 
 ---
 
 ## Using the AuthContext
 
-Example usage:
-
+### Basic Usage
 ```jsx
 import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/authContext";
 
 const Dashboard = () => {
-    const { user, logout } = useContext(AuthContext);
+    const { user, samlUser, logout, isAdmin } = useContext(AuthContext);
+
+    const displayName = samlUser?.name || user?.username || 'User';
 
     return (
         <div>
-            <h1>Welcome, {user?.username}</h1>
+            <h1>Welcome, {displayName}</h1>
+            {isAdmin && <p>You have admin access</p>}
             <button onClick={logout}>Logout</button>
         </div>
     );
 };
 ```
 
+### Checking Auth Status
+```jsx
+const { loading, isAuthenticated, isAdmin } = useContext(AuthContext);
+
+if (loading) return <p>Loading...</p>;
+if (!isAuthenticated) return <p>Please log in</p>;
+if (!isAdmin) return <p>Admin access required</p>;
+```
+
+### Protecting Routes
+```jsx
+const { user, samlUser, loading } = useContext(AuthContext);
+
+useEffect(() => {
+    if (!loading && !user && !samlUser?.isAdmin) {
+        navigate('/admin-login');
+    }
+}, [user, samlUser, loading]);
+```
+
 ---
+
+## Authentication Priority
+
+1. **JWT Token** - Checked first from localStorage
+2. **SAML Session** - Checked via API call to `/api/saml/me`
+3. **SAML Admin Auto-Promote** - If SAML user is admin and no JWT, creates unified `user`
+
+This allows:
+- Legacy admins to continue using username/password
+- SSO users to log in without creating legacy accounts
+- Both auth methods to work simultaneously
+
+---
+
+## Related Files
+
+- `client/src/services/authService.js` - JWT token management
+- `client/src/context/samlAuthContext.jsx` - Standalone SAML context
+- `server/src/routes/samlAuthRoutes.js` - SAML API endpoints
+- `server/src/middleware/samlAuth.js` - SAML verification middleware
+
+See also: [SAML Integration Documentation](../authentication/saml-integration.md)

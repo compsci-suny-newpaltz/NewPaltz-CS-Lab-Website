@@ -1,5 +1,6 @@
 // src/pages/Admin/AdminPanel.jsx
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
 
 import PendingHighlights from '../../components/AdminPanel/PendingHighlights';
@@ -22,8 +23,11 @@ import CompExamSection from '../../components/AdminPanel/CompExamSection';
 
 import { adminService } from '../../services/adminService';
 
+const HYDRA_BASE_URL = import.meta.env.VITE_HYDRA_BASE_URL || 'https://hydra.newpaltz.edu';
+
 export default function AdminPanel() {
-    const { user, loading } = useContext(AuthContext);
+    const { user, samlUser, loading, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [activeCategory, setActiveCategory] = useState('student-highlights');
     const [admins, setAdmins] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +37,16 @@ export default function AdminPanel() {
     const handleSelect = (category) => setActiveCategory(category);
     const handleDelete = (id) => console.log('Delete admin with id:', id);
 
-    const canAccess = (roles) => roles.includes(user.role);
+    // Check if user can access based on roles - SAML admins get full admin access
+    const canAccess = (roles) => {
+        if (samlUser?.isAdmin) return true; // SAML admins can access everything
+        return user?.role && roles.includes(user.role);
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate('/admin-login');
+    };
 
     // Load admins
     useEffect(() => {
@@ -84,9 +97,26 @@ export default function AdminPanel() {
     ];
 
     if (loading) return <p>Loading user...</p>;
-    if (!user) return <p>You are not authorized to view this page.</p>;
+    if (!user && !samlUser?.isAdmin) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-stone-50">
+                <p className="text-lg text-gray-700 mb-4">You are not authorized to view this page.</p>
+                <button
+                    onClick={() => window.location.href = `${HYDRA_BASE_URL}/login?returnTo=${encodeURIComponent(window.location.href)}`}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                >
+                    Sign in with New Paltz SSO
+                </button>
+            </div>
+        );
+    }
     if (isLoading) return <p>Loading admins...</p>;
     if (error) return <p>Error:{error}</p>;
+
+    // Get display name for current user
+    const displayName = samlUser?.name || user?.username || 'Admin';
+    const displayEmail = samlUser?.email || user?.email || '';
+    const isSamlAdmin = samlUser?.isAdmin;
 
     function ComingSoon() {
         return (
@@ -98,9 +128,18 @@ export default function AdminPanel() {
     return (
         <div className="flex min-h-screen mx-auto">
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200">
+            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
                 <div className="p-4 border-b border-gray-200">
                     <h1 className="text-lg font-bold text-gray-800">Admin Panel</h1>
+                    <div className="mt-2 text-sm">
+                        <p className="font-medium text-gray-700 truncate">{displayName}</p>
+                        {displayEmail && <p className="text-gray-500 text-xs truncate">{displayEmail}</p>}
+                        {isSamlAdmin && (
+                            <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full">
+                                SSO Admin
+                            </span>
+                        )}
+                    </div>
                 </div>
                 <nav className="px-4 py-6 space-y-2">
                     {panels
@@ -172,6 +211,18 @@ export default function AdminPanel() {
                         })}
                 </nav>
 
+                {/* Logout button at bottom */}
+                <div className="mt-auto p-4 border-t border-gray-200">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-all flex items-center gap-2"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Logout
+                    </button>
+                </div>
             </aside>
 
             {/* Main Content */}

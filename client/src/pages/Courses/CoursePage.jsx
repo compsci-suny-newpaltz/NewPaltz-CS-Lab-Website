@@ -59,14 +59,32 @@ const CoursePage = () => {
       setLoading(false);
     }
 
-    // Try API in background
+    // Try API in background - fetch all sections by course code
     const fetchCourse = async () => {
       try {
-        const data = await courseService.getCourseBySlug(slug);
-        if (data) {
+        // First try to get all sections by course code
+        const sections = await courseService.getCoursesByCode(slug);
+        if (sections && sections.length > 0) {
+          const firstCourse = sections[0];
           setCourseData({
-            ...data,
-            sections: [data]
+            code: firstCourse.code.split('/')[0].trim(),
+            name: firstCourse.name,
+            category: firstCourse.category,
+            description: firstCourse.description,
+            credits: firstCourse.credits,
+            semester: firstCourse.semester,
+            color: firstCourse.color,
+            sections: sections.map(c => ({
+              id: c.id,
+              section: c.section,
+              professor: c.professor,
+              days: c.days,
+              time: c.time,
+              location: c.location,
+              crn: c.crn,
+              syllabusFile: c.syllabusFile,
+              resources: c.resources
+            }))
           });
         }
       } catch (err) {

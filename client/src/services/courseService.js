@@ -41,6 +41,16 @@ const courseService = {
     },
 
     /**
+     * Get all sections of a course by code (e.g., "cps210" returns all CPS 210 sections)
+     * @param {string} code - Course code (e.g., "cps210" or "CPS 210")
+     * @returns {Promise<Array>} Array of course section objects
+     */
+    getCoursesByCode: async (code) => {
+        const response = await apiClient.get(`/courses/code/${code}`);
+        return response.data;
+    },
+
+    /**
      * Add a new course
      * @param {FormData|Object} courseData - Course data (FormData for file upload)
      * @returns {Promise<Object>} Response with new course ID

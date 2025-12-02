@@ -45,6 +45,8 @@ import Event from './pages/Events/EventPage';
 import EventAddPage from './pages/Events/EventAddPage';
 import EventEditPage from './pages/Events/EventEditPage';
 
+import MonitoringPanelPage from './pages/AdminPanel/MonitoringPanelPage';
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -95,6 +97,8 @@ const App = () => {
             <Route path="/events" element={<Event />} />
             <Route path="/create-event" element={<EventAddPage />} />
             <Route path="/admin-panel/events/edit/:id" element={<EventEditPage />} />
+
+            <Route path="/admin-panel/monitoring-panel" element={<MonitoringPanelPage />} />
 
 
           </Routes>

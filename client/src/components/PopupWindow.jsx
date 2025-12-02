@@ -87,13 +87,7 @@ export default function PopupWindow({ date, events, faculty, onClose }) {
                                     📅 {new Date(ev.start_time).toLocaleString()} - {new Date(ev.end_time).toLocaleString()}
                                 </p>
                                 {ev.location && <p>📍 {ev.location}</p>}
-                                {ev.flyer_url && (
-                                    <img
-                                        src={ev.flyer_url}
-                                        alt={ev.title}
-                                        style={{ maxWidth: "100%", borderRadius: 8, marginTop: 6 }}
-                                    />
-                                )}
+
                             </li>
                         ))}
                     </ul>

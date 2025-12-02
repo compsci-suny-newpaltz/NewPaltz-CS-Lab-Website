@@ -64,11 +64,14 @@ export default function PendingAccounts() {
                                                         id: students.id,
                                                     })
                                                 });
-                                                console.log("SENDING ID:", students.id);
                                                 console.log("FETCH STATUS:", response.status);
-                                                console.log("FETCH TEXT:", await response.text());
-                                                // 3. Remove the student from table UI
-                                                //setStudents(prev => prev.filter(s => s.id !== students.id));
+
+                                                // deletes user form from table
+                                                await sdFormService.deleteForm(students.id);
+
+
+                                                // 4. Remove the student from table UI
+                                                setStudents(prev => prev.filter(s => s.id !== students.id));
 
                                                 alert("Student approved and Hydra account created!");
                                             } catch (err) {

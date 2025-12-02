@@ -17,6 +17,9 @@ import EventsSection from '../../components/AdminPanel/EventsSection';
 
 import MonitoringPanelPage from './MonitoringPanelPage';
 
+import CoursesManagement from './Courses/CoursesManagement';
+import CompExamSection from '../../components/AdminPanel/CompExamSection';
+
 import { adminService } from '../../services/adminService';
 
 export default function AdminPanel() {
@@ -71,6 +74,8 @@ export default function AdminPanel() {
         { key: 'faq', component: <FAQSection />, roles: ['admin'], label: 'FAQs' },
         { key: 'faculty-directory', component: <FacultySection />, roles: ['admin', 'editor'], label: 'Faculty Directory' },
         { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin', 'editor'], label: 'Student Resources' },
+        { key: 'courses', component: <CoursesManagement />, roles: ['admin', 'editor'], label: 'Courses' },
+        { key: 'comp-exam', component: <CompExamSection />, roles: ['admin'], label: 'Comp Exam Settings' },
         { key: 'pending-accounts', component: <PendingAccountsSection />, roles: ['admin'], label: 'Pending Accounts' },
         { key: 'user-controls', component: <UserControlsSection admins={admins} handleDelete={handleDelete} />, roles: ['admin'], label: 'User Controls' },
 

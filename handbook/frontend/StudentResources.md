@@ -1,4 +1,4 @@
-**File:** `pages/StudentResources.jsx`
+# pages/Home.jsx
 
 The Student Resources page displays academic, programming, and career-oriented resources available to students. It supports searching, filtering, pagination, and dynamic loading of resource cards retrieved from the backend.
 

@@ -100,20 +100,49 @@ router.post('/', upload.single('flyer'), validateEvent, async (req, res) => {
 });
 
 
-// Delete an event by ID
 router.delete('/:id', async (req, res) => {
     try {
         const id = Number(req.params.id);
+
+        //Get event first so we know the flyer path
+        const existingRows = await eventsModel.getEventById(id);
+        const existingEvent = existingRows[0];
+
+        if (!existingEvent) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        //Delete the flyer file IF it's not the default image
+        if (existingEvent.flyer_url && !existingEvent.flyer_url.includes("noFlyer.jpg")) {
+
+            // absolute path: server/uploads/<filename.jpg>
+            const flyerPath = path.join(__dirname, '..', existingEvent.flyer_url);
+
+            fs.unlink(flyerPath, (err) => {
+                if (err) {
+                    console.error("Failed to delete flyer:", err);
+                } else {
+                    console.log("Flyer deleted:", flyerPath);
+                }
+            });
+        }
+
+        //Delete event from DB
         const affectedRows = await eventsModel.deleteEvent(id);
+
         if (affectedRows === 0) {
             return res.status(404).json({ message: 'Event not found' });
         }
+
+        // Respond
         res.json({ message: 'Event deleted successfully', affectedRows });
+
     } catch (err) {
         console.error('Error deleting event:', err);
         res.status(500).json({ message: 'Failed to delete event' });
     }
 });
+
 
 // Get events by admin ID
 router.get('/admin/:adminId', async (req, res) => {

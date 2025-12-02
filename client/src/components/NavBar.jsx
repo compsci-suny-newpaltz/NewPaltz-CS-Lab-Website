@@ -203,6 +203,16 @@ const NavBar = () => {
                 Hydra Dashboard
               </a>
             </li>
+            <li>
+              <a
+                href="https://compsci-suny-newpaltz.github.io/TR-TA-CompSci-Handbook/#/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+              >
+                TA Guidelines
+              </a>
+            </li>
           </ul>
 
         </li>

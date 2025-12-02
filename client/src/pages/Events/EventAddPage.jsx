@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import eventService from "../../services/eventService";
 import { AuthContext } from "../../context/authContext"; // make sure you have this context
+import { Link } from "react-router-dom";
 
 export default function EventAddPage() {
     const { user } = useContext(AuthContext); // get logged-in user's id and role
@@ -143,7 +144,7 @@ export default function EventAddPage() {
                     type="submit"
                     className="w-full py-2 px-4 bg-blue-300 text-white rounded-md hover:bg-blue-400 transition font-medium"
                 >
-                    Create Event
+                    <Link to="/admin-panel">Create Event</Link>
                 </button>
             </form>
         </div>

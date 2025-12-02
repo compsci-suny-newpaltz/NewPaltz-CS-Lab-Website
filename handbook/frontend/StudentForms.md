@@ -1,7 +1,5 @@
 # pages/StudentForms.jsx — Component Documentation
 
-This document explains the structure, purpose, and logic of the StudentForms.jsx component in a fully copyable Markdown format.
-
 ---
 
 ## Imports

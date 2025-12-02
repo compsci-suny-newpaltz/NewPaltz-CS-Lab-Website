@@ -1,8 +1,32 @@
+import { useState, useEffect } from 'react';
 import { FaDownload, FaCalendarAlt, FaMapMarkerAlt, FaClock, FaBook, FaDatabase, FaCode, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { HiAcademicCap } from 'react-icons/hi';
 import { BiData } from 'react-icons/bi';
+import compExamService from '../../services/compExamService';
 
 const CompExam = () => {
+  const [examSettings, setExamSettings] = useState({
+    exam_date: 'May 8th, 2025',
+    exam_time: '9 AM - 12 PM',
+    location: 'Science Hall 259'
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const data = await compExamService.getSettings();
+        setExamSettings({
+          exam_date: data.exam_date || 'May 8th, 2025',
+          exam_time: data.exam_time || '9 AM - 12 PM',
+          location: data.location || 'Science Hall 259'
+        });
+      } catch (err) {
+        console.error('Error fetching comp exam settings:', err);
+        // Keep defaults on error
+      }
+    };
+    fetchSettings();
+  }, []);
   const webDbTopics = [
     'How to create an E-R Diagram with the proper notation and following components: entities, attributes, relationships, relationship cardinalities',
     'Know how to create a relation from an ERD',
@@ -45,19 +69,19 @@ const CompExam = () => {
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-5">
               <FaCalendarAlt className="text-2xl mb-2" />
               <p className="text-sm opacity-80">Date</p>
-              <p className="text-xl font-bold">May 8th, 2025</p>
+              <p className="text-xl font-bold">{examSettings.exam_date}</p>
             </div>
 
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-5">
               <FaClock className="text-2xl mb-2" />
               <p className="text-sm opacity-80">Time</p>
-              <p className="text-xl font-bold">9 AM - 12 PM</p>
+              <p className="text-xl font-bold">{examSettings.exam_time}</p>
             </div>
 
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-5">
               <FaMapMarkerAlt className="text-2xl mb-2" />
               <p className="text-sm opacity-80">Location</p>
-              <p className="text-xl font-bold">Science Hall 259</p>
+              <p className="text-xl font-bold">{examSettings.location}</p>
             </div>
           </div>
 

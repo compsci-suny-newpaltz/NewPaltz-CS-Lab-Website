@@ -16,36 +16,35 @@ const schoolCalendarService = {
   },
 
   // Get calendar by ID
-async getCalendarById(id) {
-  console.log("📌 getCalendarById CALLED with id:", id);
+  async getCalendarById(id) {
+    console.log('📌 getCalendarById CALLED with id:', id);
 
-  try {
-    const url = `${baseURL}/${id}`;
-    console.log("🌐 Requesting URL:", url);
+    try {
+      const url = `${baseURL}/${id}`;
+      console.log('🌐 Requesting URL:', url);
 
-    const response = await axios.get(url);
+      const response = await axios.get(url);
 
-    console.log("✅ Response Status:", response.status);
-    console.log("📦 Response Data:", response.data);
+      console.log('✅ Response Status:', response.status);
+      console.log('📦 Response Data:', response.data);
 
-    return response.data;
-  } catch (error) {
-    console.log("❌ ERROR in getCalendarById:");
+      return response.data;
+    } catch (error) {
+      console.log('❌ ERROR in getCalendarById:');
 
-    if (error.response) {
-      console.log("Status:", error.response.status);
-      console.log("Data:", error.response.data);
-      console.log("Headers:", error.response.headers);
-    } else if (error.request) {
-      console.log("🚫 No response received:", error.request);
-    } else {
-      console.log("⚠️ Error setting up request:", error.message);
+      if (error.response) {
+        console.log('Status:', error.response.status);
+        console.log('Data:', error.response.data);
+        console.log('Headers:', error.response.headers);
+      } else if (error.request) {
+        console.log('🚫 No response received:', error.request);
+      } else {
+        console.log('⚠️ Error setting up request:', error.message);
+      }
+
+      throw new Error('Failed to load calendar');
     }
-
-    throw new Error('Failed to load calendar');
-  }
-}
-
+  },
 
   // Add a new calendar
   async addCalendar(calendarData) {

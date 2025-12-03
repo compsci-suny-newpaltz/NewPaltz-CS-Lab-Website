@@ -2,10 +2,18 @@ import axios from 'axios';
 
 const baseURL = '/api/school-calendar';
 
+// Converts "" → null (MariaDB-friendly)
+function normalizeDates(data) {
+  const cleaned = {};
+  for (const key in data) {
+    cleaned[key] = data[key] === '' ? null : data[key];
+  }
+  return cleaned;
+}
+
 const schoolCalendarService = {
   // School Calendar CRUD
 
-  // Get all calendars
   async getAllCalendars() {
     try {
       const response = await axios.get(baseURL);
@@ -15,7 +23,6 @@ const schoolCalendarService = {
     }
   },
 
-  // Get calendar by ID
   async getCalendarById(id) {
     console.log('📌 getCalendarById CALLED with id:', id);
 
@@ -35,7 +42,6 @@ const schoolCalendarService = {
       if (error.response) {
         console.log('Status:', error.response.status);
         console.log('Data:', error.response.data);
-        console.log('Headers:', error.response.headers);
       } else if (error.request) {
         console.log('🚫 No response received:', error.request);
       } else {
@@ -46,7 +52,6 @@ const schoolCalendarService = {
     }
   },
 
-  // Add a new calendar
   async addCalendar(calendarData) {
     console.log('Adding calendar with data:', calendarData);
     try {
@@ -57,18 +62,23 @@ const schoolCalendarService = {
     }
   },
 
-  // Edit calendar
+  // FIXED VERSION WITH DATE NORMALIZATION
   async editCalendar(id, data) {
     console.log('📌 editCalendar CALLED');
     console.log('ID:', id);
-    console.log('Payload:', data);
+    console.log('Payload BEFORE normalize:', data);
+
+    const cleaned = normalizeDates(data);
+
+    console.log('🧽 Payload AFTER normalize:', cleaned);
 
     try {
       const url = `${baseURL}/${id}`;
       console.log('🌐 PUT URL:', url);
 
-      const response = await axios.put(url, data);
+      const response = await axios.put(url, cleaned);
       console.log('✅ PUT Response:', response.data);
+
       return response.data;
     } catch (error) {
       console.log('❌ ERROR in editCalendar:');
@@ -81,7 +91,6 @@ const schoolCalendarService = {
     }
   },
 
-  // Delete calendar
   async deleteCalendar(id) {
     try {
       const response = await axios.delete(`${baseURL}/${id}`);
@@ -91,9 +100,7 @@ const schoolCalendarService = {
     }
   },
 
-  //No school days CRUD
-
-  // Get all "no school" days for a calendar
+  // No School CRUD
   async getNoSchoolDays(calendarId) {
     try {
       const response = await axios.get(`${baseURL}/${calendarId}/no-school`);
@@ -103,7 +110,6 @@ const schoolCalendarService = {
     }
   },
 
-  // Add a "no school" day
   async addNoSchoolDay(calendarId, day) {
     console.log('Adding no school day:', day, 'to calendar ID:', calendarId);
     try {
@@ -116,19 +122,17 @@ const schoolCalendarService = {
     }
   },
 
-  // Delete "no school" day by entryId
   async deleteNoSchoolDay(entryId) {
     try {
       const response = await axios.delete(`${baseURL}/no-school/${entryId}`);
       return response.data;
     } catch (error) {
-      throw new Error('Failed to delete no school day');
+      console.error('Error deleting faculty from semester:', error);
+      throw new Error('Failed to remove faculty from semester');
     }
   },
 
-  // Faculty-Semester Assignments CRUD
-
-  // Get assigned faculty for a semester
+  // Faculty-Semester CRUD
   async getFacultyForSemester(calendarId, semester) {
     try {
       const response = await axios.get(
@@ -140,7 +144,6 @@ const schoolCalendarService = {
     }
   },
 
-  // Assign faculty to a semester
   async addFacultyToSemester(calendarId, facultyId, semester) {
     try {
       const response = await axios.post(`${baseURL}/${calendarId}/semester`, {
@@ -153,13 +156,11 @@ const schoolCalendarService = {
     }
   },
 
-  // Remove faculty from a semester
   async deleteFacultyFromSemester(entryId) {
     try {
       const response = await axios.delete(`${baseURL}/semester/${entryId}`);
       return response.data;
     } catch (error) {
-      console.error('Error deleting faculty from semester:', error);
       throw new Error('Failed to remove faculty from semester');
     }
   },

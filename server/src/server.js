@@ -16,6 +16,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const coursesRoutes = require("./routes/coursesRoutes");
 const compExamRoutes = require("./routes/compExamRoutes");
 
+const schoolCalendarRoutes = require("./routes/schoolCalendarRoutes");
 let adminProxy;
 
 try {
@@ -54,6 +55,8 @@ app.use("/courses", coursesRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/comp-exam", compExamRoutes);
 app.use("/api/comp-exam", compExamRoutes);
+
+app.use("/school-calendar", schoolCalendarRoutes);
 
 
 // Serve static files from the uploads directory

@@ -53,6 +53,7 @@ import EventEditPage from './pages/Events/EventEditPage';
 
 import MonitoringPanelPage from './pages/AdminPanel/MonitoringPanelPage';
 import OfficeHourPage from './pages/AdminPanel/Faculty/OfficeHourPage';
+import SchoolCalendarPage from './pages/AdminPanel/Faculty/SchoolCalendarPage';
 
 const App = () => {
   return (
@@ -87,6 +88,7 @@ const App = () => {
             <Route path="/admin-panel/faculty/edit/:id" element={<FacultyEditPage />} />
             <Route path="/create-faculty" element={<FacultyAddPage />} />
             <Route path="/admin-panel/faculty/office-hours" element={<OfficeHourPage />} />
+            <Route path="/admin-panel/faculty/school-calendar" element={<SchoolCalendarPage />} />
 
             <Route path="/faq" element={<FAQ />} />
             <Route path="/admin-panel/faq/edit/:id" element={<FAQEditPage />} />

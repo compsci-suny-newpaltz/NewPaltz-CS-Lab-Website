@@ -41,3 +41,7 @@
 .popup-scroll {
   scrollbar-gutter: stable !important;
 }
+
+.carousel-container {
+  touch-action: none;
+}

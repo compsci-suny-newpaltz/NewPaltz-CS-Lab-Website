@@ -121,7 +121,7 @@ export default function EventCarousel({ title, events }) {
                 {/* Carousel */}
                 <div
                     ref={carouselRef}
-                    className={`flex gap-4 overflow-x-auto pb-4 pt-2 px-2 scrollbar-hide 
+                    className={`flex gap-4 overflow-x-auto carousel-container pb-4 pt-2 px-2 scrollbar-hide 
                                cursor-grab ${isDragging ? "cursor-grabbing" : ""}`}
                     style={{
                         scrollbarWidth: "none",

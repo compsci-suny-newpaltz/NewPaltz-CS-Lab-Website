@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import PopupWindow from "./PopupWindow";
 import facultyService from "../services/facultyService";
 import eventService from "../services/eventService";
+import schoolCalendarService from "../services/schoolCalendarService";
 
 export default function Calendar() {
     const [viewDate, setViewDate] = useState(new Date());
@@ -12,7 +13,26 @@ export default function Calendar() {
     const [searchQuery, setSearchQuery] = useState("");
     const [events, setEvents] = useState({});
 
-    // ⭐ Pastel background colors by month
+    const [noSchoolDays, setNoSchoolDays] = useState([]);
+    const [semesterFaculty, setSemesterFaculty] = useState([]);
+    const [activeSemester, setActiveSemester] = useState(null);
+    const [activeCalendarId, setActiveCalendarId] = useState(null);
+
+    function getCurrentSemester(cal) {
+        const today = new Date();
+
+        const ranges = [
+            { name: "Fall", start: new Date(cal.FallStart), end: new Date(cal.FallEnd) },
+            { name: "Winter", start: new Date(cal.WinterStart), end: new Date(cal.WinterEnd) },
+            { name: "Spring", start: new Date(cal.SpringStart), end: new Date(cal.SpringEnd) },
+            { name: "Summer", start: new Date(cal.SummerStart), end: new Date(cal.SummerEnd) },
+        ];
+
+        const match = ranges.find(r => today >= r.start && today <= r.end);
+        return match ? match.name : null;
+    }
+
+    // Pastel background colors by month
     const monthColors = [
         "#FFE8E8", "#FFF3E0", "#FFF9C5", "#C6FFCB",
         "#B8DCF5", "#DCC8FB", "#FCE4EC", "#FFF2C9",
@@ -89,6 +109,77 @@ export default function Calendar() {
         fetchEvents();
     }, []);
 
+    // Fetch default calendar and semester
+    useEffect(() => {
+        const loadDefault = async () => {
+            try {
+                const calendars = await schoolCalendarService.getAllCalendars();
+                //console.log("All calendars:", calendars);
+                const defaultCal = calendars.find(c => c.isDefault);
+
+                if (defaultCal) {
+                    setActiveCalendarId(defaultCal.id);
+                    setActiveCalendar(defaultCal);
+                    const semester = getCurrentSemester(defaultCal);
+                    setActiveSemester(semester);
+                }
+            } catch (err) {
+                console.error("Failed to load calendar", err);
+            }
+        };
+
+        loadDefault();
+    }, []);
+
+    // Fetch no school days and semester faculty when calendar or semester changes  
+    useEffect(() => {
+        if (!activeCalendarId || !activeSemester) return;
+
+        const loadExtras = async () => {
+            try {
+                const noSchool = await schoolCalendarService.getNoSchoolDays(activeCalendarId);
+                setNoSchoolDays(noSchool.map(d => d.Day));
+
+                const semFaculty = await schoolCalendarService.getFacultyForSemester(
+                    activeCalendarId,
+                    activeSemester
+                );
+                setSemesterFaculty(semFaculty);
+            } catch (err) {
+                console.error("Failed to load semester extras", err);
+            }
+        };
+
+        loadExtras();
+    }, [activeCalendarId, activeSemester]);
+
+
+    function isWithinSemester(date, calendar, semesterName) {
+        if (!calendar || !semesterName) return false;
+
+        const start = new Date(calendar[semesterName + "Start"]);
+        const end = new Date(calendar[semesterName + "End"]);
+
+        return date >= start && date <= end;
+    }
+    const [activeCalendar, setActiveCalendar] = useState(null);
+
+
+
+    const isNoSchoolDay = (date) => {
+        const dateKey = date.toISOString().split("T")[0];
+        return noSchoolDays.includes(dateKey);
+    };
+
+    const allowedFacultyIds = useMemo(() => {
+        return new Set(
+            semesterFaculty.map(f =>
+                f.FacultyId ?? f.facultyId ?? f.faculty_id ?? f.id // fallback
+            )
+        );
+    }, [semesterFaculty]);
+
+
     const filteredFaculty = facultyList.filter((f) => {
         const name = f?.name?.toLowerCase() ?? "";
         const officeHours = f?.office_hours?.toLowerCase() ?? "";
@@ -96,13 +187,25 @@ export default function Calendar() {
         return name.includes(query) || officeHours.includes(query);
     });
 
+
+
     const hasOfficeHours = (date) => {
-        const dayStr = date.toLocaleDateString("en-US", { weekday: "long" });
-        return filteredFaculty.some((f) => {
-            const hours = f.office_hours || "";
-            return hours.toLowerCase().includes(dayStr.toLowerCase());
+        if (isNoSchoolDay(date)) return false;
+
+        const weekday = date.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+
+        // Check semester date range FIRST
+        if (!isWithinSemester(date, activeCalendar, activeSemester)) {
+            return false;
+        }
+
+        return facultyList.some(f => {
+            const hasDay = f.office_hours?.toLowerCase().includes(weekday);
+            const inSemester = allowedFacultyIds.has(f.id);
+            return hasDay && inSemester;
         });
     };
+
 
     const onDateSelect = (date) => {
         setSelectedDate(date);
@@ -130,10 +233,7 @@ export default function Calendar() {
 
     const formatDateKey = (date) => date.toLocaleDateString("en-CA");
 
-
-    // ---------------------------------------------------------
-    // RENDER
-    // ---------------------------------------------------------
+    // Render
     return (
         <div
             style={{
@@ -343,12 +443,14 @@ export default function Calendar() {
                 <PopupWindow
                     date={selectedDate}
                     faculty={filteredFaculty.filter((f) => {
-                        const dayStr = selectedDate.toLocaleDateString(
-                            "en-US",
-                            { weekday: "long" }
+                        const weekday = selectedDate.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+                        return (
+                            f.office_hours?.toLowerCase().includes(weekday) &&
+                            allowedFacultyIds.has(f.id) &&
+                            !isNoSchoolDay(selectedDate)
                         );
-                        return f.office_hours?.toLowerCase().includes(dayStr.toLowerCase());
                     })}
+
                     events={filteredEvents[formatDateKey(selectedDate)] || []}
                     onClose={() => setShowPopup(false)}
                 />

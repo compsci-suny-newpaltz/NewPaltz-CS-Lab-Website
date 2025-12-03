@@ -20,6 +20,7 @@ import CoursesManagement from './Courses/CoursesManagement';
 import CompExamSection from '../../components/AdminPanel/CompExamSection';
 
 import OfficeHourPage from './Faculty/OfficeHourPage';
+import SchoolCalendarPage from './Faculty/SchoolCalendarPage';
 
 import { adminService } from '../../services/adminService';
 
@@ -85,6 +86,7 @@ export default function AdminPanel() {
             key: 'faculty', label: 'Faculty Management', roles: ['admin', 'editor'], children: [
                 { key: 'faculty-directory', component: <FacultySection />, label: 'Faculty Directory' },
                 { key: 'faculty-office-hours', component: <OfficeHourPage />, label: 'Faculty Office Hours' },
+                { key: 'faculty-school-calendar', component: <SchoolCalendarPage />, label: 'Faculty School Calendar' },
             ]
         },
 

@@ -27,6 +27,7 @@ export default function CalendarDatesEditor({ calendarId }) {
             SpringEnd: formatDate(data?.SpringEnd),
             SummerStart: formatDate(data?.SummerStart),
             SummerEnd: formatDate(data?.SummerEnd),
+            isDefault: data?.isDefault ?? 0,
         });
     }
 
@@ -43,6 +44,7 @@ export default function CalendarDatesEditor({ calendarId }) {
             SpringEnd: calendar.SpringEnd,
             SummerStart: calendar.SummerStart,
             SummerEnd: calendar.SummerEnd,
+            isDefault: calendar.isDefault ?? 0,
         };
 
         await schoolCalendarService.editCalendar(calendarId, cleanPayload);

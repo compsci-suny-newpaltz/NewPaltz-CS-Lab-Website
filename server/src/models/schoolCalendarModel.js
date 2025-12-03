@@ -14,8 +14,11 @@ async function getAllCalendars() {
 async function addCalendar(data) {
     const conn = await pool.getConnection();
     try {
+        // Normalize isDefault safely
+        const isDefault = data.isDefault ? 1 : 0;
+
         // If adding a default calendar, remove default from others
-        if (data.isDefault === 1) {
+        if (isDefault === 1) {
             await conn.query("UPDATE SchoolCalendar SET isDefault = 0");
         }
 
@@ -32,14 +35,16 @@ async function addCalendar(data) {
                 data.SpringEnd,
                 data.SummerStart,
                 data.SummerEnd,
-                data.isDefault ?? 0
+                isDefault
             ]
         );
+
         return result.insertId;
     } finally {
         conn.release();
     }
 }
+
 
 // Get calendar by ID
 async function getCalendarById(id) {

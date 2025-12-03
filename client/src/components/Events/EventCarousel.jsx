@@ -24,11 +24,20 @@ export default function EventCarousel({ title, events }) {
         });
     };
 
-    // Wheel scrolling
-    const handleWheel = (e) => {
-        e.preventDefault();
-        carouselRef.current.scrollLeft += e.deltaY * 2;
-    };
+    // ⚡ FIXED: Manual wheel handler (non-passive)
+    useEffect(() => {
+        const el = carouselRef.current;
+        if (!el) return;
+
+        const wheelHandler = (e) => {
+            e.preventDefault(); // allowed now
+            el.scrollLeft += e.deltaY * 2;
+        };
+
+        el.addEventListener("wheel", wheelHandler, { passive: false });
+
+        return () => el.removeEventListener("wheel", wheelHandler);
+    }, []);
 
     // Auto scroll on edges
     const handleMouseMoveContainer = (e) => {
@@ -78,6 +87,7 @@ export default function EventCarousel({ title, events }) {
     };
 
     const handleMouseUp = () => setIsDragging(false);
+
     const handleMouseLeave = () => {
         setIsDragging(false);
         stopAutoScroll();
@@ -131,12 +141,14 @@ export default function EventCarousel({ title, events }) {
                     onMouseDown={handleMouseDown}
                     onMouseUp={handleMouseUp}
                     onMouseMove={handleMouseMove}
-                    onWheel={handleWheel}
                 >
                     {events.length ? (
                         events.map((event) => (
                             <div key={event.id} className="flex-shrink-0 w-[20rem]">
-                                <EventCard event={event} onClick={() => handleEventClick(event)} />
+                                <EventCard
+                                    event={event}
+                                    onClick={() => handleEventClick(event)}
+                                />
                             </div>
                         ))
                     ) : (
@@ -165,9 +177,6 @@ export default function EventCarousel({ title, events }) {
             {selectedEvent && (
                 <EventPopup event={selectedEvent} onClose={() => setSelectedEvent(null)} />
             )}
-            {/* Horse for the carousel */}
         </div>
     );
-
-
 }

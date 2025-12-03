@@ -106,4 +106,14 @@ async function getFacultyById(id) {
     return rows.length > 0 ? rows[0] : null; // Return the faculty member or null if not found
 }
 
-module.exports = { getAllFaculty, addFaculty, removeFaculty, editFaculty, getFaculty, getFacultyById };
+async function changeOnlyFacultyOfficeHours(id, newOfficeHours) {
+    const conn = await pool.getConnection();
+    const result = await conn.query(
+        "UPDATE Faculty SET office_hours = ? WHERE id = ?",
+        [newOfficeHours, id]
+    );
+    conn.release();
+    return result.affectedRows;
+}
+
+module.exports = { getAllFaculty, addFaculty, removeFaculty, editFaculty, getFaculty, getFacultyById, changeOnlyFacultyOfficeHours };

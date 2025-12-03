@@ -55,6 +55,16 @@ router.delete("/:id", async (req, res) => {
 });
 
 
+// Update only office hours
+router.patch("/:id/office-hours", async (req, res) => {
+    try {
+        const result = await faculty.changeOnlyFacultyOfficeHours(req.params.id, req.body.office_hours);
+        res.json({ affectedRows: result, message: "Faculty Member's office hours updated successfully" });
+    } catch (err) {
+        console.error("Cannot Update Faculty Member's office hours", err);
+        res.status(500).json({ message: err.message });
+    }
+});
 
 module.exports = router;
 

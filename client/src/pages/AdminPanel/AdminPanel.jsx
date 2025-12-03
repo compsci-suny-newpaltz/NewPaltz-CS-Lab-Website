@@ -12,7 +12,6 @@ import StudentResourceSection from '../../components/AdminPanel/StudentResourceS
 import PendingAccountsSection from '../../components/AdminPanel/PendingAccountsSection';
 import UserControlsSection from '../../components/AdminPanel/UserControlsSection';
 
-import PendingEvents from '../../components/AdminPanel/PendingEvents';
 import EventsSection from '../../components/AdminPanel/EventsSection';
 
 import MonitoringPanelPage from './MonitoringPanelPage';
@@ -20,7 +19,10 @@ import MonitoringPanelPage from './MonitoringPanelPage';
 import CoursesManagement from './Courses/CoursesManagement';
 import CompExamSection from '../../components/AdminPanel/CompExamSection';
 
+import OfficeHourPage from './Faculty/OfficeHourPage';
+
 import { adminService } from '../../services/adminService';
+
 
 export default function AdminPanel() {
     const { user, loading } = useContext(AuthContext);
@@ -75,12 +77,21 @@ export default function AdminPanel() {
         },
         {
             key: 'events', label: 'Events', roles: ['admin', 'editor', 'club'], children: [
-                { key: 'pending-events', label: 'Pending Events', component: <PendingEvents /> },
+
                 { key: 'current-events', label: 'Current Events', component: <EventsSection /> },
             ]
         },
+        {
+            key: 'faculty', label: 'Faculty Management', roles: ['admin', 'editor'], children: [
+                { key: 'faculty-directory', component: <FacultySection />, label: 'Faculty Directory' },
+                { key: 'faculty-office-hours', component: <OfficeHourPage />, label: 'Faculty Office Hours' },
+            ]
+        },
+
+
         { key: 'faq', component: <FAQSection />, roles: ['admin'], label: 'FAQs' },
-        { key: 'faculty-directory', component: <FacultySection />, roles: ['admin', 'editor'], label: 'Faculty Directory' },
+
+
         { key: 'student-resources', component: <StudentResourceSection />, roles: ['admin', 'editor'], label: 'Student Resources' },
         { key: 'courses', component: <CoursesManagement />, roles: ['admin', 'editor'], label: 'Courses' },
         { key: 'comp-exam', component: <CompExamSection />, roles: ['admin'], label: 'Comp Exam Settings' },
@@ -98,13 +109,6 @@ export default function AdminPanel() {
     if (isLoading) return <p>Loading admins...</p>;
     if (error) return <p>Error:{error}</p>;
 
-    function ComingSoon() {
-        return (
-            <div className="p-4 text-gray-700 bg-gray-50 rounded-md border border-gray-200">
-                Events is coming soon!
-            </div>
-        );
-    }
     return (
         <div className="flex min-h-screen mx-auto">
             {/* Sidebar */}

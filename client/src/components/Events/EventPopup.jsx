@@ -4,8 +4,8 @@ import { FaTimes, FaClock, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa"
 export default function EventPopup({ event, onClose }) {
     if (!event) return null;
 
-    const flyerSrc = event.flyer
-        ? `/api${event.flyer}`
+    const flyerSrc = event.flyer_url
+        ? `/api${event.flyer_url}`
         : "/api/uploads/noFlyer.jpg";
 
     const handleImageError = (e) => {

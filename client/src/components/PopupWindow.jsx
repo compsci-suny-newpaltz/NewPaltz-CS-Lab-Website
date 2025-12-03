@@ -46,8 +46,8 @@ export default function PopupWindow({ date, events, faculty, onClose }) {
                     {events.length > 0 ? (
                         <div className="space-y-6">
                             {events.map((ev, i) => {
-                                const flyerSrc = ev.flyer
-                                    ? `/api${ev.flyer}`
+                                const flyerSrc = ev.flyer_url
+                                    ? `/api${ev.flyer_url}`
                                     : "/api/uploads/noFlyer.jpg";
 
                                 return (

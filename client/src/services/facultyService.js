@@ -51,7 +51,19 @@ const facultyService = {
     } catch (error) {
       throw new Error('Failed to edit faculty');
     }
-  }
+  },
+
+  // Update only office hours of a faculty member by ID
+  async updateFacultyOfficeHours(id, newOfficeHours) {
+    try {
+      const response = await axios.patch(`${baseURL}/${id}/office-hours`, {
+        office_hours: newOfficeHours,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to update faculty member's office hours");
+    }
+  },
 };
 
 export default facultyService;

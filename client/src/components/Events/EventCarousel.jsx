@@ -16,7 +16,7 @@ export default function EventCarousel({ title, events }) {
 
     const scroll = (direction) => {
         if (!carouselRef.current) return;
-        const amount = 300;
+        const amount = 600;
 
         carouselRef.current.scrollBy({
             left: direction === "left" ? -amount : amount,
@@ -39,7 +39,7 @@ export default function EventCarousel({ title, events }) {
         const width = rect.width;
 
         const edgeZone = width * 0.15;
-        const maxSpeed = 8;
+        const maxSpeed = 30;
 
         stopAutoScroll();
 

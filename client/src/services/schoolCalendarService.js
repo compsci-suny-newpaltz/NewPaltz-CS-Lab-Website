@@ -58,11 +58,25 @@ const schoolCalendarService = {
   },
 
   // Edit calendar
-  async editCalendar(id, updatedData) {
+  async editCalendar(id, data) {
+    console.log('📌 editCalendar CALLED');
+    console.log('ID:', id);
+    console.log('Payload:', data);
+
     try {
-      const response = await axios.put(`${baseURL}/${id}`, updatedData);
+      const url = `${baseURL}/${id}`;
+      console.log('🌐 PUT URL:', url);
+
+      const response = await axios.put(url, data);
+      console.log('✅ PUT Response:', response.data);
       return response.data;
     } catch (error) {
+      console.log('❌ ERROR in editCalendar:');
+
+      if (error.response) {
+        console.log('Status:', error.response.status);
+        console.log('Data:', error.response.data);
+      }
       throw new Error('Failed to edit calendar');
     }
   },

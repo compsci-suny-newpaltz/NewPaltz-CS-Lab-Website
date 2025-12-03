@@ -24,7 +24,7 @@ const schoolCalendarService = {
   },
 
   async getCalendarById(id) {
-    console.log('📌 getCalendarById CALLED with id:', id);
+    //console.log('📌 getCalendarById CALLED with id:', id);
 
     try {
       const url = `${baseURL}/${id}`;
@@ -32,8 +32,8 @@ const schoolCalendarService = {
 
       const response = await axios.get(url);
 
-      console.log('✅ Response Status:', response.status);
-      console.log('📦 Response Data:', response.data);
+      //console.log('✅ Response Status:', response.status);
+      //console.log('📦 Response Data:', response.data);
 
       return response.data;
     } catch (error) {
@@ -64,20 +64,19 @@ const schoolCalendarService = {
 
   // FIXED VERSION WITH DATE NORMALIZATION
   async editCalendar(id, data) {
-    console.log('📌 editCalendar CALLED');
-    console.log('ID:', id);
-    console.log('Payload BEFORE normalize:', data);
+    //console.log('📌 editCalendar CALLED');
+    //console.log('ID:', id);
+    //console.log('Payload BEFORE normalize:', data);
 
     const cleaned = normalizeDates(data);
 
-    console.log('🧽 Payload AFTER normalize:', cleaned);
-
+    //console.log('🧽 Payload AFTER normalize:', cleaned);
     try {
       const url = `${baseURL}/${id}`;
       console.log('🌐 PUT URL:', url);
 
       const response = await axios.put(url, cleaned);
-      console.log('✅ PUT Response:', response.data);
+      //console.log('✅ PUT Response:', response.data);
 
       return response.data;
     } catch (error) {

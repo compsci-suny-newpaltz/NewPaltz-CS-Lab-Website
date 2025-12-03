@@ -58,11 +58,17 @@ async function getCalendarById(id) {
 async function editCalendar(id, data) {
     const conn = await pool.getConnection();
     try {
-        // Normalize isDefault
-        const isDefault = data.isDefault ? 1 : 0;
+        // Get the current db value
+        const [rows] = await conn.query(
+            "SELECT isDefault FROM SchoolCalendar WHERE id = ?",
+            [id]
+        );
 
-        // If user marks this calendar as default, unset all others
-        if (isDefault === 1) {
+        const previousDefault = rows[0]?.isDefault ?? 0;
+        const newDefault = data.isDefault ? 1 : 0;
+
+        // ONLY unset others if default actually changed
+        if (newDefault === 1 && previousDefault === 0) {
             await conn.query("UPDATE SchoolCalendar SET isDefault = 0");
         }
 
@@ -85,7 +91,7 @@ async function editCalendar(id, data) {
             data.SpringEnd,
             data.SummerStart,
             data.SummerEnd,
-            isDefault,
+            newDefault,
             id
         ]);
 
@@ -94,6 +100,7 @@ async function editCalendar(id, data) {
         conn.release();
     }
 }
+
 
 
 // Delete calendar

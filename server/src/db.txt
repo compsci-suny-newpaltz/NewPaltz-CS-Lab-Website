@@ -31,7 +31,7 @@ CREATE TABLE `Admins` (
   `role` enum('admin','club','editor') NOT NULL DEFAULT 'club',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `Admins` (
 
 LOCK TABLES `Admins` WRITE;
 /*!40000 ALTER TABLE `Admins` DISABLE KEYS */;
-INSERT INTO `Admins` VALUES (1,'cool','test@gmail.com','$2b$10$mY7pN1Pkz/zMM0KCq0HKweY/qxZBNUCJsH/I8y3muhB088.YqQ5ou','admin'),(2,'taylorpitman','taylordianebusiness@gmail.com','$2b$10$DV79Dl12btdVlMeczE3eNeEnrXzFc1hGef2u.g8H4s0UJvrGaZWFm','admin'),(4,'kaitlin','hoffmank4@newpaltz.edu','$2b$10$YzLx/42CDLMtMqR2RrMnluPEnopsCcSl55SCXqPLDJfxFvZbyJQE2','admin'),(5,'admin','admin@example.com','$2b$10$PbS4DUrP06F8/O/Y81F7z.RsSvBA99LToqYRdJYJlt3LRioUHFs1C','admin'),(6,'alejilal1','alejilal1@newpaltz.edu','$2b$10$lFxaWmtLSzmBP/42mtsCPetdjGrzt5tRO/77fHONr5xPqa2PWbUiO','admin'),(7,'slaterm2','slaterm2@newpaltz.edu','$2b$10$OQMBJbu7tIJ8Mf.lJgTPqO9jqxNdFc0REPIyo0HAHUYZDn0SRDWCy','admin'),(8,'mathewj10','mathewj10@newpaltz.edu','$2b$10$jMObqpwrvl5cz128aFFqVO72RoEa9Q5CpVHPilQqdfo9NH.CPRKXi','admin'),(11,'mollytslater','mollytslater@gmail.com','$2b$10$RvR3fK6IkU2o83y.07h26eHigRtVioP2XMAKoZMlzl2TCDynY57sm','admin'),(12,'testrole12345t6','testrole@example.com','$2b$10$examplehashvalue','admin'),(13,'mathew','testroles@gmail.com','$2b$10$MMvof/vtdF0wusr6lPGS.uIA3Vpeg9I3ogxkzxixW03YhbFWZYwXe','club'),(15,'dummy_admin','dummyadmin@example.com','$2a$12$sHOmcYiSubPmwRAr.PSMQ.Upy7p71qdv5lKfrABIcqFXxquCEDqMq','admin'),(16,'dummy_club','dummyclub@example.com','$2a$12$sHOmcYiSubPmwRAr.PSMQ.Upy7p71qdv5lKfrABIcqFXxquCEDqMq','editor'),(17,'dummy_editor','dummyeditor@example.com','$2a$12$sHOmcYiSubPmwRAr.PSMQ.Upy7p71qdv5lKfrABIcqFXxquCEDqMq','editor');
+INSERT INTO `Admins` VALUES (1,'cool','test@gmail.com','$2b$10$mY7pN1Pkz/zMM0KCq0HKweY/qxZBNUCJsH/I8y3muhB088.YqQ5ou','admin'),(2,'taylorpitman','taylordianebusiness@gmail.com','$2b$10$DV79Dl12btdVlMeczE3eNeEnrXzFc1hGef2u.g8H4s0UJvrGaZWFm','admin'),(4,'kaitlin','hoffmank4@newpaltz.edu','$2b$10$YzLx/42CDLMtMqR2RrMnluPEnopsCcSl55SCXqPLDJfxFvZbyJQE2','admin'),(5,'admin','admin@example.com','$2b$10$PbS4DUrP06F8/O/Y81F7z.RsSvBA99LToqYRdJYJlt3LRioUHFs1C','admin'),(6,'alejilal1','alejilal1@newpaltz.edu','$2b$10$lFxaWmtLSzmBP/42mtsCPetdjGrzt5tRO/77fHONr5xPqa2PWbUiO','admin'),(7,'slaterm2','slaterm2@newpaltz.edu','$2b$10$OQMBJbu7tIJ8Mf.lJgTPqO9jqxNdFc0REPIyo0HAHUYZDn0SRDWCy','admin'),(8,'mathewj10','mathewj10@newpaltz.edu','$2b$10$jMObqpwrvl5cz128aFFqVO72RoEa9Q5CpVHPilQqdfo9NH.CPRKXi','admin'),(11,'mollytslater1234r5ty','mollytslater@gmail.com','$2b$10$RvR3fK6IkU2o83y.07h26eHigRtVioP2XMAKoZMlzl2TCDynY57sm','admin'),(12,'testrole12345t6','testrole@example.com','$2b$10$examplehashvalue','club'),(13,'mathew','testroles@gmail.com','$2b$10$MMvof/vtdF0wusr6lPGS.uIA3Vpeg9I3ogxkzxixW03YhbFWZYwXe','editor'),(15,'dummy_admin','dummyadmin@example.com','$2a$12$sHOmcYiSubPmwRAr.PSMQ.Upy7p71qdv5lKfrABIcqFXxquCEDqMq','admin'),(16,'dummy_club','dummyclub@example.com','$2a$12$sHOmcYiSubPmwRAr.PSMQ.Upy7p71qdv5lKfrABIcqFXxquCEDqMq','club'),(17,'dummy_editor','dummyeditor@example.com','$2a$12$sHOmcYiSubPmwRAr.PSMQ.Upy7p71qdv5lKfrABIcqFXxquCEDqMq','editor'),(18,'lfkn','elkmn@lwkenf.com','$2b$10$7T6wRInWY4Q6u8GElHLPI.VwLQnQTsB7MseIrqYRcgHx4slKam0nO','club');
 /*!40000 ALTER TABLE `Admins` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,7 +64,7 @@ CREATE TABLE `Events` (
   PRIMARY KEY (`id`),
   KEY `admin_id` (`admin_id`),
   CONSTRAINT `Events_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `Admins` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,6 +73,7 @@ CREATE TABLE `Events` (
 
 LOCK TABLES `Events` WRITE;
 /*!40000 ALTER TABLE `Events` DISABLE KEYS */;
+INSERT INTO `Events` VALUES (1,6,'Final Presentation','Computer Science students will be presenting their final projects. ','2025-12-03 10:00:00','2025-12-03 00:00:00','Science Hall','/uploads/noFlyer.jpg','2025-11-30 21:50:02'),(3,8,'cool','cool','2025-12-01 23:12:00','2025-12-01 23:12:00','New Paltz','/uploads/1764648744772-589107065.jpg','2025-12-02 04:12:24'),(4,6,'Pet Day','','2025-12-06 12:00:00','2025-12-06 15:00:00','Science Hall','/uploads/1764715394845-487552552.jpg','2025-12-02 22:43:14'),(5,6,'Past Event Example','','2025-10-27 17:45:00','2025-10-27 18:45:00','','/uploads/noFlyer.jpg','2025-12-02 22:45:58'),(6,6,'CS Movie Night','','2026-02-09 17:49:00','2026-02-09 19:49:00','','/uploads/1764715786863-324713482.jpg','2025-12-02 22:49:46');
 /*!40000 ALTER TABLE `Events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -104,8 +105,38 @@ CREATE TABLE `Faculty` (
 
 LOCK TABLES `Faculty` WRITE;
 /*!40000 ALTER TABLE `Faculty` DISABLE KEYS */;
-INSERT INTO `Faculty` VALUES (28,'Sreya Banerjee','banerjes@newpaltz.edu','sbanerj2.wixsite.com',NULL,'(845) 257-3997','Assistant Professor','SH 250',NULL),(29,'Min Chen','chenm@newpaltz.edu',NULL,NULL,'(845) 257-3547','Associate Professor/Chair','SH 255',NULL),(30,'Mike Curry','currym6@newpaltz.edu',NULL,NULL,'(845) 257-3529','Lecturer/Associate Chair','SH 245',NULL),(31,'Chirakkal Easwaran','easwaran@newpaltz.edu','http://www.cs.newpaltz.edu',NULL,'(845) 257-3514','Professor','SH 244',NULL),(32,'Kaitlin Hoffmann','hoffmank4@newpaltz.edu','','Tuesday 3-5 Pm','(845) 257-3533','Lecturer/Graduate Coordinator','SH 243',NULL),(33,'Keqin Li','lik@newpaltz.edu','www.cs.newpaltz.edu',NULL,'(845) 257-3534','Professor','SH 249',NULL),(34,'Hanh Pham','phamh@newpaltz.edu','www.cs.newpaltz.edu',NULL,'(845) 257-3574','Associate Professor','SH 248',NULL),(35,'Ashley Suchy','suchya1@newpaltz.edu',NULL,NULL,NULL,'Assistant Professor','SH 247',NULL),(36,'Katherine Brainard','brainark@newpaltz.edu',NULL,NULL,NULL,'Adjunct Faculty','SH 247',NULL),(37,'Charles DeGennaro','degenna1@newpaltz.edu',NULL,NULL,NULL,'Adjunct Faculty','SH 247',NULL),(38,'Christian Golden','goldenc2@newpaltz.edu',NULL,NULL,NULL,'Adjunct Faculty','SH 247',NULL),(39,'Moshe Plotkin','plotkinm@newpaltz.edu',NULL,NULL,'(845) 257-3992','Adjunct Faculty','SH 244',NULL),(40,'Ashlee Dykeman','dykemana2@newpaltz.edu',NULL,NULL,'(845) 257-3990','Administrative Assistant 1','SH 253',NULL);
+INSERT INTO `Faculty` VALUES (28,'Sreya Banerjee','banerjes@newpaltz.edu','https://sbanerj2.wixsite.com/','Wednesday 11am-1pm, Thursday 11am-1pm','(845) 257-3997','Assistant Professor','SH 250',NULL),(29,'Min Chen','chenm@newpaltz.edu',NULL,'Monday 3PM - 4PM','(845) 257-3547','Associate Professor/Chair','SH 255',NULL),(30,'Mike Curry','currym6@newpaltz.edu',NULL,'Monday 12:30pm-2:30pm, Tuesday 9:30am-10:45pm','(845) 257-3529','Lecturer/Associate Chair','SH 245',NULL),(31,'Chirakkal Easwaran','easwaran@newpaltz.edu','http://www.cs.newpaltz.edu',NULL,'(845) 257-3514','Professor','SH 244',NULL),(32,'Kaitlin Hoffmann','hoffmank4@newpaltz.edu','','Monday 1:15PM - 3:15PM, Tuesday 3PM - 5PM','(845) 257-3533','Lecturer/Graduate Coordinator','SH 243',NULL),(33,'Keqin Li','lik@newpaltz.edu','www.cs.newpaltz.edu',NULL,'(845) 257-3534','Professor','SH 249',NULL),(34,'Hanh Pham','phamh@newpaltz.edu','www.cs.newpaltz.edu',NULL,'(845) 257-3574','Associate Professor','SH 248',NULL),(35,'Ashley Suchy','suchya1@newpaltz.edu',NULL,NULL,NULL,'Assistant Professor','SH 247',NULL),(36,'Katherine Brainard','brainark@newpaltz.edu',NULL,NULL,NULL,'Adjunct Faculty','SH 247',NULL),(37,'Charles DeGennaro','degenna1@newpaltz.edu',NULL,'Tuesday 12:30pm-2:30pm',NULL,'Adjunct Faculty','SH 247',NULL),(38,'Christian Golden','goldenc2@newpaltz.edu',NULL,NULL,NULL,'Adjunct Faculty','SH 247',NULL),(39,'Moshe Plotkin','plotkinm@newpaltz.edu',NULL,NULL,'(845) 257-3992','Adjunct Faculty','SH 244',NULL),(40,'Ashlee Dykeman','dykemana2@newpaltz.edu',NULL,NULL,'(845) 257-3990','Administrative Assistant 1','SH 253',NULL);
 /*!40000 ALTER TABLE `Faculty` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `FacultySemesters`
+--
+
+DROP TABLE IF EXISTS `FacultySemesters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `FacultySemesters` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `CalendarId` int(11) NOT NULL,
+  `FacultyId` int(11) NOT NULL,
+  `Semester` enum('Fall','Winter','Spring','Summer') NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `CalendarId` (`CalendarId`),
+  KEY `FacultyId` (`FacultyId`),
+  CONSTRAINT `FacultySemesters_ibfk_1` FOREIGN KEY (`CalendarId`) REFERENCES `SchoolCalendar` (`id`),
+  CONSTRAINT `FacultySemesters_ibfk_2` FOREIGN KEY (`FacultyId`) REFERENCES `Faculty` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `FacultySemesters`
+--
+
+LOCK TABLES `FacultySemesters` WRITE;
+/*!40000 ALTER TABLE `FacultySemesters` DISABLE KEYS */;
+INSERT INTO `FacultySemesters` VALUES (1,1,29,'Fall'),(2,1,32,'Fall'),(3,1,32,'Winter'),(4,1,29,'Winter'),(5,1,29,'Spring'),(6,1,28,'Fall');
+/*!40000 ALTER TABLE `FacultySemesters` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -135,6 +166,65 @@ INSERT INTO `Faqs` VALUES (9,'What degrees are offered?','The department offers 
 UNLOCK TABLES;
 
 --
+-- Table structure for table `NoSchoolDays`
+--
+
+DROP TABLE IF EXISTS `NoSchoolDays`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `NoSchoolDays` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `CalendarId` int(11) NOT NULL,
+  `Day` date NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `CalendarId` (`CalendarId`),
+  CONSTRAINT `NoSchoolDays_ibfk_1` FOREIGN KEY (`CalendarId`) REFERENCES `SchoolCalendar` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `NoSchoolDays`
+--
+
+LOCK TABLES `NoSchoolDays` WRITE;
+/*!40000 ALTER TABLE `NoSchoolDays` DISABLE KEYS */;
+INSERT INTO `NoSchoolDays` VALUES (1,1,'2025-12-04'),(2,1,'2025-12-15');
+/*!40000 ALTER TABLE `NoSchoolDays` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `SchoolCalendar`
+--
+
+DROP TABLE IF EXISTS `SchoolCalendar`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `SchoolCalendar` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `FallStart` date DEFAULT NULL,
+  `FallEnd` date DEFAULT NULL,
+  `WinterStart` date DEFAULT NULL,
+  `WinterEnd` date DEFAULT NULL,
+  `SpringStart` date DEFAULT NULL,
+  `SpringEnd` date DEFAULT NULL,
+  `SummerStart` date DEFAULT NULL,
+  `SummerEnd` date DEFAULT NULL,
+  `isDefault` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `SchoolCalendar`
+--
+
+LOCK TABLES `SchoolCalendar` WRITE;
+/*!40000 ALTER TABLE `SchoolCalendar` DISABLE KEYS */;
+INSERT INTO `SchoolCalendar` VALUES (1,'2025-12-01','2025-12-02','2025-12-03','2025-12-31',NULL,NULL,NULL,NULL,1);
+/*!40000 ALTER TABLE `SchoolCalendar` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `ServerDatabaseForm`
 --
 
@@ -149,7 +239,7 @@ CREATE TABLE `ServerDatabaseForm` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,7 +248,7 @@ CREATE TABLE `ServerDatabaseForm` (
 
 LOCK TABLES `ServerDatabaseForm` WRITE;
 /*!40000 ALTER TABLE `ServerDatabaseForm` DISABLE KEYS */;
-INSERT INTO `ServerDatabaseForm` VALUES (4,'Dana Lopez','dana.lopez@example.com','N44332211','2025-09-12 20:49:44'),(5,'Ethan Patel','ethan.patel@example.com','N99887766','2025-09-12 20:49:44'),(24,'sfsdf','kontol@newpaltz.edu','N23123222','2025-11-19 12:13:42'),(26,'Molly','mollyTwo@newpaltz.edu','N01010101','2025-11-24 03:38:43');
+INSERT INTO `ServerDatabaseForm` VALUES (5,'Ethan Patel','ethan.patel@example.com','N99887766','2025-09-12 20:49:44'),(27,'Nathan Gopee','gopeen1@newpaltz.edu','N04082452','2025-12-01 03:07:25');
 /*!40000 ALTER TABLE `ServerDatabaseForm` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -296,4 +386,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-28 21:00:16
+-- Dump completed on 2025-12-12 22:30:11

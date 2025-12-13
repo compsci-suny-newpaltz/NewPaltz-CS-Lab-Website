@@ -49,7 +49,7 @@ export default function EventPopup({ event, onClose }) {
                     <FaTimes className="text-gray-600 text-lg" />
                 </button>
 
-                {/* Scrollable Content Wrapper — MATCHES PopupWindow */}
+                {/* Scrollable Content Wrapper */}
                 <div className="max-h-[70vh] overflow-y-auto popup-scroll pr-2 scrollbar-gutter-stable">
 
                     {/* Title */}

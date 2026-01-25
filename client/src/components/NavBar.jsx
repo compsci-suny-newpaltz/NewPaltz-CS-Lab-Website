@@ -56,9 +56,13 @@ const NavBar = () => {
       {/* Logo */}
       <Link
         to="/"
-        className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-400 to-indigo-500 text-xs font-bold text-white shadow-md hover:scale-105 transition-transform duration-200"
+        className="flex h-12 w-12 items-center justify-center hover:scale-105 transition-transform duration-200"
       >
-        CS lab
+        <img
+          src="/favicon.png"
+          alt="CS Lab"
+          className="h-12 w-12 object-contain"
+        />
       </Link>
 
       {/* Main Navigation Menu */}

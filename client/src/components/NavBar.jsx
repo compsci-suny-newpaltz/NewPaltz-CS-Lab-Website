@@ -1,15 +1,19 @@
 import { Link } from 'react-router-dom';
 import { AiOutlineHome } from 'react-icons/ai';
 import { IoCalendarClearOutline } from 'react-icons/io5';
-import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { MdOutlineAdminPanelSettings, MdDashboard, MdEvent } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import { BsPencil } from 'react-icons/bs';
 import { PiFactoryLight } from 'react-icons/pi';
+import { HiAcademicCap } from 'react-icons/hi';
+import { FiExternalLink } from 'react-icons/fi';
 import authService from '../services/authService';
+
 /**
  * NavBar Component
  *
  * Primary navigation component with the following features:
+ * - Sticky header with blur effect
  * - Responsive layout using flexbox
  * - Interactive dropdown menus for Blogs and Resources
  * - Smooth hover transitions and visual feedback
@@ -18,7 +22,10 @@ import authService from '../services/authService';
  *
  * Navigation Structure:
  * - Home
+ * - Hydra Dashboard (external)
+ * - Courses
  * - Calendar
+ * - Events
  * - Blogs (dropdown)
  *   └─ Student Highlights
  *   └─ Tech Blog
@@ -26,6 +33,9 @@ import authService from '../services/authService';
  *   └─ Student Resources
  *   └─ Faculty Directory
  *   └─ FAQ
+ *   └─ Student Forms
+ *   └─ Course Progression
+ *   └─ Comp Exam
  *
  * @component
  */
@@ -42,71 +52,80 @@ const NavBar = () => {
 
 
   return (
-    <nav className="relative z-10 flex items-center justify-between bg-stone-50 px-10 py-5">
-      {/* Logo*/}
+    <nav className="sticky top-0 z-50 flex items-center justify-between bg-stone-50/95 backdrop-blur-sm px-8 py-4 shadow-sm border-b border-stone-100">
+      {/* Logo */}
       <Link
         to="/"
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-200 text-xs font-bold text-black"
+        className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-400 to-indigo-500 text-xs font-bold text-white shadow-md hover:scale-105 transition-transform duration-200"
       >
         CS lab
       </Link>
 
-      {/* Main Navigation Menu
-       * - Centered layout with flexible spacing
-       * - Semi-transparent background with blur effect
-       * - Consistent hover states across items
-       */}
-      <ul className="flex gap-6 rounded-full bg-stone-200/80 px-6 py-3 shadow-inner backdrop-blur-sm">
-        {/* Primary Navigation Items
-         * Each item features:
-         * - Icon + text combination
-         * - Hover feedback with background change
-         * - Consistent padding and spacing
-         */}
+      {/* Main Navigation Menu */}
+      <ul className="flex items-center gap-1 rounded-2xl bg-stone-100/80 px-4 py-2 shadow-inner border border-stone-200/50">
+        {/* Home */}
         <Link to="/">
-          <li className="transition-color rounded-xl px-1 py-1 duration-300 hover:bg-rose-300 hover:text-black hover:shadow">
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
             <p className="flex items-center gap-1">
-              {' '}
               <AiOutlineHome /> Home
             </p>
           </li>
         </Link>
 
+        {/* Hydra Dashboard - External Link */}
+        <a
+          href="https://hydra.newpaltz.edu/dashboard"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
+            <p className="flex items-center gap-1">
+              <MdDashboard /> Hydra <FiExternalLink className="text-xs opacity-70" />
+            </p>
+          </li>
+        </a>
+
+        {/* Courses */}
+        <Link to="/courses">
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
+            <p className="flex items-center gap-1">
+              <HiAcademicCap /> Courses
+            </p>
+          </li>
+        </Link>
+
+        {/* Calendar */}
         <Link to="/calendar">
-          <li className="transition-color rounded-xl px-1 py-1 duration-300 hover:bg-rose-300  hover:shadow">
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
             <p className="flex items-center gap-1">
               <IoCalendarClearOutline /> Calendar
             </p>
           </li>
         </Link>
 
+        {/* Events */}
         <Link to="/events">
-          <li className="transition-color rounded-xl px-1 py-1 duration-300 hover:bg-rose-300  hover:shadow">
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
             <p className="flex items-center gap-1">
-              <IoCalendarClearOutline /> Events
+              <MdEvent /> Events
             </p>
           </li>
         </Link>
 
-        {/* Blogs Dropdown
-         * - Uses group hover for interaction
-         * - Animated entry/exit
-         * - Maintains hover state during submenu interaction
-         */}
-        <li className="group relative rounded-xl px-1 py-1 hover:bg-rose-300 ">
-          <span className="transition-color rounded-xl text-stone-700 duration-300 hover:bg-rose-300">
-            <p className="flex items-center gap-1 text-black">
-              {' '}
+        {/* Blogs Dropdown */}
+        <li className="group relative rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
+          <span className="cursor-pointer">
+            <p className="flex items-center gap-1">
               <BsPencil /> Blogs
             </p>
           </span>
 
-          {/* Dropdown container - hidden by default, shown on group hover */}
-          <ul className="invisible absolute left-0 mt-2 w-48 scale-95 transform rounded-xl bg-stone-50/90 py-2 opacity-0 shadow-xl backdrop-blur-sm transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
+          {/* Dropdown container */}
+          <ul className="invisible absolute left-0 mt-2 w-56 scale-95 transform rounded-xl bg-white py-2 opacity-0 shadow-lg ring-1 ring-stone-200/50 transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
             <li>
               <Link
                 to="/student-highlights"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 Student Highlights
               </Link>
@@ -114,7 +133,7 @@ const NavBar = () => {
             <li>
               <Link
                 to="/tech-blog"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 Tech Blog
               </Link>
@@ -122,25 +141,20 @@ const NavBar = () => {
           </ul>
         </li>
 
-        {/* Resources Dropdown
-         * - Mirrors Blogs dropdown behavior
-         * - Consistent styling with main navigation
-         * - Contains frequently accessed resource links
-         */}
-        <li className="group relative rounded-xl px-1 py-1 hover:bg-rose-300 ">
-          <span className="transition-color rounded-xl text-black duration-300 hover:bg-rose-300">
-            <p className="flex items-center gap-1 text-black">
-              {' '}
-              <PiFactoryLight size={20} /> Resources{' '}
+        {/* Resources Dropdown */}
+        <li className="group relative rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
+          <span className="cursor-pointer">
+            <p className="flex items-center gap-1">
+              <PiFactoryLight size={18} /> Resources
             </p>
           </span>
 
-          {/*Drop Down*/}
-          <ul className="invisible absolute left-0 mt-2 w-48 scale-95 transform rounded-xl bg-white/90 py-2 opacity-0 shadow-xl backdrop-blur-sm transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
+          {/* Dropdown container */}
+          <ul className="invisible absolute left-0 mt-2 w-56 scale-95 transform rounded-xl bg-white py-2 opacity-0 shadow-lg ring-1 ring-stone-200/50 transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
             <li>
               <Link
                 to="/student-resources"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 Student Resources
               </Link>
@@ -148,7 +162,7 @@ const NavBar = () => {
             <li>
               <Link
                 to="/faculty"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 Faculty Directory
               </Link>
@@ -156,7 +170,7 @@ const NavBar = () => {
             <li>
               <Link
                 to="/faq"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 FAQ
               </Link>
@@ -164,23 +178,15 @@ const NavBar = () => {
             <li>
               <Link
                 to="/student-forms"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 Student Forms
               </Link>
             </li>
             <li>
               <Link
-                to="/courses"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
-              >
-                Courses
-              </Link>
-            </li>
-            <li>
-              <Link
                 to="/course-progression"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 Course Progression
               </Link>
@@ -188,51 +194,41 @@ const NavBar = () => {
             <li>
               <Link
                 to="/comp-exam"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
+                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
               >
                 Comp Exam
               </Link>
             </li>
-            <li>
-              <a
-                href="https://hydra.newpaltz.edu/dashboard"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 transition-colors hover:bg-rose-300/90"
-              >
-                Hydra Dashboard
-              </a>
-            </li>
           </ul>
-
         </li>
+
         {/* Admin Option (Visible only when authenticated) */}
         {isAuthenticated && (
           <Link to="/admin-panel">
-            <li className="transition-color rounded-xl px-1 py-1 duration-300 hover:bg-rose-300 hover:text-black hover:shadow">
+            <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
               <p className="flex items-center gap-1">
-                <MdOutlineAdminPanelSettings size={20} />
-                Admin Panel</p>
+                <MdOutlineAdminPanelSettings size={18} />
+                Admin Panel
+              </p>
             </li>
           </Link>
         )}
-
       </ul>
 
-      {/* Login/Logout
-       */}
+      {/* Login/Logout Button */}
       {isAuthenticated ? (
         <button
           onClick={handleLogout}
-          className="rounded-full bg-orange-300 px-7 py-1 font-medium text-stone-700 duration-300 hover:bg-orange-400 hover:text-black"
+          className="rounded-xl bg-gradient-to-r from-orange-300 to-amber-400 px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-105"
         >
-          <p>Logout</p>
-        </button>) : (
+          Logout
+        </button>
+      ) : (
         <Link
           to="/admin-login"
-          className="rounded-full bg-orange-300 px-7 py-1 font-medium text-stone-700 duration-300 hover:bg-orange-400 hover:text-black"
+          className="rounded-xl bg-gradient-to-r from-orange-300 to-amber-400 px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-105"
         >
-          <p>Login</p>
+          Login
         </Link>
       )}
     </nav>

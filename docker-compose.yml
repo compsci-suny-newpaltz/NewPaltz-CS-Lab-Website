@@ -1,0 +1,66 @@
+# Docker Compose for NewPaltz CS Lab Website
+# React frontend + Express backend + MariaDB
+
+services:
+  # Backend API
+  backend:
+    build: .
+    container_name: cs-lab-backend
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=${DB_USER:-cslab}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME:-cslab}
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "5001:5001"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cslab-network
+
+  # MariaDB Database
+  db:
+    image: mariadb:10.11
+    container_name: cs-lab-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME:-cslab}
+      - MYSQL_USER=${DB_USER:-cslab}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - cslab-network
+
+  # Frontend (optional - can also serve via Apache/nginx on host)
+  # Uncomment if you want to serve frontend from this stack
+  # frontend:
+  #   image: nginx:alpine
+  #   container_name: cs-lab-frontend
+  #   volumes:
+  #     - ./client/dist:/usr/share/nginx/html:ro
+  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  #   ports:
+  #     - "3000:80"
+  #   restart: unless-stopped
+  #   networks:
+  #     - cslab-network
+
+volumes:
+  db_data:
+
+networks:
+  cslab-network:
+    driver: bridge

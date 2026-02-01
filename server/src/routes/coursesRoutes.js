@@ -87,13 +87,31 @@ router.get("/:id", async (req, res) => {
             // It's a slug - try exact match first
             course = await courses.getCourseBySlug(param);
 
-            // If not found, try matching by course code pattern (e.g., cps310 -> cps310-%)
-            if (!course && /^[a-z]+\d+$/i.test(param)) {
+            if (!course) {
                 const allCourses = await courses.getAllCourses();
-                const codeMatch = param.toLowerCase().replace(/[^a-z0-9]/g, '');
-                course = allCourses.find(c =>
-                    c.slug && c.slug.toLowerCase().startsWith(codeMatch + '-')
-                );
+                const paramLower = param.toLowerCase();
+
+                // Try matching by course code pattern (e.g., cps310 -> cps310-%)
+                if (/^[a-z]+\d+$/i.test(param)) {
+                    const codeMatch = paramLower.replace(/[^a-z0-9]/g, '');
+                    course = allCourses.find(c =>
+                        c.slug && c.slug.toLowerCase().startsWith(codeMatch + '-')
+                    );
+                }
+
+                // Try matching by friendly slug pattern (e.g., cps493-datascience -> "Data Science")
+                if (!course && paramLower.includes('-')) {
+                    const parts = paramLower.split('-');
+                    const codePrefix = parts[0]; // e.g., "cps493"
+                    const namePart = parts.slice(1).join(' '); // e.g., "datascience"
+
+                    course = allCourses.find(c => {
+                        const courseCode = c.code?.toLowerCase().replace(/\s+/g, '');
+                        const courseName = c.name?.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+                        return courseCode === codePrefix &&
+                               (courseName.includes(namePart) || courseName.replace(/\s+/g, '').includes(namePart.replace(/\s+/g, '')));
+                    });
+                }
             }
         }
 

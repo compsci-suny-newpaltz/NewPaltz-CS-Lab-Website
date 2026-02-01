@@ -60,11 +60,8 @@ app.use("/tech-blog", techBlogRoutes);
 app.use("/student-highlights", studentHighlightRoutes);
 app.use("/sd-forms", sdFormRoutes);
 app.use("/student", student2Routes);
-app.use("/events", eventRoutes);
 app.use("/api/events", eventRoutes);
-app.use("/courses", coursesRoutes);
 app.use("/api/courses", coursesRoutes);
-app.use("/comp-exam", compExamRoutes);
 app.use("/api/comp-exam", compExamRoutes);
 
 app.use("/school-calendar", schoolCalendarRoutes);
@@ -96,8 +93,7 @@ app.get("*", (req, res, next) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/faq') ||
         req.path.startsWith('/faculty') || req.path.startsWith('/uploads') ||
         req.path.startsWith('/scripts') || req.path.startsWith('/tech-blog') ||
-        req.path.startsWith('/student') || req.path.startsWith('/events') ||
-        req.path.startsWith('/courses') || req.path.startsWith('/comp-exam') ||
+        req.path.startsWith('/student') ||
         req.path.startsWith('/admins') || req.path.startsWith('/auth') ||
         req.path.startsWith('/school-calendar') || req.path.startsWith('/sd-forms')) {
         return next();

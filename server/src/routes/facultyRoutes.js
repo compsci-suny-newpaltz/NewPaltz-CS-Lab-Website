@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const faculty = require('../models/facultyModel');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 router.get("/", async (req, res) => {
     try {
@@ -11,11 +12,11 @@ router.get("/", async (req, res) => {
     }
 });
 
-//add faculty
-router.post("/", async (req, res) => {
+// Add faculty (admin only)
+router.post("/", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faculty.addFaculty(req.body);
-        res.status(201).json({ id: result.toString(), message: "FAQ added successfully" }); // Return a clear success response
+        res.status(201).json({ id: result.toString(), message: "Faculty added successfully" });
     } catch (err) {
         console.error("Error adding faculty:", err);
         res.status(500).json({ message: err.message });
@@ -32,20 +33,19 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-//edit all columns
-router.put("/:id", async (req, res) => {
+// Edit all columns (admin only)
+router.put("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faculty.editFaculty(req.params.id, req.body);
-        res.json({ affectedRows: result, message: "Faculty Member updated successfully"  });
+        res.json({ affectedRows: result, message: "Faculty Member updated successfully" });
     } catch (err) {
         console.error("Cannot Update Faculty Member", err)
         res.status(500).json({ message: err.message });
     }
 });
 
-
-//delete faculty
-router.delete("/:id", async (req, res) => {
+// Delete faculty (admin only)
+router.delete("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faculty.removeFaculty(req.params.id);
         res.json({ affectedRows: result });
@@ -54,9 +54,8 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-
-// Update only office hours
-router.patch("/:id/office-hours", async (req, res) => {
+// Update only office hours (admin only)
+router.patch("/:id/office-hours", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faculty.changeOnlyFacultyOfficeHours(req.params.id, req.body.office_hours);
         res.json({ affectedRows: result, message: "Faculty Member's office hours updated successfully" });

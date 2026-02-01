@@ -2,12 +2,11 @@ import { Link } from 'react-router-dom';
 import { AiOutlineHome } from 'react-icons/ai';
 import { IoCalendarClearOutline } from 'react-icons/io5';
 import { MdOutlineAdminPanelSettings, MdDashboard, MdEvent } from "react-icons/md";
-import { useNavigate } from 'react-router-dom';
 import { BsPencil } from 'react-icons/bs';
 import { PiFactoryLight } from 'react-icons/pi';
 import { HiAcademicCap } from 'react-icons/hi';
-import { FiExternalLink } from 'react-icons/fi';
-import authService from '../services/authService';
+import { FiExternalLink, FiUser, FiLogOut, FiLogIn } from 'react-icons/fi';
+import { useAuth } from '../context/authContext';
 
 /**
  * NavBar Component
@@ -17,6 +16,7 @@ import authService from '../services/authService';
  * - Responsive layout using flexbox
  * - Interactive dropdown menus for Blogs and Resources
  * - Smooth hover transitions and visual feedback
+ * - SSO authentication integration
  * - Accessible navigation structure
  * - Consistent branding elements
  *
@@ -27,29 +27,21 @@ import authService from '../services/authService';
  * - Calendar
  * - Events
  * - Blogs (dropdown)
- *   └─ Student Highlights
- *   └─ Tech Blog
+ *   - Student Highlights
+ *   - Tech Blog
  * - Resources (dropdown)
- *   └─ Student Resources
- *   └─ Faculty Directory
- *   └─ FAQ
- *   └─ Student Forms
- *   └─ Course Progression
- *   └─ Comp Exam
+ *   - Student Resources
+ *   - Faculty Directory
+ *   - FAQ
+ *   - Student Forms
+ *   - Course Progression
+ *   - Comp Exam
  *
  * @component
  */
 
 const NavBar = () => {
-
-  const isAuthenticated = authService.isAuthenticated();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/');
-  };
-
+  const { user, isAuthenticated, isAdmin, login, logout, loading } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between bg-stone-50/95 backdrop-blur-sm px-8 py-4 shadow-sm border-b border-stone-100">
@@ -206,8 +198,8 @@ const NavBar = () => {
           </ul>
         </li>
 
-        {/* Admin Option (Visible only when authenticated) */}
-        {isAuthenticated && (
+        {/* Admin Option (Visible only when user is admin) */}
+        {isAdmin && (
           <Link to="/admin-panel">
             <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
               <p className="flex items-center gap-1">
@@ -219,21 +211,42 @@ const NavBar = () => {
         )}
       </ul>
 
-      {/* Login/Logout Button */}
-      {isAuthenticated ? (
-        <button
-          onClick={handleLogout}
-          className="rounded-xl bg-gradient-to-r from-orange-300 to-amber-400 px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-105"
-        >
-          Logout
-        </button>
+      {/* User Menu / Login Button */}
+      {loading ? (
+        <div className="w-24 h-10 rounded-xl bg-stone-200 animate-pulse" />
+      ) : isAuthenticated ? (
+        <div className="group relative">
+          <button className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-100 to-orange-100 px-4 py-2 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:shadow-md hover:from-rose-200 hover:to-orange-200">
+            <FiUser className="text-rose-500" />
+            <span className="max-w-[120px] truncate">{user?.given_name || user?.name?.split(' ')[0] || 'User'}</span>
+          </button>
+
+          {/* User dropdown */}
+          <div className="invisible absolute right-0 mt-2 w-64 scale-95 transform rounded-xl bg-white py-2 opacity-0 shadow-lg ring-1 ring-stone-200/50 transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
+            <div className="px-4 py-3 border-b border-stone-100">
+              <p className="text-sm font-medium text-stone-900">{user?.name}</p>
+              <p className="text-xs text-stone-500">{user?.email}</p>
+              {user?.affiliation && (
+                <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded-full bg-rose-100 text-rose-700 capitalize">
+                  {user.affiliation}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={logout}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
+            >
+              <FiLogOut /> Sign out
+            </button>
+          </div>
+        </div>
       ) : (
-        <Link
-          to="/admin-login"
-          className="rounded-xl bg-gradient-to-r from-orange-300 to-amber-400 px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-105"
+        <button
+          onClick={() => login()}
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-300 to-amber-400 px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-105"
         >
-          Login
-        </Link>
+          <FiLogIn /> Sign in
+        </button>
       )}
     </nav>
   );

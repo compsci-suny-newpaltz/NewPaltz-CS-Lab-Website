@@ -29,7 +29,7 @@ const CompExamSection = () => {
       console.error('Error fetching comp exam settings:', err);
       // Use defaults if API fails
       setSettings({
-        exam_date: 'May 8th, 2025',
+        exam_date: 'May 8th, 2026',
         exam_time: '9 AM - 12 PM',
         location: 'Science Hall 259'
       });
@@ -87,10 +87,10 @@ const CompExamSection = () => {
               name="exam_date"
               value={settings.exam_date}
               onChange={handleChange}
-              placeholder="e.g., May 8th, 2025"
+              placeholder="e.g., May 8th, 2026"
               className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-rose-300 focus:outline-none text-lg"
             />
-            <p className="mt-1 text-xs text-gray-500">Enter the date as you want it displayed (e.g., "May 8th, 2025")</p>
+            <p className="mt-1 text-xs text-gray-500">Enter the date as you want it displayed (e.g., "May 8th, 2026")</p>
           </div>
 
           {/* Time */}

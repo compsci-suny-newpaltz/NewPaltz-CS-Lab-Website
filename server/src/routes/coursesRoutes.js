@@ -74,16 +74,35 @@ router.get("/slug/:slug", async (req, res) => {
     }
 });
 
-// Get course by ID
+// Get course by ID or slug
 router.get("/:id", async (req, res) => {
     try {
-        const course = await courses.getCourseByID(req.params.id);
+        const param = req.params.id;
+        let course;
+
+        // Check if param is numeric (ID) or a slug
+        if (/^\d+$/.test(param)) {
+            course = await courses.getCourseByID(param);
+        } else {
+            // It's a slug - try exact match first
+            course = await courses.getCourseBySlug(param);
+
+            // If not found, try matching by course code pattern (e.g., cps310 -> cps310-%)
+            if (!course && /^[a-z]+\d+$/i.test(param)) {
+                const allCourses = await courses.getAllCourses();
+                const codeMatch = param.toLowerCase().replace(/[^a-z0-9]/g, '');
+                course = allCourses.find(c =>
+                    c.slug && c.slug.toLowerCase().startsWith(codeMatch + '-')
+                );
+            }
+        }
+
         if (!course) {
             return res.status(404).json({ message: "Course not found" });
         }
         res.json(course);
     } catch (err) {
-        console.error("Error getting course by ID:", err);
+        console.error("Error getting course:", err);
         res.status(500).json({ message: err.message });
     }
 });

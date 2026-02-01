@@ -4,3 +4,10 @@ client/node_modules/
 .vscode/
 .DS_Store
 dist/
+
+# Environment files (contain secrets)
+.env
+.env.*
+!.env.example
+*.pem
+*.key

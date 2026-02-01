@@ -4,6 +4,7 @@ const eventsModel = require('../models/eventsModel');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 // Ensure uploads folder exists
 const uploadsDir = path.join(__dirname, '..', 'uploads');
@@ -56,9 +57,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Add a new event with optional flyer
-// Add a new event with optional flyer
-router.post('/', upload.single('flyer'), validateEvent, async (req, res) => {
+// Add a new event with optional flyer (admin only)
+router.post('/', verifySSO, requireAdmin, upload.single('flyer'), validateEvent, async (req, res) => {
     console.log("BODY:", req.body);
     console.log("FILE:", req.file);
 
@@ -100,7 +100,8 @@ router.post('/', upload.single('flyer'), validateEvent, async (req, res) => {
 });
 
 
-router.delete('/:id', async (req, res) => {
+// Delete an event (admin only)
+router.delete('/:id', verifySSO, requireAdmin, async (req, res) => {
     try {
         const id = Number(req.params.id);
 
@@ -176,8 +177,8 @@ router.get('/:id', async (req, res) => {
 });
 
 
-// Edit an existing event by ID with optional flyer replacement
-router.put('/:id', upload.single('flyer'), async (req, res) => {
+// Edit an existing event by ID with optional flyer replacement (admin only)
+router.put('/:id', verifySSO, requireAdmin, upload.single('flyer'), async (req, res) => {
     console.log("REQ BODY:", req.body);
 console.log("REQ FILE:", req.file);
     try {

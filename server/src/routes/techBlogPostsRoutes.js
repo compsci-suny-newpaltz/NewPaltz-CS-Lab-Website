@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const techPosts = require('../models/techBlogPostsModel');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 // Get all tech blog posts
 router.get("/", async (req, res) => {
@@ -13,21 +14,26 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Get pending tech blog posts
-router.get("/pending", async (req, res) => {
+// Get pending tech blog posts (admin only)
+router.get("/pending", verifySSO, requireAdmin, async (req, res) => {
     try {
         const rows = await techPosts.getPendingPosts();
         res.json(rows);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
-);
+});
 
-// Add a new tech blog post
-router.post("/", async (req, res) => {
+// Add a new tech blog post (authenticated users can submit)
+router.post("/", verifySSO, async (req, res) => {
     try {
-        await techPosts.addPost(req.body);
+        // Auto-fill submitter info from SSO token
+        const postData = {
+            ...req.body,
+            author: req.body.author || req.user.name,
+            submitter_email: req.user.email
+        };
+        await techPosts.addPost(postData);
 
         res.status(201).json({ message: "Tech Blog Post added successfully" });
     } catch (err) {
@@ -36,8 +42,8 @@ router.post("/", async (req, res) => {
     }
 });
 
-// Delete a tech blog post
-router.delete("/:id", async (req, res) => {
+// Delete a tech blog post (admin only)
+router.delete("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await techPosts.removePost(req.params.id);
         res.json({ affectedRows: result });
@@ -46,8 +52,8 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-// Update author
-router.put("/:id/author", async (req, res) => {
+// Update author (admin only)
+router.put("/:id/author", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await techPosts.updateAuthor(req.params.id, req.body.author);
         res.json({ affectedRows: result });
@@ -56,8 +62,8 @@ router.put("/:id/author", async (req, res) => {
     }
 });
 
-//Update title
-router.put("/:id/title", async (req, res) => {
+// Update title (admin only)
+router.put("/:id/title", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await techPosts.updateTitle(req.params.id, req.body.title);
         res.json({ affectedRows: result });
@@ -66,18 +72,18 @@ router.put("/:id/title", async (req, res) => {
     }
 });
 
-//Update summary
-router.put("/:id/summary", async (req, res) => {
+// Update summary (admin only)
+router.put("/:id/summary", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await techPosts.updateSummary(req.params.id, req.body.summary);
         res.json({ affectedRows: result });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}); 
+});
 
-//Update link
-router.put("/:id/link", async (req, res) => {
+// Update link (admin only)
+router.put("/:id/link", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await techPosts.updateLink(req.params.id, req.body.link);
         res.json({ affectedRows: result });
@@ -99,8 +105,8 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// Approve tech blog post
-router.put("/approve/:id", async (req, res) => {
+// Approve tech blog post (admin only)
+router.put("/approve/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await techPosts.approvePost(req.params.id);
         res.json({ affectedRows: result });
@@ -109,8 +115,8 @@ router.put("/approve/:id", async (req, res) => {
     }
 });
 
-//Updating entire tech blog post
-router.put("/:id", async (req, res) => {
+// Updating entire tech blog post (admin only)
+router.put("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await techPosts.editPost(req.params.id, req.body);
         if (result === 0) {
@@ -121,8 +127,7 @@ router.put("/:id", async (req, res) => {
         console.error('Error updating Tech Blog Post:', err);
         res.status(500).json({ message: err.message });
     }
-}
-);
+});
 
 
 module.exports = router;

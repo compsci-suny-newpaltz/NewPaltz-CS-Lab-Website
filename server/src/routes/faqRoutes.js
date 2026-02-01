@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const faqs = require('../models/faqModel');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 // Get all FAQs
 router.get("/", async (req, res) => {
@@ -23,19 +24,19 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-//add faq
-router.post("/", async (req, res) => {
+// Add faq (admin only)
+router.post("/", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faqs.addFAQ(req.body);
-        res.status(201).json({ id: result, message: "FAQ added successfully" }); // Return a clear success response
+        res.status(201).json({ id: result, message: "FAQ added successfully" });
     } catch (err) {
         console.error("Error in addFAQ route:", err);
         res.status(500).json({ message: "Failed to add FAQ", error: err.message });
     }
 });
 
-//delete faq by id
-router.delete("/:id", async (req, res) => {
+// Delete faq by id (admin only)
+router.delete("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faqs.deleteFAQ(req.params.id);
         res.json({ affectedRows: result });
@@ -44,8 +45,8 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-//edit question 
-router.put("/:id/question", async (req, res) => {
+// Edit question (admin only)
+router.put("/:id/question", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faqs.updateQuestion(req.params.id, req.body.question);
         res.json({ affectedRows: result });
@@ -54,8 +55,8 @@ router.put("/:id/question", async (req, res) => {
     }
 });
 
-//`
-router.put("/:id/answer", async (req, res) => {
+// Edit answer (admin only)
+router.put("/:id/answer", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faqs.updateAnswer(req.params.id, req.body.answer);
         res.json({ affectedRows: result });
@@ -64,8 +65,8 @@ router.put("/:id/answer", async (req, res) => {
     }
 });
 
-//edit entire faq
-router.put("/:id", async (req, res) => {
+// Edit entire faq (admin only)
+router.put("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await faqs.updateFAQ(req.params.id, req.body);
         res.json({ affectedRows: result, message: "FAQ updated successfully" });

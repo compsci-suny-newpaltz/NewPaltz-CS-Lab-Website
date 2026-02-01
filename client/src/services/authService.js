@@ -1,35 +1,58 @@
 import apiClient from './apiClient';
 
-//handles all authentication-related tasks
-
+/**
+ * SSO Authentication Service
+ * Uses hydra-saml-auth for authentication via np_access cookie
+ */
 const authService = {
-  //handles user login
-  async login(credentials) {
+  /**
+   * Get current user from SSO session
+   * @returns {Promise<Object|null>} User object or null if not authenticated
+   */
+  async getCurrentUser() {
     try {
-      const response = await apiClient.post('/auth/login', credentials);
-
-      if (response.data.token) {
-        localStorage.setItem('adminToken', response.data.token);
-        return response.data;
+      const response = await apiClient.get('/api/auth/me', {
+        withCredentials: true
+      });
+      if (response.data.authenticated) {
+        return response.data.user;
       }
+      return null;
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Login failed');
+      console.error('Failed to get current user:', error);
+      return null;
     }
   },
 
-  //handles logout
+  /**
+   * Redirect to SSO login
+   * @param {string} returnTo - URL to return to after login
+   */
+  login(returnTo = window.location.pathname) {
+    window.location.href = '/login?returnTo=' + encodeURIComponent(returnTo);
+  },
+
+  /**
+   * Redirect to SSO logout
+   */
   logout() {
-    localStorage.removeItem('adminToken');
+    window.location.href = '/logout';
   },
 
-  //checks if user is logged in
-  isAuthenticated() {
-    return !!localStorage.getItem('adminToken');
+  /**
+   * Check if user is authenticated (async)
+   * @returns {Promise<boolean>}
+   */
+  async isAuthenticated() {
+    const user = await this.getCurrentUser();
+    return user !== null;
   },
 
+  // Legacy methods for backwards compatibility
   getToken() {
-    return localStorage.getItem('adminToken');
-  },
+    // SSO uses cookies, not localStorage tokens
+    return null;
+  }
 };
 
 export default authService;

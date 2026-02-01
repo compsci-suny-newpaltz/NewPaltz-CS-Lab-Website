@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const studentResources = require('../models/studentResourcesModel');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 // Get all student resources
 router.get("/", async (req, res) => {
@@ -12,18 +13,18 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Add a new student resource
-router.post("/", async (req, res) => {
+// Add a new student resource (admin only)
+router.post("/", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await studentResources.addStudentResource(req.body);
-        res.status(201).json({ message: "Student highlight added successfully" });
+        res.status(201).json({ message: "Student resource added successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-// Delete a student resource
-router.delete("/:id", async (req, res) => {
+// Delete a student resource (admin only)
+router.delete("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await studentResources.removeStudentResource(req.params.id);
         res.json({ affectedRows: result });
@@ -32,8 +33,8 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-// Edit a student resource
-router.put("/:id", async (req, res) => {
+// Edit a student resource (admin only)
+router.put("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await studentResources.editStudentResource(req.params.id, req.body);
         res.json({ affectedRows: result });

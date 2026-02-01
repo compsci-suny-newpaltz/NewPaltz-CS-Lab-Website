@@ -9,27 +9,50 @@ import staticCoursesData from '../../data/coursesData';
 const findCoursesByCode = (courses, codeSlug) => {
   const normalizedSlug = codeSlug.toLowerCase().replace(/\s+/g, '');
 
-  const matchingCourses = courses.filter(course => {
+  // First, find the specific course that matches the slug
+  const matchedCourse = courses.find(course => {
     const courseCode = course.code.toLowerCase().replace(/\s+/g, '');
     return courseCode === normalizedSlug ||
            course.id === codeSlug ||
            course.slug === codeSlug;
   });
 
-  if (matchingCourses.length === 0) return null;
+  if (!matchedCourse) return null;
+
+  // Extract the base course code (e.g., "CPS 210" from "CPS 210/211")
+  const baseCode = matchedCourse.code.split('/')[0].trim();
+
+  // For topics courses (393/493/593), only group by same code AND same name
+  // since different topics should stay separate
+  const isTopicsCourse = baseCode.includes('393') || baseCode.includes('493') || baseCode.includes('593');
+
+  // Find ALL courses with the same code (and same name for topics courses)
+  const allSections = courses.filter(course => {
+    const courseBaseCode = course.code.split('/')[0].trim();
+    if (isTopicsCourse) {
+      return courseBaseCode === baseCode && course.name === matchedCourse.name;
+    }
+    return courseBaseCode === baseCode;
+  });
+
+  // Find which index the originally requested section is at
+  const selectedIndex = allSections.findIndex(c =>
+    c.id === codeSlug || c.slug === codeSlug
+  );
 
   // Return grouped course with all sections
-  const firstCourse = matchingCourses[0];
   return {
-    code: firstCourse.code.split('/')[0].trim(),
-    name: firstCourse.name,
-    category: firstCourse.category,
-    description: firstCourse.description,
-    credits: firstCourse.credits,
-    semester: firstCourse.semester,
-    color: firstCourse.color,
-    sections: matchingCourses.map(c => ({
+    code: baseCode,
+    name: matchedCourse.name,
+    category: matchedCourse.category,
+    description: matchedCourse.description,
+    credits: matchedCourse.credits,
+    semester: matchedCourse.semester,
+    color: matchedCourse.color,
+    initialSectionIndex: selectedIndex >= 0 ? selectedIndex : 0,
+    sections: allSections.map(c => ({
       id: c.id,
+      slug: c.slug,
       section: c.section,
       professor: c.professor,
       days: c.days,
@@ -49,6 +72,7 @@ const CoursePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [iframeError, setIframeError] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -56,6 +80,7 @@ const CoursePage = () => {
     const groupedCourse = findCoursesByCode(staticCoursesData, slug);
     if (groupedCourse) {
       setCourseData(groupedCourse);
+      setSelectedSectionIndex(groupedCourse.initialSectionIndex || 0);
       setLoading(false);
     }
 
@@ -79,7 +104,6 @@ const CoursePage = () => {
       }
     };
     fetchCourse();
-    setSelectedSectionIndex(0);
     setIframeError(false);
   }, [slug]);
 
@@ -102,6 +126,7 @@ const CoursePage = () => {
   const handleSectionChange = (index) => {
     setSelectedSectionIndex(index);
     setIframeError(false);
+    setPdfLoading(true);
     setDropdownOpen(false);
   };
 
@@ -353,12 +378,30 @@ const CoursePage = () => {
 
             {syllabusUrl && !iframeError ? (
               <div className="relative" style={{ height: '800px' }}>
+                {/* PDF Loading Animation */}
+                {pdfLoading && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-10">
+                    <div className="relative">
+                      {/* Animated document icon */}
+                      <div className="w-20 h-24 bg-white rounded-lg shadow-lg border-2 border-gray-200 flex items-center justify-center animate-pulse">
+                        <FaBook className="text-3xl text-rose-300" />
+                      </div>
+                      {/* Spinning loader around document */}
+                      <div className="absolute -inset-4">
+                        <div className="w-full h-full border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin" />
+                      </div>
+                    </div>
+                    <p className="mt-8 text-gray-600 font-medium">Loading PDF...</p>
+                    <p className="text-sm text-gray-400 mt-1">This may take a moment</p>
+                  </div>
+                )}
                 <iframe
                   key={syllabusUrl}
                   src={`${syllabusUrl}#toolbar=1&navpanes=0`}
-                  className="w-full h-full border-0"
+                  className={`w-full h-full border-0 transition-opacity duration-300 ${pdfLoading ? 'opacity-0' : 'opacity-100'}`}
                   title={`${courseData.code} Syllabus - ${selectedSection?.professor}`}
-                  onError={() => setIframeError(true)}
+                  onLoad={() => setPdfLoading(false)}
+                  onError={() => { setIframeError(true); setPdfLoading(false); }}
                 />
               </div>
             ) : (

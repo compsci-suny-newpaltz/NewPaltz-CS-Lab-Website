@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const compExam = require('../models/compExamModel');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
-// Get comp exam settings
+// Get comp exam settings (public)
 router.get("/", async (req, res) => {
     try {
         const settings = await compExam.getCompExamSettings();
@@ -12,8 +13,8 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Update comp exam settings
-router.put("/", async (req, res) => {
+// Update comp exam settings (admin only)
+router.put("/", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await compExam.updateCompExamSettings(req.body);
         res.json({ affectedRows: result, message: "Settings updated successfully" });

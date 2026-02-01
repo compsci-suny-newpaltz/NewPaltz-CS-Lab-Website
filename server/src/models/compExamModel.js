@@ -12,7 +12,7 @@ async function getCompExamSettings() {
             // Return defaults if no settings exist
             return {
                 id: 1,
-                exam_date: 'May 8th, 2025',
+                exam_date: 'May 8th, 2026',
                 exam_time: '9 AM - 12 PM',
                 location: 'Science Hall 259'
             };

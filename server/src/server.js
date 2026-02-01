@@ -3,6 +3,7 @@ const express = require("express");
 
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const faqRoutes = require("./routes/faqRoutes.js");
 const facultyRoutes = require("./routes/facultyRoutes");
 const studentRoutes = require("./routes/studentResourcesRoutes");
@@ -30,15 +31,25 @@ try {
 
 const student2Routes = require("./routes/studentRoutes");
 
+// SSO Authentication middleware
+const { optionalSSO, getCurrentUser } = require("./middleware/ssoAuth");
+
 const app = express();
 const nodemailer = require("nodemailer");
 
 const path = require("path");
 
 
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// SSO auth endpoint - get current user from np_access cookie
+app.get('/api/auth/me', optionalSSO, getCurrentUser);
 
 app.use("/faq", faqRoutes);
 app.use("/faculty", facultyRoutes);
@@ -61,11 +72,13 @@ app.use("/school-calendar", schoolCalendarRoutes);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use("/scripts", adminProxy); 
+app.use("/scripts", adminProxy);
 
-// Uncomment the following lines to enable these routes when needed
+// Serve static frontend files from client/dist
+const clientDistPath = path.join(__dirname, '../../client/dist');
+app.use(express.static(clientDistPath));
 
-/*
+// API routes with /api prefix (for compatibility)
 app.use("/api/faq", faqRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/student-resources", studentRoutes);
@@ -74,12 +87,22 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tech-blog", techBlogRoutes);
 app.use("/api/student-highlights", studentHighlightRoutes);
 app.use("/api/sd-forms", sdFormRoutes);
-*/
-// waiting to implement
-// app.use("/api/profile", require("./src/routes/profileRoutes"));
+app.use("/api/student", student2Routes);
+app.use("/api/school-calendar", schoolCalendarRoutes);
 
-app.get("/", (req, res) => {
-    res.send("CS Department Website API is running...");
+// Catch-all: serve index.html for client-side routing (must be after API routes)
+app.get("*", (req, res, next) => {
+    // Don't catch API routes or other known backend routes
+    if (req.path.startsWith('/api/') || req.path.startsWith('/faq') ||
+        req.path.startsWith('/faculty') || req.path.startsWith('/uploads') ||
+        req.path.startsWith('/scripts') || req.path.startsWith('/tech-blog') ||
+        req.path.startsWith('/student') || req.path.startsWith('/events') ||
+        req.path.startsWith('/courses') || req.path.startsWith('/comp-exam') ||
+        req.path.startsWith('/admins') || req.path.startsWith('/auth') ||
+        req.path.startsWith('/school-calendar') || req.path.startsWith('/sd-forms')) {
+        return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5001;

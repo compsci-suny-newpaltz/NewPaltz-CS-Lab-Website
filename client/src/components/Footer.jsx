@@ -17,18 +17,18 @@ const Footer = () => {
           <div className="mt-4 md:mt-0">
             <ul className="flex flex-wrap gap-4">
               <li>
-                <a href="/calendar" className="hover:text-orange-300">
-                  Events
+                <a href="/course-progression" className="hover:text-orange-300">
+                  Course Progression
                 </a>
               </li>
               <li>
-                <a href="/faculty" className="hover:text-blue-300">
+                <a href="/comp-exam" className="hover:text-blue-300">
+                  Comp Exam
+                </a>
+              </li>
+              <li>
+                <a href="/faculty" className="hover:text-violet-300">
                   Faculty
-                </a>
-              </li>
-              <li>
-                <a href="/student-resources" className="hover:text-violet-300">
-                  Student Resources
                 </a>
               </li>
               <li>
@@ -47,9 +47,10 @@ const Footer = () => {
           {/* Social Media Icons */}
           <div className="mt-4 flex gap-4 px-4 md:mt-0">
             <a
-              href="https://github.com"
+              href="https://github.com/compsci-suny-newpaltz/NewPaltz-CS-Lab-Website"
               target="_blank"
               rel="noopener noreferrer"
+              title="View source on GitHub"
             >
               <FaGithub className="text-2xl text-violet-300 hover:text-blue-300" />
             </a>

@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom';
 import { AiOutlineHome } from 'react-icons/ai';
-import { IoCalendarClearOutline } from 'react-icons/io5';
-import { MdOutlineAdminPanelSettings, MdDashboard, MdEvent } from "react-icons/md";
-import { BsPencil } from 'react-icons/bs';
-import { PiFactoryLight } from 'react-icons/pi';
-import { HiAcademicCap } from 'react-icons/hi';
-import { FiExternalLink, FiUser, FiLogOut, FiLogIn } from 'react-icons/fi';
+import { TbWriting } from 'react-icons/tb';
+import { FaGithub, FaRocket, FaTrophy } from 'react-icons/fa';
+import { MdOutlineAdminPanelSettings, MdDashboard } from "react-icons/md";
+import { HiAcademicCap, HiViewGrid } from 'react-icons/hi';
+import { FiExternalLink, FiUser, FiLogOut, FiLogIn, FiUsers, FiHelpCircle, FiFileText, FiTrendingUp, FiStar, FiEdit3 } from 'react-icons/fi';
 import { useAuth } from '../context/authContext';
 
 /**
@@ -24,8 +23,8 @@ import { useAuth } from '../context/authContext';
  * - Home
  * - Hydra Dashboard (external)
  * - Courses
- * - Calendar
- * - Events
+ * - GitHub (external)
+ * - Comp Exam (external)
  * - Blogs (dropdown)
  *   - Student Highlights
  *   - Tech Blog
@@ -90,112 +89,108 @@ const NavBar = () => {
           </li>
         </Link>
 
-        {/* Calendar */}
-        <Link to="/calendar">
+        {/* GitHub */}
+        <a
+          href="https://github.com/compsci-suny-newpaltz"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
             <p className="flex items-center gap-1">
-              <IoCalendarClearOutline /> Calendar
+              <FaGithub /> GitHub <FiExternalLink className="text-xs opacity-70" />
+            </p>
+          </li>
+        </a>
+
+        {/* Comp Exam */}
+        <a
+          href="https://hydra.newpaltz.edu/comp-exam"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
+            <p className="flex items-center gap-1">
+              <TbWriting /> Comp Exam <FiExternalLink className="text-xs opacity-70" />
+            </p>
+          </li>
+        </a>
+        {/* Hackathon */}
+        <a
+          href="https://hydra.newpaltz.edu/hackathons"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
+            <p className="flex items-center gap-1">
+              <FaTrophy /> Hackathon <FiExternalLink className="text-xs opacity-70" />
+            </p>
+          </li>
+        </a>
+
+        {/* Student Resources */}
+        <Link to="/student-resources">
+          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
+            <p className="flex items-center gap-1">
+              <FaRocket /> Resources
             </p>
           </li>
         </Link>
 
-        {/* Events */}
-        <Link to="/events">
-          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
-            <p className="flex items-center gap-1">
-              <MdEvent /> Events
-            </p>
-          </li>
-        </Link>
-
-        {/* Blogs Dropdown */}
+        {/* More Menu - Grid Dropdown */}
         <li className="group relative rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
           <span className="cursor-pointer">
             <p className="flex items-center gap-1">
-              <BsPencil /> Blogs
+              <HiViewGrid size={18} /> More
             </p>
           </span>
 
-          {/* Dropdown container */}
-          <ul className="invisible absolute left-0 mt-2 w-56 scale-95 transform rounded-xl bg-white py-2 opacity-0 shadow-lg ring-1 ring-stone-200/50 transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
-            <li>
-              <Link
-                to="/student-highlights"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
-              >
-                Student Highlights
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/tech-blog"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
-              >
-                Tech Blog
-              </Link>
-            </li>
-          </ul>
-        </li>
-
-        {/* Resources Dropdown */}
-        <li className="group relative rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
-          <span className="cursor-pointer">
-            <p className="flex items-center gap-1">
-              <PiFactoryLight size={18} /> Resources
-            </p>
-          </span>
-
-          {/* Dropdown container */}
-          <ul className="invisible absolute left-0 mt-2 w-56 scale-95 transform rounded-xl bg-white py-2 opacity-0 shadow-lg ring-1 ring-stone-200/50 transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
-            <li>
-              <Link
-                to="/student-resources"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
-              >
-                Student Resources
-              </Link>
-            </li>
-            <li>
+          {/* Grid Dropdown */}
+          <div className="invisible absolute right-0 mt-2 w-72 scale-95 transform rounded-2xl bg-gradient-to-br from-white to-stone-50 p-3 opacity-0 shadow-2xl ring-1 ring-stone-200/50 transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
+            <div className="grid grid-cols-2 gap-2">
               <Link
                 to="/faculty"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-blue-500 hover:to-indigo-600 hover:text-white hover:shadow-md"
               >
-                Faculty Directory
+                <FiUsers size={20} />
+                <span className="text-xs font-medium">Faculty</span>
               </Link>
-            </li>
-            <li>
               <Link
                 to="/faq"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-amber-500 hover:to-orange-600 hover:text-white hover:shadow-md"
               >
-                FAQ
+                <FiHelpCircle size={20} />
+                <span className="text-xs font-medium">FAQ</span>
               </Link>
-            </li>
-            <li>
               <Link
                 to="/student-forms"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-emerald-500 hover:to-teal-600 hover:text-white hover:shadow-md"
               >
-                Student Forms
+                <FiFileText size={20} />
+                <span className="text-xs font-medium">Forms</span>
               </Link>
-            </li>
-            <li>
               <Link
                 to="/course-progression"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-violet-500 hover:to-purple-600 hover:text-white hover:shadow-md"
               >
-                Course Progression
+                <FiTrendingUp size={20} />
+                <span className="text-xs font-medium">Progression</span>
               </Link>
-            </li>
-            <li>
               <Link
-                to="/comp-exam"
-                className="block px-4 py-2 text-sm text-stone-600 transition-colors hover:bg-rose-300/80 hover:text-stone-900"
+                to="/student-highlights"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-pink-500 hover:to-rose-600 hover:text-white hover:shadow-md"
               >
-                Comp Exam
+                <FiStar size={20} />
+                <span className="text-xs font-medium">Highlights</span>
               </Link>
-            </li>
-          </ul>
+              <Link
+                to="/tech-blog"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-cyan-500 hover:to-blue-600 hover:text-white hover:shadow-md"
+              >
+                <FiEdit3 size={20} />
+                <span className="text-xs font-medium">Tech Blog</span>
+              </Link>
+            </div>
+          </div>
         </li>
 
         {/* Admin Option (Visible only when user is admin) */}

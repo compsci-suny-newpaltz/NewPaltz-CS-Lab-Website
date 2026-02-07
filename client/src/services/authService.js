@@ -11,7 +11,7 @@ const authService = {
    */
   async getCurrentUser() {
     try {
-      const response = await apiClient.get('/api/auth/me', {
+      const response = await apiClient.get('/auth/me', {
         withCredentials: true
       });
       if (response.data.authenticated) {

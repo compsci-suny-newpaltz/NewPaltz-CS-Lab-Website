@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import { FaDownload, FaCalendarAlt, FaMapMarkerAlt, FaClock, FaBook, FaDatabase, FaCode, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaDownload, FaCalendarAlt, FaMapMarkerAlt, FaClock, FaBook, FaDatabase, FaCode, FaCheckCircle, FaExclamationTriangle, FaEdit } from 'react-icons/fa';
 import { HiAcademicCap } from 'react-icons/hi';
 import { BiData } from 'react-icons/bi';
 import compExamService from '../../services/compExamService';
+import { useAuth } from '../../context/authContext';
+import EditCompExamModal from '../../components/CompExam/EditCompExamModal';
 
 const CompExam = () => {
+  const { isAdmin, isFaculty } = useAuth();
+  const canEdit = isAdmin || isFaculty;
+  const [showEditModal, setShowEditModal] = useState(false);
   const [examSettings, setExamSettings] = useState({
     exam_date: 'May 8th, 2026',
     exam_time: '9 AM - 12 PM',
@@ -60,10 +65,20 @@ const CompExam = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {/* Exam Details Card - Large */}
         <div className="md:col-span-2 lg:col-span-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-8 text-white shadow-xl">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+          <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
             <FaCalendarAlt />
             Exam Details
           </h2>
+          {canEdit && (
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+            >
+              <FaEdit /> Edit
+            </button>
+          )}
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-5">
@@ -287,6 +302,14 @@ const CompExam = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Comp Exam Modal */}
+      <EditCompExamModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        currentSettings={examSettings}
+        onSuccess={(newSettings) => setExamSettings(newSettings)}
+      />
     </div>
   );
 };

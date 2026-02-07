@@ -87,13 +87,29 @@ app.use("/api/sd-forms", sdFormRoutes);
 app.use("/api/student", student2Routes);
 app.use("/api/school-calendar", schoolCalendarRoutes);
 
+// Proxy routes for hydra dashboard services (when requests come through this server)
+app.get('/minecraftdashboard/api/my-username', (req, res) => {
+  res.json({ minecraft_username: null, message: 'Minecraft integration not available' });
+});
+app.post('/minecraftdashboard/api/my-username', (req, res) => {
+  res.status(503).json({ success: false, message: 'Minecraft integration not available' });
+});
+app.get('/minecraftdashboard/*', (req, res) => {
+  res.redirect('https://hydra.newpaltz.edu/dashboard');
+});
+app.all('/dashboard/api/*', (req, res) => {
+  // Proxy dashboard API requests to hydra-main
+  res.redirect(307, `https://hydra.newpaltz.edu${req.originalUrl}`);
+});
+
 // Catch-all: serve index.html for client-side routing (must be after API routes)
 app.get("*", (req, res, next) => {
     // Don't catch API routes or other known backend routes
     if (req.path.startsWith('/api/') || req.path.startsWith('/faq') ||
         req.path.startsWith('/faculty') || req.path.startsWith('/uploads') ||
         req.path.startsWith('/scripts') || req.path.startsWith('/tech-blog') ||
-        req.path.startsWith('/student') ||
+        req.path.startsWith('/student-resources') || req.path.startsWith('/student-highlights') ||
+        (req.path.startsWith('/student') && !req.path.startsWith('/student-forms') && !req.path.startsWith('/submit-')) ||
         req.path.startsWith('/admins') || req.path.startsWith('/auth') ||
         req.path.startsWith('/school-calendar') || req.path.startsWith('/sd-forms')) {
         return next();

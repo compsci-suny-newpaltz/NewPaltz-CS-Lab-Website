@@ -11,7 +11,8 @@ const apiClient = axios.create({
   baseURL: '/api', //Directs all API calls to /api
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true // Send np_access SSO cookie with all requests
 });
 
 // Add token to requests if it exists

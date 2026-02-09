@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBook, FaSearch, FaGraduationCap, FaPlus } from 'react-icons/fa';
+import { FaBook, FaSearch, FaGraduationCap, FaPlus, FaCog } from 'react-icons/fa';
 import { HiAcademicCap } from 'react-icons/hi';
 import courseService from '../../services/courseService';
 import staticCoursesData from '../../data/coursesData';
 import { useAuth } from '../../context/authContext';
 import AddCourseModal from '../../components/Courses/AddCourseModal';
+import EditCourseModal from '../../components/Courses/EditCourseModal';
 
 // Group courses by course code AND name
 const groupCoursesByCodeAndName = (courses) => {
@@ -55,7 +56,7 @@ const LEVEL_TABS = [
   { id: 'graduate', label: 'Graduate', icon: FaGraduationCap },
 ];
 
-const CourseCard = ({ course }) => {
+const CourseCard = ({ course, canManageCourses, onEditClick }) => {
   const level = getCourseLevel(course.code);
   const sectionCount = course.sections?.length || 1;
 
@@ -73,10 +74,23 @@ const CourseCard = ({ course }) => {
   return (
     <Link
       to={`/courses/${course.slug || course.code.toLowerCase().replace(/\s+/g, '')}`}
-      className="block"
+      className="block group relative"
     >
       <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-4 h-full
                     border border-gray-100 hover:border-np-orange-200 hover:-translate-y-1">
+        {/* Settings Cog - admin/faculty only, visible on hover */}
+        {canManageCourses && (
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEditClick(course); }}
+            className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full shadow-sm
+                       text-gray-400 hover:text-rose-500 hover:bg-white
+                       opacity-0 group-hover:opacity-100 transition-all z-10"
+            title="Edit course"
+          >
+            <FaCog size={13} />
+          </button>
+        )}
+
         {/* Code Badge */}
         <div className="flex items-center justify-between mb-2">
           <span className={`px-3 py-1 bg-gradient-to-r ${colorClass} rounded-lg text-xs font-bold text-white`}>
@@ -104,9 +118,24 @@ const Courses = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [editingCourseId, setEditingCourseId] = useState(null);
   const { isAdmin, isFaculty } = useAuth();
 
   const canManageCourses = isAdmin || isFaculty;
+
+  const handleEditClick = async (groupedCourse) => {
+    try {
+      const sectionId = groupedCourse.sections?.[0]?.id || groupedCourse.id;
+      const fullCourse = await courseService.getCourseByID(sectionId);
+      setEditingCourse(fullCourse);
+      setEditingCourseId(sectionId);
+      setEditModalOpen(true);
+    } catch (err) {
+      console.error('Failed to load course for editing:', err);
+    }
+  };
 
   const fetchCourses = async () => {
     try {
@@ -258,7 +287,8 @@ const Courses = () => {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {filteredCourses.map(course => (
-              <CourseCard key={`${course.code}__${course.name}`} course={course} />
+              <CourseCard key={`${course.code}__${course.name}`} course={course}
+                canManageCourses={canManageCourses} onEditClick={handleEditClick} />
             ))}
           </div>
         )}
@@ -274,6 +304,15 @@ const Courses = () => {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSuccess={fetchCourses}
+      />
+
+      {/* Edit Course Modal */}
+      <EditCourseModal
+        isOpen={editModalOpen}
+        onClose={() => { setEditModalOpen(false); setEditingCourse(null); }}
+        onSuccess={fetchCourses}
+        courseData={editingCourse}
+        courseId={editingCourseId}
       />
     </div>
   );

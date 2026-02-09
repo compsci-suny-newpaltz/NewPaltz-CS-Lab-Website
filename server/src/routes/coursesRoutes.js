@@ -4,6 +4,7 @@ const courses = require('../models/coursesModel');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 // Configure multer for syllabus file uploads
 const storage = multer.diskStorage({
@@ -126,7 +127,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Add new course with optional syllabus upload
-router.post("/", upload.single('syllabusFile'), async (req, res) => {
+router.post("/", verifySSO, requireAdmin, upload.single('syllabusFile'), async (req, res) => {
     try {
         const courseData = req.body;
 
@@ -149,7 +150,7 @@ router.post("/", upload.single('syllabusFile'), async (req, res) => {
 });
 
 // Update course
-router.put("/:id", upload.single('syllabusFile'), async (req, res) => {
+router.put("/:id", verifySSO, requireAdmin, upload.single('syllabusFile'), async (req, res) => {
     try {
         const courseData = req.body;
 
@@ -172,7 +173,7 @@ router.put("/:id", upload.single('syllabusFile'), async (req, res) => {
 });
 
 // Delete course
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const result = await courses.removeCourse(req.params.id);
         res.json({ message: "Course deleted successfully", affectedRows: result });
@@ -183,7 +184,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Upload syllabus file separately
-router.post("/:id/syllabus", upload.single('syllabusFile'), async (req, res) => {
+router.post("/:id/syllabus", verifySSO, requireAdmin, upload.single('syllabusFile'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: "No file uploaded" });

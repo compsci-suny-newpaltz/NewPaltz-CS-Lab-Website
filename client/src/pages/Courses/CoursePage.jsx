@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FaArrowLeft, FaExternalLinkAlt, FaBook, FaClock, FaMapMarkerAlt, FaUser, FaDownload, FaHashtag, FaChevronDown, FaUsers } from 'react-icons/fa';
+import { FaArrowLeft, FaExternalLinkAlt, FaBook, FaClock, FaMapMarkerAlt, FaUser, FaDownload, FaHashtag, FaChevronDown, FaUsers, FaCog } from 'react-icons/fa';
 import { HiAcademicCap } from 'react-icons/hi';
 import courseService from '../../services/courseService';
 import staticCoursesData from '../../data/coursesData';
+import { useAuth } from '../../context/authContext';
+import EditCourseModal from '../../components/Courses/EditCourseModal';
 
 // Group courses by code to find all sections
 const findCoursesByCode = (courses, codeSlug) => {
@@ -74,6 +76,9 @@ const CoursePage = () => {
   const [iframeError, setIframeError] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const { isAdmin, isFaculty } = useAuth();
+  const canManageCourses = isAdmin || isFaculty;
 
   useEffect(() => {
     // Load static data immediately for fast render
@@ -106,6 +111,20 @@ const CoursePage = () => {
     fetchCourse();
     setIframeError(false);
   }, [slug]);
+
+  // Refresh course data after edit
+  const refreshCourse = async () => {
+    try {
+      const data = await courseService.getCourseBySlug(slug);
+      if (data) {
+        setCourseData({ ...data, sections: [data] });
+      }
+    } catch {
+      // fallback: reload static
+      const groupedCourse = findCoursesByCode(staticCoursesData, slug);
+      if (groupedCourse) setCourseData(groupedCourse);
+    }
+  };
 
   // Get the currently selected section
   const selectedSection = courseData?.sections?.[selectedSectionIndex] || courseData?.sections?.[0];
@@ -344,10 +363,23 @@ const CoursePage = () => {
             </div>
           </div>
 
-          {/* Semester Badge */}
-          <div className="flex items-center gap-2 bg-white/70 rounded-xl px-6 py-4 shadow-sm">
-            <HiAcademicCap className="text-2xl text-rose-400" />
-            <span className="font-bold text-gray-700">{courseData.semester}</span>
+          {/* Semester Badge + Edit Button */}
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex items-center gap-2 bg-white/70 rounded-xl px-6 py-4 shadow-sm">
+              <HiAcademicCap className="text-2xl text-rose-400" />
+              <span className="font-bold text-gray-700">{courseData.semester}</span>
+            </div>
+            {canManageCourses && selectedSection && (
+              <button
+                onClick={() => setEditModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-white/70 rounded-xl shadow-sm
+                           text-gray-600 hover:text-rose-500 hover:bg-white transition-all"
+                title="Edit this course"
+              >
+                <FaCog className="text-sm" />
+                <span className="text-sm font-medium">Edit Course</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -509,6 +541,33 @@ const CoursePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Course Modal */}
+      {canManageCourses && (
+        <EditCourseModal
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSuccess={refreshCourse}
+          courseData={selectedSection ? {
+            code: courseData.code,
+            name: courseData.name,
+            category: courseData.category,
+            description: courseData.description,
+            credits: courseData.credits,
+            semester: courseData.semester,
+            color: courseData.color,
+            section: selectedSection.section,
+            professor: selectedSection.professor,
+            days: selectedSection.days,
+            time: selectedSection.time,
+            location: selectedSection.location,
+            crn: selectedSection.crn,
+            syllabusFile: selectedSection.syllabusFile,
+            resources: selectedSection.resources,
+          } : null}
+          courseId={selectedSection?.id}
+        />
+      )}
     </div>
   );
 };

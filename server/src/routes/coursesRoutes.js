@@ -75,6 +75,20 @@ router.get("/slug/:slug", async (req, res) => {
     }
 });
 
+// Get grouped course (all sections sharing same code) by slug
+router.get("/group/:slug", async (req, res) => {
+    try {
+        const group = await courses.getCourseGroupBySlug(req.params.slug);
+        if (!group) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+        res.json(group);
+    } catch (err) {
+        console.error("Error getting course group:", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Get course by ID or slug
 router.get("/:id", async (req, res) => {
     try {

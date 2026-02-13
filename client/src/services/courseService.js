@@ -31,6 +31,16 @@ const courseService = {
     },
 
     /**
+     * Get grouped course (all sections with same code) by slug
+     * @param {string} slug - Course slug
+     * @returns {Promise<Object>} Grouped course object with sections array
+     */
+    getCourseGroupBySlug: async (slug) => {
+        const response = await apiClient.get(`/courses/group/${slug}`);
+        return response.data;
+    },
+
+    /**
      * Get courses by category
      * @param {string} category - Category name
      * @returns {Promise<Array>} Array of course objects

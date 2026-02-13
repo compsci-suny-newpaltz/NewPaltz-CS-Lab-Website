@@ -89,15 +89,14 @@ const CoursePage = () => {
       setLoading(false);
     }
 
-    // Try API in background
+    // Try grouped API endpoint (returns all sections with same code)
     const fetchCourse = async () => {
       try {
-        const data = await courseService.getCourseBySlug(slug);
-        if (data) {
-          setCourseData({
-            ...data,
-            sections: [data]
-          });
+        const group = await courseService.getCourseGroupBySlug(slug);
+        if (group && group.sections) {
+          setCourseData(group);
+          setSelectedSectionIndex(group.initialSectionIndex || 0);
+          setLoading(false);
         }
       } catch (err) {
         // Silently use static data - already loaded
@@ -115,9 +114,9 @@ const CoursePage = () => {
   // Refresh course data after edit
   const refreshCourse = async () => {
     try {
-      const data = await courseService.getCourseBySlug(slug);
-      if (data) {
-        setCourseData({ ...data, sections: [data] });
+      const group = await courseService.getCourseGroupBySlug(slug);
+      if (group && group.sections) {
+        setCourseData(group);
       }
     } catch {
       // fallback: reload static
@@ -137,8 +136,12 @@ const CoursePage = () => {
     if (selectedSection.syllabusFile.startsWith('/uploads')) {
       return `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}${selectedSection.syllabusFile}`;
     }
-    // Otherwise assume it's in public folder
-    return selectedSection.syllabusFile;
+    // If it starts with /, it's already a full path in public folder
+    if (selectedSection.syllabusFile.startsWith('/')) {
+      return selectedSection.syllabusFile;
+    }
+    // Bare filename from DB — resolve to /syllabi/ path
+    return `/syllabi/${selectedSection.syllabusFile}`;
   };
 
   // Handle section change

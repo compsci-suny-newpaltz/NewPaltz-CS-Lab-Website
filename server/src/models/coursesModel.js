@@ -9,7 +9,7 @@ async function getAllCourses() {
     try {
         const rows = await conn.query(`
             SELECT c.*,
-                   GROUP_CONCAT(DISTINCT CONCAT(cr.name, '||', cr.url, '||', cr.description) SEPARATOR ';;') as resources
+                   group_concat(cr.name || '||' || cr.url || '||' || cr.description, ';;') as resources
             FROM Courses c
             LEFT JOIN CourseResources cr ON c.id = cr.course_id
             GROUP BY c.id
@@ -224,7 +224,7 @@ async function getCoursesByCategory(category) {
     try {
         const rows = await conn.query(
             `SELECT c.*,
-                    GROUP_CONCAT(DISTINCT CONCAT(cr.name, '||', cr.url, '||', cr.description) SEPARATOR ';;') as resources
+                    group_concat(cr.name || '||' || cr.url || '||' || cr.description, ';;') as resources
              FROM Courses c
              LEFT JOIN CourseResources cr ON c.id = cr.course_id
              WHERE c.category = ?
@@ -245,6 +245,85 @@ async function getCoursesByCategory(category) {
     }
 }
 
+/**
+ * Get all courses sharing the same base code as a given slug.
+ * For topics courses (493/593), also matches by name to avoid
+ * grouping different topics together.
+ * @param {string} slug - Any slug belonging to the course group
+ * @returns {Promise<Object|null>} Grouped course with sections array
+ */
+async function getCourseGroupBySlug(slug) {
+    const conn = await pool.getConnection();
+    try {
+        // Find the target course first
+        const targets = await conn.query(
+            "SELECT * FROM Courses WHERE slug = ?",
+            [slug]
+        );
+        if (!targets[0]) return null;
+        const target = targets[0];
+
+        // Extract the base code number (e.g., "CPS 210" from "CPS 210", or "CPS 493" from "CPS 493-02")
+        const baseCode = target.code.split('/')[0].trim().split('-')[0].trim();
+        const isTopics = baseCode.includes('493') || baseCode.includes('593');
+
+        // Find all courses with matching base code
+        let siblings;
+        if (isTopics) {
+            // Topics courses: match by base code AND same name
+            siblings = await conn.query(
+                "SELECT * FROM Courses WHERE name = ? AND (code LIKE ? OR code LIKE ?) ORDER BY section ASC",
+                [target.name, baseCode + '%', '% ' + baseCode.split(' ').pop() + '%']
+            );
+        } else {
+            // Regular courses: match by base code prefix
+            siblings = await conn.query(
+                "SELECT * FROM Courses WHERE code LIKE ? ORDER BY section ASC",
+                [baseCode + '%']
+            );
+        }
+
+        if (!siblings.length) siblings = [target];
+
+        // Load resources for each sibling
+        for (const sib of siblings) {
+            const resources = await conn.query(
+                "SELECT name, url, description FROM CourseResources WHERE course_id = ?",
+                [sib.id]
+            );
+            sib.resources = resources || [];
+        }
+
+        // Find which index matches the requested slug
+        const selectedIndex = siblings.findIndex(s => s.slug === slug);
+
+        return {
+            code: target.code.split('/')[0].trim(),
+            name: target.name,
+            category: target.category,
+            description: target.description,
+            credits: target.credits,
+            semester: target.semester,
+            color: target.color,
+            initialSectionIndex: selectedIndex >= 0 ? selectedIndex : 0,
+            sections: siblings.map(s => ({
+                id: s.id,
+                slug: s.slug,
+                section: s.section,
+                professor: s.professor,
+                days: s.days,
+                time: s.time,
+                location: s.location,
+                crn: s.crn,
+                syllabusFile: s.syllabusFile,
+                resources: s.resources
+            }))
+        };
+    } finally {
+        conn.release();
+    }
+}
+
 module.exports = {
     getAllCourses,
     getCourseByID,
@@ -252,5 +331,6 @@ module.exports = {
     addCourse,
     editCourse,
     removeCourse,
-    getCoursesByCategory
+    getCoursesByCategory,
+    getCourseGroupBySlug
 };

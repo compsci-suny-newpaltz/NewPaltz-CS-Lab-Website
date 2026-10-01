@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const calendar = require("../models/schoolCalendarModel");
 const db = require("../config/db");
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 // get all calendars
 router.get("/", async (req, res) => {
@@ -14,7 +15,7 @@ router.get("/", async (req, res) => {
 });
 
 // add a new calendar
-router.post("/", async (req, res) => {
+router.post("/", verifySSO, requireAdmin, async (req, res) => {
     try {
         const id = await calendar.addCalendar(req.body);
         res.status(201).json({ id, message: "Calendar added successfully" });
@@ -34,7 +35,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // edit calendar
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const affectedRows = await calendar.editCalendar(req.params.id, req.body);
         res.json({ affectedRows, message: "Calendar updated successfully" });
@@ -44,7 +45,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // delete calendar
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifySSO, requireAdmin, async (req, res) => {
     try {
         const affectedRows = await calendar.removeCalendar(req.params.id);
         res.json({ affectedRows });
@@ -66,7 +67,7 @@ router.get("/:id/no-school", async (req, res) => {
 });
 
 
-router.post("/:id/no-school", async (req, res) => {
+router.post("/:id/no-school", verifySSO, requireAdmin, async (req, res) => {
     try {
         const insertId = await calendar.addNoSchoolDay(req.params.id, req.body.Day);
 
@@ -82,7 +83,7 @@ router.post("/:id/no-school", async (req, res) => {
 
 
 // delete a no school day
-router.delete("/no-school/:dayId", async (req, res) => {
+router.delete("/no-school/:dayId", verifySSO, requireAdmin, async (req, res) => {
     try {
         const affectedRows = await calendar.removeNoSchoolDay(req.params.dayId);
         res.json({ affectedRows });
@@ -108,7 +109,7 @@ router.get("/:id/semester/:semester", async (req, res) => {
 
 
 // assign faculty to a semester
-router.post("/:id/semester", async (req, res) => {
+router.post("/:id/semester", verifySSO, requireAdmin, async (req, res) => {
     try {
         const insertId = await calendar.addFacultyToSemester(
             req.params.id,
@@ -122,7 +123,7 @@ router.post("/:id/semester", async (req, res) => {
 });
 
 // remove faculty from semester
-router.delete("/semester/:entryId", async (req, res) => {
+router.delete("/semester/:entryId", verifySSO, requireAdmin, async (req, res) => {
     try {
         const affectedRows = await calendar.removeFacultyFromSemester(req.params.entryId);
         res.json({ affectedRows });
@@ -131,7 +132,7 @@ router.delete("/semester/:entryId", async (req, res) => {
     }
 });
 
-router.patch("/:id/set-default", async (req, res) => {
+router.patch("/:id/set-default", verifySSO, requireAdmin, async (req, res) => {
     const { id } = req.params;
     console.log("Setting default calendar to ID:", id);
 

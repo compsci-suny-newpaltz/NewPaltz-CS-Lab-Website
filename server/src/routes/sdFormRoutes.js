@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const sdForms = require('../models/sdFormsModel');
 const nodemailer = require("nodemailer");
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
 
 
 //get all Server/Database form data
-router.get('/', async (req, res) => {
+router.get('/', verifySSO, requireAdmin, async (req, res) => {
     
     try {
         const rows = await sdForms.getAllSDForms();
@@ -29,7 +30,7 @@ router.post('/', async (req, res) => {
 });
 
 //delete a form by id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifySSO, requireAdmin, async (req, res) => {
    try {
         // 1. Get the student's email by ID
         const form = await sdForms.getSDFormById(req.params.id);
@@ -66,7 +67,7 @@ router.delete('/:id', async (req, res) => {
 );
 
 // Get a Server/Database form by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifySSO, requireAdmin, async (req, res) => {
     try {
         const form = await sdForms.getSDFormById(req.params.id);
         if (!form) return res.status(404).json({ message: "Form not found" });
@@ -77,7 +78,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/:id/approve', async (req, res) => {
+router.post('/:id/approve', verifySSO, requireAdmin, async (req, res) => {
     try {
         const form = await sdForms.getSDFormById(req.params.id);
         if (!form) return res.status(404).json({ message: "Form not found" });

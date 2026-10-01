@@ -38,6 +38,7 @@ const app = express();
 const nodemailer = require("nodemailer");
 
 const path = require("path");
+const { verifySSO, requireAdmin } = require('./middleware/ssoAuth');
 
 
 app.use(cors({
@@ -51,22 +52,6 @@ app.use(cookieParser());
 // SSO auth endpoint - get current user from np_access cookie
 app.get('/api/auth/me', optionalSSO, getCurrentUser);
 
-app.use("/faq", faqRoutes);
-app.use("/faculty", facultyRoutes);
-app.use("/student-resources", studentRoutes); 
-app.use("/admins", adminRoutes);
-app.use("/auth", authRoutes);
-app.use("/tech-blog", techBlogRoutes);
-app.use("/student-highlights", studentHighlightRoutes);
-app.use("/sd-forms", sdFormRoutes);
-app.use("/student", student2Routes);
-app.use("/api/events", eventRoutes);
-app.use("/api/courses", coursesRoutes);
-app.use("/api/comp-exam", compExamRoutes);
-
-app.use("/school-calendar", schoolCalendarRoutes);
-
-
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/scripts", adminProxy);
@@ -75,7 +60,7 @@ app.use("/scripts", adminProxy);
 const clientDistPath = path.join(__dirname, '../../client/dist');
 app.use(express.static(clientDistPath));
 
-// API routes with /api prefix (for compatibility)
+// API routes — all under /api/ prefix so they don't conflict with SPA routes
 app.use("/api/faq", faqRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/student-resources", studentRoutes);
@@ -85,6 +70,9 @@ app.use("/api/tech-blog", techBlogRoutes);
 app.use("/api/student-highlights", studentHighlightRoutes);
 app.use("/api/sd-forms", sdFormRoutes);
 app.use("/api/student", student2Routes);
+app.use("/api/events", eventRoutes);
+app.use("/api/courses", coursesRoutes);
+app.use("/api/comp-exam", compExamRoutes);
 app.use("/api/school-calendar", schoolCalendarRoutes);
 
 // Proxy routes for hydra dashboard services (when requests come through this server)
@@ -104,14 +92,8 @@ app.all('/dashboard/api/*', (req, res) => {
 
 // Catch-all: serve index.html for client-side routing (must be after API routes)
 app.get("*", (req, res, next) => {
-    // Don't catch API routes or other known backend routes
-    if (req.path.startsWith('/api/') || req.path.startsWith('/faq') ||
-        req.path.startsWith('/faculty') || req.path.startsWith('/uploads') ||
-        req.path.startsWith('/scripts') || req.path.startsWith('/tech-blog') ||
-        req.path.startsWith('/student-resources') || req.path.startsWith('/student-highlights') ||
-        (req.path.startsWith('/student') && !req.path.startsWith('/student-forms') && !req.path.startsWith('/submit-')) ||
-        req.path.startsWith('/admins') || req.path.startsWith('/auth') ||
-        req.path.startsWith('/school-calendar') || req.path.startsWith('/sd-forms')) {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/') ||
+        req.path.startsWith('/scripts/')) {
         return next();
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
@@ -132,7 +114,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-app.post("/send-alert", async (req, res) => {
+app.post("/send-alert", verifySSO, requireAdmin, async (req, res) => {
   try {
     const { subject, message } = req.body;
     await transporter.sendMail({

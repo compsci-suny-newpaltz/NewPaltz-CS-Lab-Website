@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/studentModel');
-const { execFile } = require('child_process');
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
+
+// Legacy admin-panel 'students' management. Admin only.
+// (POST /createUser — unauthenticated sudo exec of create_user.sh — removed 2026-10-01.)
+router.use(verifySSO, requireAdmin);
 
 // Route to get all students
 router.get('/', async (req, res) => {
@@ -77,40 +81,6 @@ router.get('/check-email/:email', async (req, res) => {
 });
 
 // creating a new user using the script
-router.post("/createUser", (req, res) => {
-  const { email, nId } = req.body;
-
-  if (!email || !nId) {
-    return res.status(400).json({ success: false, error: "Missing email or nId" });
-  }
-
-  const scriptPath = "/opt/hydra-scripts/create_user.sh";
-
-// Run the script as sudo
-  const child = execFile(
-    "sudo",
-    ["bash", scriptPath, email, nId],
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error("Error executing script:", error);
-        return res.status(500).json({
-          success: false,
-          error: stderr || error.message,
-        });
-      }
-
-      console.log("Script output:", stdout);
-      res.json({
-        success: true,
-        message: "User created successfully via server script",
-        output: stdout,
-      });
-    }
-  );
-});
-
-
-// Get all pending requests
 router.get("/pending", async (req, res) => {
   try {
     const requests = await Student.getPendingRequests();

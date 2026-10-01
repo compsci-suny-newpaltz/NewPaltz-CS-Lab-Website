@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Admin = require('../models/adminModel');
 const requireRole = require("../middleware/requireRole");
+const { verifySSO, requireAdmin } = require('../middleware/ssoAuth');
+
+// Every route here manages admin accounts: SSO login + admin role required.
+// (Until 2026-10-01 this router had no auth at all — GET / listed every
+// admin account and POST / created one for anyone on the internet.)
+router.use(verifySSO, requireAdmin);
 
 //get all admins
 router.get('/', async (req, res) => {

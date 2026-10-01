@@ -80,40 +80,33 @@ const NavBar = () => {
           </li>
         </a>
 
-        {/* Courses */}
-        <Link to="/courses">
+        {/* Course Progression */}
+        <Link to="/course-progression">
           <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
             <p className="flex items-center gap-1">
-              <HiAcademicCap /> Courses
+              <FiTrendingUp /> Progression
             </p>
           </li>
         </Link>
 
-        {/* GitHub */}
-        <a
-          href="https://github.com/compsci-suny-newpaltz"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        {/* FAQ */}
+        <Link to="/faq">
           <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
             <p className="flex items-center gap-1">
-              <FaGithub /> GitHub <FiExternalLink className="text-xs opacity-70" />
+              <FiHelpCircle /> FAQ
             </p>
           </li>
-        </a>
+        </Link>
 
-        {/* Comp Exam */}
-        <a
-          href="https://hydra.newpaltz.edu/comp-exam"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        {/* Student Resources */}
+        <Link to="/student-resources">
           <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
             <p className="flex items-center gap-1">
-              <TbWriting /> Comp Exam <FiExternalLink className="text-xs opacity-70" />
+              <FaRocket /> Resources
             </p>
           </li>
-        </a>
+        </Link>
+
         {/* Hackathon */}
         <a
           href="https://hydra.newpaltz.edu/hackathons"
@@ -127,15 +120,6 @@ const NavBar = () => {
           </li>
         </a>
 
-        {/* Student Resources */}
-        <Link to="/student-resources">
-          <li className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
-            <p className="flex items-center gap-1">
-              <FaRocket /> Resources
-            </p>
-          </li>
-        </Link>
-
         {/* More Menu - Grid Dropdown */}
         <li className="group relative rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-200 hover:bg-rose-300/80 hover:text-stone-900">
           <span className="cursor-pointer">
@@ -146,7 +130,21 @@ const NavBar = () => {
 
           {/* Grid Dropdown */}
           <div className="invisible absolute right-0 mt-2 w-72 scale-95 transform rounded-2xl bg-gradient-to-br from-white to-stone-50 p-3 opacity-0 shadow-2xl ring-1 ring-stone-200/50 transition-all duration-300 ease-in-out group-hover:visible group-hover:scale-100 group-hover:opacity-100">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              <Link
+                to="/comp-exam"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-red-500 hover:to-rose-600 hover:text-white hover:shadow-md"
+              >
+                <TbWriting size={20} />
+                <span className="text-xs font-medium">Comp Exam</span>
+              </Link>
+              <Link
+                to="/courses"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-violet-500 hover:to-purple-600 hover:text-white hover:shadow-md"
+              >
+                <HiAcademicCap size={20} />
+                <span className="text-xs font-medium">Courses</span>
+              </Link>
               <Link
                 to="/faculty"
                 className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-blue-500 hover:to-indigo-600 hover:text-white hover:shadow-md"
@@ -155,25 +153,11 @@ const NavBar = () => {
                 <span className="text-xs font-medium">Faculty</span>
               </Link>
               <Link
-                to="/faq"
-                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-amber-500 hover:to-orange-600 hover:text-white hover:shadow-md"
-              >
-                <FiHelpCircle size={20} />
-                <span className="text-xs font-medium">FAQ</span>
-              </Link>
-              <Link
                 to="/student-forms"
-                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-emerald-500 hover:to-teal-600 hover:text-white hover:shadow-md"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-amber-500 hover:to-orange-600 hover:text-white hover:shadow-md"
               >
                 <FiFileText size={20} />
                 <span className="text-xs font-medium">Forms</span>
-              </Link>
-              <Link
-                to="/course-progression"
-                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-violet-500 hover:to-purple-600 hover:text-white hover:shadow-md"
-              >
-                <FiTrendingUp size={20} />
-                <span className="text-xs font-medium">Progression</span>
               </Link>
               <Link
                 to="/student-highlights"
@@ -189,6 +173,15 @@ const NavBar = () => {
                 <FiEdit3 size={20} />
                 <span className="text-xs font-medium">Tech Blog</span>
               </Link>
+              <a
+                href="https://github.com/compsci-suny-newpaltz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-1 rounded-xl p-3 text-stone-600 transition-all hover:bg-gradient-to-br hover:from-gray-600 hover:to-gray-800 hover:text-white hover:shadow-md"
+              >
+                <FaGithub size={20} />
+                <span className="text-xs font-medium">GitHub</span>
+              </a>
             </div>
           </div>
         </li>

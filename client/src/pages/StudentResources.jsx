@@ -492,6 +492,7 @@ export default function StudentResources() {
                 <LinkCard href="https://code.visualstudio.com/" icon={FaCode} title="VS Code" subtitle="Microsoft code editor" color="from-slate-700 to-slate-900" />
                 <LinkCard href="https://education.github.com/pack" icon={FaGithub} title="JetBrains" subtitle="All IDEs free" color="from-orange-500 to-red-600" />
                 <LinkCard href="https://www.eclipse.org/downloads/" icon={FaCode} title="Eclipse IDE" subtitle="Java development" color="from-purple-600 to-indigo-700" />
+                <LinkCard href="https://kilobat.app/students" icon={FaServer} title="Kilobat Pro for Students" subtitle="1 year free on 2 Macs" color="from-blue-500 to-cyan-700" />
                 <LinkCard href="https://azure.microsoft.com/free/students" icon={FaServer} title="Azure for Students" subtitle="$100 credits" color="from-blue-400 to-blue-600" />
               </SectionCard>
             </div>
